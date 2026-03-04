@@ -7,4 +7,5 @@ class AppConstants {
   // SharedPreferences keys
   static const String keyAuthToken = 'auth_token';
   static const String keyUserId = 'user_id';
+  static const String keyOnboardingCompleted = 'onboarding_completed';
 }

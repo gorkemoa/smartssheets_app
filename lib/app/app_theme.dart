@@ -4,28 +4,29 @@ class AppTheme {
   AppTheme._();
 
   // --- Colors ---
-  static const Color primary = Color(0xFF1A73E8);
-  static const Color primaryDark = Color(0xFF1557B0);
-  static const Color primaryLight = Color(0xFFD2E3FC);
-  static const Color accent = Color(0xFF34A853);
+  static const Color primary = Color(0xFF10172F);
+  static const Color primaryDark = Color(0xFF192234);
+  static const Color primaryLight = Color(0xFF2A3A5C);
+  static const Color accent = Color(0xFF4C6EF5);
 
-  static const Color background = Color(0xFFF8F9FA);
+  static const Color background = Color(0xFFFFFFFF);
+  static const Color backgroundDark = Color(0xFF192234);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF1F3F4);
+  static const Color surfaceVariant = Color(0xFFF4F5F8);
 
-  static const Color textPrimary = Color(0xFF202124);
-  static const Color textSecondary = Color(0xFF5F6368);
-  static const Color textHint = Color(0xFF9AA0A6);
+  static const Color textPrimary = Color(0xFF10172F);
+  static const Color textSecondary = Color(0xFF5A6478);
+  static const Color textHint = Color(0xFF9EA8BB);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
 
   static const Color error = Color(0xFFD93025);
   static const Color errorLight = Color(0xFFFCE8E6);
 
-  static const Color divider = Color(0xFFE8EAED);
-  static const Color border = Color(0xFFDADCE0);
-  static const Color borderFocused = Color(0xFF1A73E8);
+  static const Color divider = Color(0xFFEAECF2);
+  static const Color border = Color(0xFFD8DCE8);
+  static const Color borderFocused = Color(0xFF10172F);
 
-  static const Color inputFill = Color(0xFFF8F9FA);
+  static const Color inputFill = Color(0xFFF4F5F8);
 
   // --- Text Styles ---
   static const TextStyle displayLarge = TextStyle(

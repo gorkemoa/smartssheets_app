@@ -1,3 +1,50 @@
+ZORUNLU KURAL — DİL DESTEĞİ (EN ÖNCELİKLİ)
+
+0. ÇOK DİLLİ DESTEK (ZORUNLU)
+
+Uygulama iki dili destekler: Türkçe ve İngilizce.
+
+Cihaz dili Türkçe → uygulama Türkçe görünür.
+Cihaz dili diğer tüm diller → uygulama İngilizce görünür.
+
+Desteklenen lokaller:
+  tr  — Türkçe (varsayılan)
+  en  — İngilizce (fallback)
+
+---
+
+0.1 Metin yönetimi kuralları
+
+View içinde hardcoded Türkçe veya İngilizce metin YASAK.
+Tüm kullanıcıya gösterilen metinler ARB dosyasından gelir.
+
+ARB dosyaları:
+  lib/l10n/app_tr.arb   — Türkçe çeviriler
+  lib/l10n/app_en.arb   — İngilizce çeviriler
+
+---
+
+0.2 Kullanım standartları
+
+View: AppLocalizations.of(context)! ile metin çeker.
+Validator: Localize edilmiş hata metinleri parametre olarak alır.
+Service / ViewModel: Lokalizasyon bilmez, dilden bağımsız çalışır.
+Yeni metin eklendiğinde önce ARB'ye eklenir, sonra View'de kullanılır.
+ARB'de olmayan string doğrudan View'e yazılamaz.
+
+---
+
+0.3 Teknik altyapı
+
+flutter_localizations: Flutter SDK lokalizasyon paketi.
+l10n.yaml: Kod üretim konfigürasyonu (proje kökünde).
+generate: true: pubspec.yaml flutter bloğunda zorunlu.
+
+Kod üretimi: flutter gen-l10n ile tetiklenir.
+Üretilen dosyalar: .dart_tool/flutter_gen/ altında yer alır.
+
+---
+
 DEĞİŞTİRİLEMEZ KURALLAR (TARTIŞMASIZ)
 
 1.1 Statik veri kesinlikle YASAK

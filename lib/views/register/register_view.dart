@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smartssheets_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/responsive/size_config.dart';
@@ -56,10 +57,12 @@ class _RegisterViewState extends State<RegisterView> {
 
     if (success) {
       // TODO: Navigate to home screen after auth flow is complete
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Hoş geldiniz, ${viewModel.authResponse?.user?.name ?? ''}!',
+            l10n.registerWelcome(viewModel.authResponse?.user?.name ?? ''),
             style: TextStyle(fontSize: SizeTokens.fontMD),
           ),
           backgroundColor: AppTheme.accent,
@@ -75,139 +78,340 @@ class _RegisterViewState extends State<RegisterView> {
     return ChangeNotifierProvider(
       create: (_) => RegisterViewModel(),
       child: Scaffold(
-        backgroundColor: AppTheme.background,
-        appBar: AppBar(
-          backgroundColor: AppTheme.background,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, size: SizeTokens.iconMD),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        body: SafeArea(
-          child: Consumer<RegisterViewModel>(
-            builder: (context, viewModel, _) {
-              return SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: SizeTokens.paddingPage),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: SizeTokens.spaceMD),
-                      _buildHeader(),
-                      SizedBox(height: SizeTokens.spaceXXL),
-                      _buildForm(viewModel),
-                      SizedBox(height: SizeTokens.spaceXL),
-                      _buildErrorMessage(viewModel),
-                      SizedBox(height: SizeTokens.spaceMD),
-                      _buildRegisterButton(viewModel),
-                      SizedBox(height: SizeTokens.spaceXL),
-                      _buildLoginLink(),
-                      SizedBox(height: SizeTokens.spaceXXL),
+        resizeToAvoidBottomInset: true,
+        backgroundColor: AppTheme.primary,
+        body: Stack(
+          children: [
+            // ── Background image ──
+            Positioned.fill(
+              child: Image.asset(
+                'assets/login-reg.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+            // ── Gradient overlay ──
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0x55000000),
+                      AppTheme.primary.withValues(alpha: 0.55),
+                      AppTheme.primary.withValues(alpha: 0.92),
                     ],
+                    stops: const [0.0, 0.30, 0.60],
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            ),
+            // ── Content ──
+            SafeArea(
+              child: Column(
+                children: [
+                  // Top narrow branding strip with back button
+                  SizedBox(
+                    height: SizeConfig.h(130),
+                    child: Stack(
+                      children: [
+                        Center(child: _buildBranding()),
+                        Positioned(
+                          left: SizeTokens.paddingXS,
+                          top: 0,
+                          bottom: 0,
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white,
+                            ),
+                            iconSize: SizeTokens.iconMD,
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // White form card (scrollable)
+                  Expanded(
+                    child: _RegisterFormCard(
+                      formKey: _formKey,
+                      nameController: _nameController,
+                      emailController: _emailController,
+                      phoneController: _phoneController,
+                      passwordController: _passwordController,
+                      passwordConfirmationController:
+                          _passwordConfirmationController,
+                      emailFocus: _emailFocus,
+                      phoneFocus: _phoneFocus,
+                      passwordFocus: _passwordFocus,
+                      passwordConfirmFocus: _passwordConfirmFocus,
+                      onRegisterPressed: _onRegisterPressed,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildBranding() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
+        Container(
+          width: SizeTokens.logoSize * 0.75,
+          height: SizeTokens.logoSize * 0.75,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.25),
+              width: 1,
+            ),
+          ),
+          child: Icon(
+            Icons.grid_view_rounded,
+            color: Colors.white,
+            size: SizeTokens.iconLG,
+          ),
+        ),
+        SizedBox(height: SizeTokens.spaceXS),
         Text(
-          'Hesap Oluştur',
+          'SmartSheets',
           style: TextStyle(
-            fontSize: SizeTokens.fontDisplay,
+            fontSize: SizeTokens.fontXL,
             fontWeight: FontWeight.w700,
-            color: AppTheme.textPrimary,
-            letterSpacing: -0.5,
-          ),
-        ),
-        SizedBox(height: SizeTokens.spaceXXS),
-        Text(
-          'Ücretsiz hesabınızı şimdi oluşturun',
-          style: TextStyle(
-            fontSize: SizeTokens.fontMD,
-            color: AppTheme.textSecondary,
-            fontWeight: FontWeight.w400,
+            color: Colors.white,
+            letterSpacing: 0.5,
           ),
         ),
       ],
     );
   }
+}
 
-  Widget _buildForm(RegisterViewModel viewModel) {
-    return Column(
-      children: [
-        AuthTextField(
-          controller: _nameController,
-          label: 'Ad Soyad',
-          hint: 'Adınızı ve soyadınızı girin',
-          keyboardType: TextInputType.name,
-          textInputAction: TextInputAction.next,
-          validator: Validators.name,
-          onFieldSubmitted: (_) => _emailFocus.requestFocus(),
+// ─────────────────────────────────────────────────────────────────────────────
+// Register Form Card
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _RegisterFormCard extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nameController;
+  final TextEditingController emailController;
+  final TextEditingController phoneController;
+  final TextEditingController passwordController;
+  final TextEditingController passwordConfirmationController;
+  final FocusNode emailFocus;
+  final FocusNode phoneFocus;
+  final FocusNode passwordFocus;
+  final FocusNode passwordConfirmFocus;
+  final Future<void> Function(RegisterViewModel) onRegisterPressed;
+
+  const _RegisterFormCard({
+    required this.formKey,
+    required this.nameController,
+    required this.emailController,
+    required this.phoneController,
+    required this.passwordController,
+    required this.passwordConfirmationController,
+    required this.emailFocus,
+    required this.phoneFocus,
+    required this.passwordFocus,
+    required this.passwordConfirmFocus,
+    required this.onRegisterPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppTheme.background,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(SizeTokens.radiusXL),
         ),
-        SizedBox(height: SizeTokens.spaceMD),
-        AuthTextField(
-          controller: _emailController,
-          focusNode: _emailFocus,
-          label: 'E-posta',
-          hint: 'ornek@email.com',
-          keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.next,
-          validator: Validators.email,
-          onFieldSubmitted: (_) => _phoneFocus.requestFocus(),
-        ),
-        SizedBox(height: SizeTokens.spaceMD),
-        AuthTextField(
-          controller: _phoneController,
-          focusNode: _phoneFocus,
-          label: 'Telefon',
-          hint: '+905551234567',
-          keyboardType: TextInputType.phone,
-          textInputAction: TextInputAction.next,
-          validator: Validators.phone,
-          onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
-        ),
-        SizedBox(height: SizeTokens.spaceMD),
-        AuthTextField(
-          controller: _passwordController,
-          focusNode: _passwordFocus,
-          label: 'Şifre',
-          hint: '••••••••',
-          isPassword: true,
-          textInputAction: TextInputAction.next,
-          validator: Validators.password,
-          onFieldSubmitted: (_) => _passwordConfirmFocus.requestFocus(),
-        ),
-        SizedBox(height: SizeTokens.spaceMD),
-        AuthTextField(
-          controller: _passwordConfirmationController,
-          focusNode: _passwordConfirmFocus,
-          label: 'Şifre Tekrar',
-          hint: '••••••••',
-          isPassword: true,
-          textInputAction: TextInputAction.done,
-          validator: (value) => Validators.passwordConfirmation(
-            value,
-            _passwordController.text,
-          ),
-          onFieldSubmitted: (_) => _onRegisterPressed(viewModel),
-        ),
-      ],
+      ),
+      child: Consumer<RegisterViewModel>(
+        builder: (context, viewModel, _) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              SizeTokens.paddingPage,
+              SizeTokens.spaceXXL,
+              SizeTokens.paddingPage,
+              SizeTokens.spaceXXXL,
+            ),
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.registerTitle,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontDisplay,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  SizedBox(height: SizeTokens.spaceXXS),
+                  Text(
+                    l10n.registerSubtitle,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontMD,
+                      color: AppTheme.textSecondary,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: SizeTokens.spaceXXL),
+                  AuthTextField(
+                    controller: nameController,
+                    label: l10n.registerNameLabel,
+                    hint: l10n.registerNameHint,
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.next,
+                    validator: (v) => Validators.name(v,
+                        emptyMessage: l10n.validatorNameEmpty,
+                        tooShortMessage: l10n.validatorNameTooShort),
+                    onFieldSubmitted: (_) => emailFocus.requestFocus(),
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                  AuthTextField(
+                    controller: emailController,
+                    focusNode: emailFocus,
+                    label: l10n.registerEmailLabel,
+                    hint: l10n.registerEmailHint,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    validator: (v) => Validators.email(v,
+                        emptyMessage: l10n.validatorEmailEmpty,
+                        invalidMessage: l10n.validatorEmailInvalid),
+                    onFieldSubmitted: (_) => phoneFocus.requestFocus(),
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                  AuthTextField(
+                    controller: phoneController,
+                    focusNode: phoneFocus,
+                    label: l10n.registerPhoneLabel,
+                    hint: l10n.registerPhoneHint,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    validator: (v) => Validators.phone(v,
+                        emptyMessage: l10n.validatorPhoneEmpty,
+                        invalidMessage: l10n.validatorPhoneInvalid),
+                    onFieldSubmitted: (_) => passwordFocus.requestFocus(),
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                  AuthTextField(
+                    controller: passwordController,
+                    focusNode: passwordFocus,
+                    label: l10n.registerPasswordLabel,
+                    hint: l10n.registerPasswordHint,
+                    isPassword: true,
+                    textInputAction: TextInputAction.next,
+                    validator: (v) => Validators.password(v,
+                        emptyMessage: l10n.validatorPasswordEmpty,
+                        tooShortMessage: l10n.validatorPasswordTooShort),
+                    onFieldSubmitted: (_) => passwordConfirmFocus.requestFocus(),
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                  AuthTextField(
+                    controller: passwordConfirmationController,
+                    focusNode: passwordConfirmFocus,
+                    label: l10n.registerPasswordConfirmLabel,
+                    hint: l10n.registerPasswordConfirmHint,
+                    isPassword: true,
+                    textInputAction: TextInputAction.done,
+                    validator: (value) => Validators.passwordConfirmation(
+                      value,
+                      passwordController.text,
+                      emptyMessage: l10n.validatorPasswordConfirmEmpty,
+                      mismatchMessage: l10n.validatorPasswordMismatch,
+                    ),
+                    onFieldSubmitted: (_) => onRegisterPressed(viewModel),
+                  ),
+                  SizedBox(height: SizeTokens.spaceXL),
+                  if (viewModel.errorMessage != null) ...[
+                    _RegisterErrorBanner(message: viewModel.errorMessage!),
+                    SizedBox(height: SizeTokens.spaceMD),
+                  ],
+                  SizedBox(
+                    width: double.infinity,
+                    height: SizeTokens.buttonHeight,
+                    child: ElevatedButton(
+                      onPressed: viewModel.isLoading
+                          ? null
+                          : () => onRegisterPressed(viewModel),
+                      child: viewModel.isLoading
+                          ? SizedBox(
+                              width: SizeTokens.iconMD,
+                              height: SizeTokens.iconMD,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppTheme.textOnPrimary,
+                              ),
+                            )
+                          : Text(
+                              l10n.registerButton,
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontLG,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textOnPrimary,
+                              ),
+                            ),
+                    ),
+                  ),
+                  SizedBox(height: SizeTokens.spaceXL),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        l10n.registerHasAccount,
+                        style: TextStyle(
+                          fontSize: SizeTokens.fontMD,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Text(
+                          l10n.registerSignIn,
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontMD,
+                            color: AppTheme.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
+}
 
-  Widget _buildErrorMessage(RegisterViewModel viewModel) {
-    if (viewModel.errorMessage == null) return const SizedBox.shrink();
+// ─────────────────────────────────────────────────────────────────────────────
+// Error Banner
+// ─────────────────────────────────────────────────────────────────────────────
 
+class _RegisterErrorBanner extends StatelessWidget {
+  final String message;
+
+  const _RegisterErrorBanner({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(SizeTokens.paddingSM),
@@ -218,11 +422,12 @@ class _RegisterViewState extends State<RegisterView> {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded, color: AppTheme.error, size: SizeTokens.iconMD),
+          Icon(Icons.error_outline_rounded,
+              color: AppTheme.error, size: SizeTokens.iconMD),
           SizedBox(width: SizeTokens.spaceXS),
           Expanded(
             child: Text(
-              viewModel.errorMessage!,
+              message,
               style: TextStyle(
                 fontSize: SizeTokens.fontSM,
                 color: AppTheme.error,
@@ -232,59 +437,6 @@ class _RegisterViewState extends State<RegisterView> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildRegisterButton(RegisterViewModel viewModel) {
-    return SizedBox(
-      width: double.infinity,
-      height: SizeTokens.buttonHeight,
-      child: ElevatedButton(
-        onPressed: viewModel.isLoading ? null : () => _onRegisterPressed(viewModel),
-        child: viewModel.isLoading
-            ? SizedBox(
-                width: SizeTokens.iconMD,
-                height: SizeTokens.iconMD,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppTheme.textOnPrimary,
-                ),
-              )
-            : Text(
-                'Kayıt Ol',
-                style: TextStyle(
-                  fontSize: SizeTokens.fontLG,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textOnPrimary,
-                ),
-              ),
-      ),
-    );
-  }
-
-  Widget _buildLoginLink() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Zaten hesabınız var mı? ',
-          style: TextStyle(
-            fontSize: SizeTokens.fontMD,
-            color: AppTheme.textSecondary,
-          ),
-        ),
-        GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Text(
-            'Giriş Yap',
-            style: TextStyle(
-              fontSize: SizeTokens.fontMD,
-              color: AppTheme.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

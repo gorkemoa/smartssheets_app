@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smartssheets_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/responsive/size_config.dart';
@@ -41,10 +42,11 @@ class _LoginViewState extends State<LoginView> {
 
     if (success) {
       // TODO: Navigate to home screen after auth flow is complete
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Hoş geldiniz, ${viewModel.authResponse?.user?.name ?? ''}!',
+            l10n.loginWelcomeBack(viewModel.authResponse?.user?.name ?? ''),
             style: TextStyle(fontSize: SizeTokens.fontMD),
           ),
           backgroundColor: AppTheme.accent,
@@ -60,108 +62,274 @@ class _LoginViewState extends State<LoginView> {
     return ChangeNotifierProvider(
       create: (_) => LoginViewModel(),
       child: Scaffold(
-        backgroundColor: AppTheme.background,
-        body: SafeArea(
-          child: Consumer<LoginViewModel>(
-            builder: (context, viewModel, _) {
-              return SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: SizeTokens.paddingPage),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: SizeTokens.spaceXXXL),
-                      _buildHeader(),
-                      SizedBox(height: SizeTokens.spaceXXL),
-                      _buildForm(viewModel),
-                      SizedBox(height: SizeTokens.spaceXL),
-                      _buildErrorMessage(viewModel),
-                      SizedBox(height: SizeTokens.spaceMD),
-                      _buildLoginButton(viewModel),
-                      SizedBox(height: SizeTokens.spaceXL),
-                      _buildRegisterLink(),
+        resizeToAvoidBottomInset: true,
+        backgroundColor: AppTheme.primary,
+        body: Stack(
+          children: [
+            // ── Background image ──
+            Positioned.fill(
+              child: Image.asset(
+                'assets/login-reg.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+            // ── Gradient overlay ──
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0x55000000),
+                      AppTheme.primary.withValues(alpha: 0.55),
+                      AppTheme.primary.withValues(alpha: 0.92),
                     ],
+                    stops: const [0.0, 0.35, 0.65],
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            ),
+            // ── Content ──
+            SafeArea(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: SizeConfig.h(210),
+                    child: Center(child: _buildBranding()),
+                  ),
+                  Expanded(
+                    child: _LoginFormCard(
+                      formKey: _formKey,
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      passwordFocus: _passwordFocus,
+                      onLoginPressed: _onLoginPressed,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildBranding() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: SizeTokens.logoSize,
           height: SizeTokens.logoSize,
           decoration: BoxDecoration(
-            color: AppTheme.primary,
+            color: Colors.white.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.25),
+              width: 1,
+            ),
           ),
           child: Icon(
             Icons.grid_view_rounded,
-            color: AppTheme.textOnPrimary,
+            color: Colors.white,
             size: SizeTokens.iconXL,
           ),
         ),
-        SizedBox(height: SizeTokens.spaceXL),
+        SizedBox(height: SizeTokens.spaceMD),
         Text(
-          'Hoş Geldiniz',
+          'SmartSheets',
           style: TextStyle(
-            fontSize: SizeTokens.fontDisplay,
+            fontSize: SizeTokens.fontXXL,
             fontWeight: FontWeight.w700,
-            color: AppTheme.textPrimary,
-            letterSpacing: -0.5,
+            color: Colors.white,
+            letterSpacing: 0.5,
           ),
         ),
         SizedBox(height: SizeTokens.spaceXXS),
         Text(
-          'Hesabınıza giriş yapın',
+          'Business Management Platform',
           style: TextStyle(
-            fontSize: SizeTokens.fontMD,
-            color: AppTheme.textSecondary,
+            fontSize: SizeTokens.fontSM,
+            color: Colors.white.withValues(alpha: 0.6),
             fontWeight: FontWeight.w400,
+            letterSpacing: 0.8,
           ),
         ),
       ],
     );
   }
+}
 
-  Widget _buildForm(LoginViewModel viewModel) {
-    return Column(
-      children: [
-        AuthTextField(
-          controller: _emailController,
-          label: 'E-posta',
-          hint: 'ornek@email.com',
-          keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.next,
-          validator: Validators.email,
-          onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
+// ─────────────────────────────────────────────────────────────────────────────
+// Login Form Card
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _LoginFormCard extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final FocusNode passwordFocus;
+  final Future<void> Function(LoginViewModel) onLoginPressed;
+
+  const _LoginFormCard({
+    required this.formKey,
+    required this.emailController,
+    required this.passwordController,
+    required this.passwordFocus,
+    required this.onLoginPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppTheme.background,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(SizeTokens.radiusXL),
         ),
-        SizedBox(height: SizeTokens.spaceMD),
-        AuthTextField(
-          controller: _passwordController,
-          focusNode: _passwordFocus,
-          label: 'Şifre',
-          hint: '••••••••',
-          isPassword: true,
-          textInputAction: TextInputAction.done,
-          validator: Validators.password,
-          onFieldSubmitted: (_) => _onLoginPressed(viewModel),
-        ),
-      ],
+      ),
+      child: Consumer<LoginViewModel>(
+        builder: (context, viewModel, _) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              SizeTokens.paddingPage,
+              SizeTokens.spaceXXL,
+              SizeTokens.paddingPage,
+              SizeTokens.spaceXXXL,
+            ),
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.loginTitle,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontDisplay,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  SizedBox(height: SizeTokens.spaceXXS),
+                  Text(
+                    l10n.loginSubtitle,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontMD,
+                      color: AppTheme.textSecondary,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: SizeTokens.spaceXXL),
+                  AuthTextField(
+                    controller: emailController,
+                    label: l10n.loginEmailLabel,
+                    hint: l10n.loginEmailHint,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    validator: (v) => Validators.email(v,
+                        emptyMessage: l10n.validatorEmailEmpty,
+                        invalidMessage: l10n.validatorEmailInvalid),
+                    onFieldSubmitted: (_) => passwordFocus.requestFocus(),
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                  AuthTextField(
+                    controller: passwordController,
+                    focusNode: passwordFocus,
+                    label: l10n.loginPasswordLabel,
+                    hint: l10n.loginPasswordHint,
+                    isPassword: true,
+                    textInputAction: TextInputAction.done,
+                    validator: (v) => Validators.password(v,
+                        emptyMessage: l10n.validatorPasswordEmpty,
+                        tooShortMessage: l10n.validatorPasswordTooShort),
+                    onFieldSubmitted: (_) => onLoginPressed(viewModel),
+                  ),
+                  SizedBox(height: SizeTokens.spaceXL),
+                  if (viewModel.errorMessage != null) ...[
+                    _ErrorBanner(message: viewModel.errorMessage!),
+                    SizedBox(height: SizeTokens.spaceMD),
+                  ],
+                  SizedBox(
+                    width: double.infinity,
+                    height: SizeTokens.buttonHeight,
+                    child: ElevatedButton(
+                      onPressed: viewModel.isLoading
+                          ? null
+                          : () => onLoginPressed(viewModel),
+                      child: viewModel.isLoading
+                          ? SizedBox(
+                              width: SizeTokens.iconMD,
+                              height: SizeTokens.iconMD,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppTheme.textOnPrimary,
+                              ),
+                            )
+                          : Text(
+                              l10n.loginButton,
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontLG,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textOnPrimary,
+                              ),
+                            ),
+                    ),
+                  ),
+                  SizedBox(height: SizeTokens.spaceXL),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        l10n.loginNoAccount,
+                        style: TextStyle(
+                          fontSize: SizeTokens.fontMD,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const RegisterView()),
+                        ),
+                        child: Text(
+                          l10n.loginSignUp,
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontMD,
+                            color: AppTheme.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
+}
 
-  Widget _buildErrorMessage(LoginViewModel viewModel) {
-    if (viewModel.errorMessage == null) return const SizedBox.shrink();
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared Error Banner
+// ─────────────────────────────────────────────────────────────────────────────
 
+class _ErrorBanner extends StatelessWidget {
+  final String message;
+
+  const _ErrorBanner({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(SizeTokens.paddingSM),
@@ -172,11 +340,12 @@ class _LoginViewState extends State<LoginView> {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded, color: AppTheme.error, size: SizeTokens.iconMD),
+          Icon(Icons.error_outline_rounded,
+              color: AppTheme.error, size: SizeTokens.iconMD),
           SizedBox(width: SizeTokens.spaceXS),
           Expanded(
             child: Text(
-              viewModel.errorMessage!,
+              message,
               style: TextStyle(
                 fontSize: SizeTokens.fontSM,
                 color: AppTheme.error,
@@ -186,62 +355,6 @@ class _LoginViewState extends State<LoginView> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildLoginButton(LoginViewModel viewModel) {
-    return SizedBox(
-      width: double.infinity,
-      height: SizeTokens.buttonHeight,
-      child: ElevatedButton(
-        onPressed: viewModel.isLoading ? null : () => _onLoginPressed(viewModel),
-        child: viewModel.isLoading
-            ? SizedBox(
-                width: SizeTokens.iconMD,
-                height: SizeTokens.iconMD,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppTheme.textOnPrimary,
-                ),
-              )
-            : Text(
-                'Giriş Yap',
-                style: TextStyle(
-                  fontSize: SizeTokens.fontLG,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textOnPrimary,
-                ),
-              ),
-      ),
-    );
-  }
-
-  Widget _buildRegisterLink() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Hesabınız yok mu? ',
-          style: TextStyle(
-            fontSize: SizeTokens.fontMD,
-            color: AppTheme.textSecondary,
-          ),
-        ),
-        GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RegisterView()),
-          ),
-          child: Text(
-            'Kayıt Ol',
-            style: TextStyle(
-              fontSize: SizeTokens.fontMD,
-              color: AppTheme.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

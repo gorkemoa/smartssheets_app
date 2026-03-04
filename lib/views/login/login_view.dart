@@ -5,7 +5,7 @@ import '../../../core/responsive/size_config.dart';
 import '../../../core/responsive/size_tokens.dart';
 import '../../../core/utils/validators.dart';
 import '../../../viewmodels/login_view_model.dart';
-import '../../register/register_view.dart';
+import '../register/register_view.dart';
 import '../../../core/ui_components/auth_text_field.dart';
 
 class LoginView extends StatefulWidget {
@@ -168,7 +168,7 @@ class _LoginViewState extends State<LoginView> {
       decoration: BoxDecoration(
         color: AppTheme.errorLight,
         borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
-        border: Border.all(color: AppTheme.error.withOpacity(0.3)),
+        border: Border.all(color: AppTheme.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

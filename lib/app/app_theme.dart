@@ -93,7 +93,6 @@ class AppTheme {
         primary: primary,
         onPrimary: textOnPrimary,
         secondary: accent,
-        background: background,
         surface: surface,
         error: error,
       ),

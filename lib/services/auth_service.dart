@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app/api_constants.dart';
 import '../app/app_constants.dart';
 import '../core/network/api_client.dart';
+import '../core/network/api_exception.dart';
 import '../core/network/api_result.dart';
 import '../core/utils/logger.dart';
 import '../models/auth_response_model.dart';

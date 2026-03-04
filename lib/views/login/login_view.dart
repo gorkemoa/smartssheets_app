@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartssheets_app/l10n/app_localizations.dart';
+import 'package:smartssheets_app/l10n/strings.dart';
 import 'package:provider/provider.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/responsive/size_config.dart';
@@ -18,8 +18,8 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'owner@demo.local');
+  final _passwordController = TextEditingController(text: 'password');
   final _passwordFocus = FocusNode();
 
   @override
@@ -42,7 +42,7 @@ class _LoginViewState extends State<LoginView> {
 
     if (success) {
       // TODO: Navigate to home screen after auth flow is complete
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppStrings.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -68,28 +68,9 @@ class _LoginViewState extends State<LoginView> {
           children: [
             // ── Background image ──
             Positioned.fill(
-              child: Image.asset(
-                'assets/login-reg.jpg',
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset('assets/login-reg.jpg', fit: BoxFit.cover),
             ),
-            // ── Gradient overlay ──
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      const Color(0x55000000),
-                      AppTheme.primary.withValues(alpha: 0.55),
-                      AppTheme.primary.withValues(alpha: 0.92),
-                    ],
-                    stops: const [0.0, 0.35, 0.65],
-                  ),
-                ),
-              ),
-            ),
+
             // ── Content ──
             SafeArea(
               child: Column(
@@ -120,42 +101,12 @@ class _LoginViewState extends State<LoginView> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: SizeTokens.logoSize,
-          height: SizeTokens.logoSize,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.25),
-              width: 1,
-            ),
-          ),
-          child: Icon(
-            Icons.grid_view_rounded,
-            color: Colors.white,
-            size: SizeTokens.iconXL,
-          ),
-        ),
         SizedBox(height: SizeTokens.spaceMD),
-        Text(
-          'SmartSheets',
-          style: TextStyle(
-            fontSize: SizeTokens.fontXXL,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            letterSpacing: 0.5,
-          ),
-        ),
-        SizedBox(height: SizeTokens.spaceXXS),
-        Text(
-          'Business Management Platform',
-          style: TextStyle(
-            fontSize: SizeTokens.fontSM,
-            color: Colors.white.withValues(alpha: 0.6),
-            fontWeight: FontWeight.w400,
-            letterSpacing: 0.8,
-          ),
+        Image.asset(
+          'assets/smartmetrics-logo.png',
+          width: SizeTokens.logoSize * 2.5,
+          height: SizeTokens.logoSize * 2.5,
+          color: Colors.white,
         ),
       ],
     );
@@ -183,7 +134,7 @@ class _LoginFormCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppStrings.of(context);
 
     return Container(
       width: double.infinity,
@@ -232,9 +183,11 @@ class _LoginFormCard extends StatelessWidget {
                     hint: l10n.loginEmailHint,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    validator: (v) => Validators.email(v,
-                        emptyMessage: l10n.validatorEmailEmpty,
-                        invalidMessage: l10n.validatorEmailInvalid),
+                    validator: (v) => Validators.email(
+                      v,
+                      emptyMessage: l10n.validatorEmailEmpty,
+                      invalidMessage: l10n.validatorEmailInvalid,
+                    ),
                     onFieldSubmitted: (_) => passwordFocus.requestFocus(),
                   ),
                   SizedBox(height: SizeTokens.spaceMD),
@@ -245,9 +198,11 @@ class _LoginFormCard extends StatelessWidget {
                     hint: l10n.loginPasswordHint,
                     isPassword: true,
                     textInputAction: TextInputAction.done,
-                    validator: (v) => Validators.password(v,
-                        emptyMessage: l10n.validatorPasswordEmpty,
-                        tooShortMessage: l10n.validatorPasswordTooShort),
+                    validator: (v) => Validators.password(
+                      v,
+                      emptyMessage: l10n.validatorPasswordEmpty,
+                      tooShortMessage: l10n.validatorPasswordTooShort,
+                    ),
                     onFieldSubmitted: (_) => onLoginPressed(viewModel),
                   ),
                   SizedBox(height: SizeTokens.spaceXL),
@@ -296,7 +251,8 @@ class _LoginFormCard extends StatelessWidget {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const RegisterView()),
+                            builder: (_) => const RegisterView(),
+                          ),
                         ),
                         child: Text(
                           l10n.loginSignUp,
@@ -340,8 +296,11 @@ class _ErrorBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded,
-              color: AppTheme.error, size: SizeTokens.iconMD),
+          Icon(
+            Icons.error_outline_rounded,
+            color: AppTheme.error,
+            size: SizeTokens.iconMD,
+          ),
           SizedBox(width: SizeTokens.spaceXS),
           Expanded(
             child: Text(

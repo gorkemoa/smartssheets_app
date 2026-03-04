@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartssheets_app/l10n/app_localizations.dart';
+import 'package:smartssheets_app/l10n/strings.dart';
 import 'package:provider/provider.dart';
 import 'package:smartssheets_app/app/app_theme.dart';
 import '../../../core/responsive/size_config.dart';
@@ -77,12 +77,12 @@ class _OnboardingViewState extends State<OnboardingView> {
                     _SplashPage(bottomReserve: overlayContentHeight),
                     _ContentPage(
                       imagePath: 'assets/onb/pexels-ian-panelo-7059605.jpg',
-                      text: AppLocalizations.of(context)!.onboardingPage2Text,
+                      text: AppStrings.of(context).onboardingPage2Text,
                       bottomReserve: overlayContentHeight,
                     ),
                     _ContentPage(
                       imagePath: 'assets/onb/pexels-leeloothefirst-5417662.jpg',
-                      text: AppLocalizations.of(context)!.onboardingPage3Text,
+                      text: AppStrings.of(context).onboardingPage3Text,
                       bottomReserve: overlayContentHeight,
                     ),
                   ],
@@ -126,10 +126,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                               ),
                               child: Text(
                                 vm.currentPage == 0
-                                    ? AppLocalizations.of(context)!.onboardingBtnExplore
+                                    ? AppStrings.of(context).onboardingBtnExplore
                                     : vm.isLastPage
-                                        ? AppLocalizations.of(context)!.onboardingBtnGetStarted
-                                        : AppLocalizations.of(context)!.onboardingBtnContinue,
+                                        ? AppStrings.of(context).onboardingBtnGetStarted
+                                        : AppStrings.of(context).onboardingBtnContinue,
                                 style: TextStyle(
                                   fontSize: SizeTokens.fontLG,
                                   fontWeight: FontWeight.w700,
@@ -197,7 +197,7 @@ class _SplashPage extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  AppLocalizations.of(context)!.onboardingSplashTitle,
+                  AppStrings.of(context).onboardingSplashTitle,
                   style: TextStyle(
                     fontSize: SizeTokens.fontXXL * 1.3,
                     color: Colors.white,

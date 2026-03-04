@@ -16,32 +16,30 @@ Desteklenen lokaller:
 0.1 Metin yönetimi kuralları
 
 View içinde hardcoded Türkçe veya İngilizce metin YASAK.
-Tüm kullanıcıya gösterilen metinler ARB dosyasından gelir.
+Tüm kullanıcıya gösterilen metinler strings.dart dosyasından gelir.
 
-ARB dosyaları:
-  lib/l10n/app_tr.arb   — Türkçe çeviriler
-  lib/l10n/app_en.arb   — İngilizce çeviriler
+Tek çeviri dosyası:
+  lib/l10n/strings.dart
+
+Her anahtar iki dili yan yana tutar:
+  'loginTitle': {'tr': 'Hoş Geldiniz', 'en': 'Welcome'},
 
 ---
 
 0.2 Kullanım standartları
 
-View: AppLocalizations.of(context)! ile metin çeker.
-Validator: Localize edilmiş hata metinleri parametre olarak alır.
-Service / ViewModel: Lokalizasyon bilmez, dilden bağımsız çalışır.
-Yeni metin eklendiğinde önce ARB'ye eklenir, sonra View'de kullanılır.
-ARB'de olmayan string doğrudan View'e yazılamaz.
+View: AppStrings.of(context) ile metin çeker.
+Validator: Lokalize hata mesajları parametre olarak alır.
+Service / ViewModel: Dilden bağımsız çalışır, AppStrings bilmez.
+Yeni metin eklenirken önce strings.dart'a her iki dil eklenir, sonra View'de kullanılır.
 
 ---
 
 0.3 Teknik altyapı
 
-flutter_localizations: Flutter SDK lokalizasyon paketi.
-l10n.yaml: Kod üretim konfigürasyonu (proje kökünde).
-generate: true: pubspec.yaml flutter bloğunda zorunlu.
-
-Kod üretimi: flutter gen-l10n ile tetiklenir.
-Üretilen dosyalar: .dart_tool/flutter_gen/ altında yer alır.
+flutter_localizations: Cihaz locale tespiti için Flutter SDK paketi.
+AppStrings.of(context): Locale'e göre TR veya EN string döndürür.
+Kod üretimi (gen-l10n) YOKTUR — elle yönetilen tek dosya yeterlidir.
 
 ---
 

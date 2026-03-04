@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartssheets_app/l10n/app_localizations.dart';
+import 'package:smartssheets_app/l10n/strings.dart';
 import 'package:provider/provider.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/responsive/size_config.dart';
@@ -58,7 +58,7 @@ class _RegisterViewState extends State<RegisterView> {
     if (success) {
       // TODO: Navigate to home screen after auth flow is complete
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppStrings.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -227,7 +227,7 @@ class _RegisterFormCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppStrings.of(context);
 
     return Container(
       width: double.infinity,

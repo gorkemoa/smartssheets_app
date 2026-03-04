@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:smartssheets_app/l10n/app_localizations.dart';
 import 'app/app_theme.dart';
 import 'views/login/login_view.dart';
 import 'views/onboarding/onboarding_view.dart';
@@ -26,7 +25,6 @@ class SmartSheetsApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       localizationsDelegates: const [
-        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

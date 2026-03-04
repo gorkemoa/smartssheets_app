@@ -7,6 +7,7 @@ import '../../../core/responsive/size_tokens.dart';
 import '../../../core/utils/validators.dart';
 import '../../../viewmodels/login_view_model.dart';
 import '../register/register_view.dart';
+import '../shell/main_shell_view.dart';
 import '../../../core/ui_components/auth_text_field.dart';
 
 class LoginView extends StatefulWidget {
@@ -41,16 +42,8 @@ class _LoginViewState extends State<LoginView> {
     if (!mounted) return;
 
     if (success) {
-      // TODO: Navigate to home screen after auth flow is complete
-      final l10n = AppStrings.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n.loginWelcomeBack(viewModel.authResponse?.user?.name ?? ''),
-            style: TextStyle(fontSize: SizeTokens.fontMD),
-          ),
-          backgroundColor: AppTheme.accent,
-        ),
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const MainShellView()),
       );
     }
   }

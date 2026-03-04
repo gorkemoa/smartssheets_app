@@ -7,6 +7,7 @@ import '../core/network/api_result.dart';
 import '../core/utils/logger.dart';
 import '../models/auth_response_model.dart';
 import '../models/login_request_model.dart';
+import '../models/me_response_model.dart';
 import '../models/register_request_model.dart';
 
 class AuthService {
@@ -87,5 +88,45 @@ class AuthService {
       return true;
     }
     return false;
+  }
+
+  Future<ApiResult<MeResponseModel>> me() async {
+    AppLogger.info(_tag, 'me() called');
+
+    final result = await ApiClient.instance.get(
+      ApiConstants.me,
+      requiresAuth: true,
+    );
+
+    return switch (result) {
+      ApiSuccess(:final data) => _mapToMeResponse(data),
+      ApiFailure(:final exception) => ApiFailure(exception),
+    };
+  }
+
+  ApiResult<MeResponseModel> _mapToMeResponse(Map<String, dynamic> data) {
+    try {
+      final model = MeResponseModel.fromJson(data);
+      AppLogger.info(_tag, 'Me response parsed. userId: \${model.user?.id}');
+      return ApiSuccess(model);
+    } catch (e) {
+      AppLogger.error(_tag, 'Parse error in _mapToMeResponse', e);
+      return ApiFailure(
+        const ApiException(
+          type: ApiExceptionType.unknown,
+          message: 'Veri işlenirken bir hata oluştu.',
+        ),
+      );
+    }
+  }
+
+  Future<void> logout() async {
+    AppLogger.info(_tag, 'logout() called');
+    await ApiClient.instance.post(
+      ApiConstants.logout,
+      body: {},
+      requiresAuth: true,
+    );
+    await clearSession();
   }
 }

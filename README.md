@@ -401,7 +401,7 @@ app/api_constants.dart
 
 ---
 
-NETWORK STANDARDI
+NETWORK STANDARDI (GÜNCELLENDİ)
 
 7.1 ApiClient
 
@@ -429,27 +429,22 @@ Failure(error)
 
 ---
 
-7.3 ApiException
+7.3 ApiException & Hata Yönetimi (ZORUNLU)
 
 Hata tipleri normalize edilir:
+network, timeout, 401, 403, 404, 500, parse error.
 
-network
+VALIDATION ERROR YÖNETİMİ:
+Backend'den gelen "errors" objesi içindeki detaylı hata mesajları (örn: "timezone": ["..."])
+ana hata mesajı ("message") yerine KULLANICIYA GÖSTERİLECEK birincil mesaj olarak atanmalıdır.
 
-timeout
-
-401
-
-403
-
-404
-
-500
-
-parse error
+Örnek Akış:
+Input: {"message":"Validation failed", "errors":{"timezone":["The timezone field must be a valid timezone."]}}
+Output (Gösterilecek): "The timezone field must be a valid timezone."
 
 ViewModel içinde:
-
 statusCode == ... kontrolü YASAK.
+Sadece exception.message üzerinden hata gösterimi yapılır.
 
 ---
 
@@ -562,3 +557,53 @@ Sadece ApiConstants kullanır
 API response alanlarını eksiksiz modeller
 
 Emin olmadığı her noktada SORAR.
+
+---
+
+ONAYLANAN ORTAK WİDGETLAR (core/ui_components/)
+
+Aşağıdaki widgetlar kullanıcı onayıyla birden fazla ekranda kullanılmak üzere
+core/ui_components/ klasörüne taşınmış veya burada oluşturulmuştur.
+
+Onay tarihi: 2026-03-04
+
+app_bottom_bar.dart
+  Açıklama: Ana navigasyon bottom bar'ı. Ortada FloatingActionButton tarzı
+            yükseltilmiş sekme içerir (görsel referans: üretim öncesi onaylanan
+            tasarım). MainShellView tarafından kullanılır.
+  Kullanan ekranlar: views/shell/main_shell_view.dart
+
+main_app_bar.dart
+  Açıklama: Tüm sekme ekranlarında standart AppBar. title parametresi alır.
+  Kullanan ekranlar: views/appointments/appointments_view.dart
+                     views/members/members_view.dart
+
+auth_text_field.dart
+  Açıklama: Giriş ve kayıt ekranlarında kullanılan ortak metin alanı.
+  Kullanan ekranlar: views/login/login_view.dart
+                     views/register/register_view.dart
+
+---
+
+NAVİGASYON KABUĞU (SHELL)
+
+views/shell/main_shell_view.dart
+  Açıklama: 5 sekmeli ana navigasyon kabuğu.
+  Sekmeler (sol→sağ):
+    0 — Anasayfa      → views/home/home_view.dart         (HomeViewModel)
+    1 — Randevular    → views/appointments/appointments_view.dart
+    2 — [FAB +]       → Özel aksiyon butonu (ekran değiştirmez)
+    3 — Üyeler        → views/members/members_view.dart
+    4 — Profil        → views/profile/profile_view.dart   (ProfileViewModel)
+
+---
+
+EKRAN / VİEWMODEL EŞLEŞMESİ
+
+views/home/home_view.dart              → viewmodels/home_view_model.dart
+views/profile/profile_view.dart        → viewmodels/profile_view_model.dart
+views/appointments/appointments_view.dart → (ViewModel henüz yok — API bekleniyor)
+views/members/members_view.dart        → (ViewModel henüz yok — API bekleniyor)
+
+Her iki ekran da /auth/me endpoint'ini bağımsız olarak çağırır.
+Ortak bir "session store" yoktur; her ViewModel kendi isteğini atar.

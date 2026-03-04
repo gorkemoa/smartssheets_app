@@ -8,8 +8,22 @@ class AppLogger {
   static void _log(LogLevel level, String tag, String message, [Object? extra]) {
     if (!kDebugMode) return;
 
-    final timestamp = DateTime.now().toIso8601String();
+    final timestamp = DateTime.now().toIso8601String().split('T').last.split('.').first;
     final prefix = _prefix(level);
+    
+    // Aesthetic formatting for request/response
+    if (level == LogLevel.request || level == LogLevel.response) {
+      final border = '═' * 80;
+      final arrow = level == LogLevel.request ? '▶▶▶' : '◀◀◀';
+      debugPrint('\n$border');
+      debugPrint('║ $prefix $arrow [$tag] ($timestamp)');
+      debugPrint('$border');
+      debugPrint(message);
+      if (extra != null) debugPrint('Extra: $extra');
+      debugPrint('$border\n');
+      return;
+    }
+
     final output = extra != null
         ? '[$timestamp] $prefix [$tag] $message\n$extra'
         : '[$timestamp] $prefix [$tag] $message';

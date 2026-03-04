@@ -73,6 +73,82 @@ class AppStrings {
   String get validatorPhoneEmpty => _t('validatorPhoneEmpty');
   String get validatorPhoneInvalid => _t('validatorPhoneInvalid');
 
+  // ─── Home ──────────────────────────────────────────────────────────────────
+  String homeGreeting(String name) => _tp('homeGreeting', {'name': name});
+  String get homeBrandTitle => _t('homeBrandTitle');
+  String get homePlanLabel => _t('homePlanLabel');
+  String get homeSubscriptionStatusLabel => _t('homeSubscriptionStatusLabel');
+  String get homeSubscriptionActive => _t('homeSubscriptionActive');
+  String get homeSubscriptionInactive => _t('homeSubscriptionInactive');
+  String get homeSubscriptionExpires => _t('homeSubscriptionExpires');
+  String get homeMemberLimitLabel => _t('homeMemberLimitLabel');
+  String get homeRoleLabel => _t('homeRoleLabel');
+  String get homePermissionsTitle => _t('homePermissionsTitle');
+  String get homeLogout => _t('homeLogout');
+  String get homeRetry => _t('homeRetry');
+  String get homeTimezoneLabel => _t('homeTimezoneLabel');
+  String get homePermCreateAppointment => _t('homePermCreateAppointment');
+  String get homePermUploadResult => _t('homePermUploadResult');
+  String get homePermChangeStatus => _t('homePermChangeStatus');
+  String get homePermManageMembers => _t('homePermManageMembers');
+  String get homePermManageStatuses => _t('homePermManageStatuses');
+  String get homePermManageAppointmentFields =>
+      _t('homePermManageAppointmentFields');
+  String get homeMembershipsTitle => _t('homeMembershipsTitle');
+  String get homeNoMemberships => _t('homeNoMemberships');
+  String get homeErrorTitle => _t('homeErrorTitle');
+
+  // ─── Navigation ────────────────────────────────────────────────────────────
+  String get navHome => _t('navHome');
+  String get navAppointments => _t('navAppointments');
+  String get navMembers => _t('navMembers');
+  String get navProfile => _t('navProfile');
+  String get navComingSoon => _t('navComingSoon');
+
+  // ─── Profile ───────────────────────────────────────────────────────────────
+  String get profileTitle => _t('profileTitle');
+  String get profileEmailLabel => _t('profileEmailLabel');
+  String get profilePhoneLabel => _t('profilePhoneLabel');
+  String get profileLogout => _t('profileLogout');
+  String get profileRetry => _t('profileRetry');
+  String get profileMembershipsTitle => _t('profileMembershipsTitle');
+  String get profileRoleLabel => _t('profileRoleLabel');
+  String get profilePermissionsTitle => _t('profilePermissionsTitle');
+  String get profileNoMemberships => _t('profileNoMemberships');
+  String get profileSubscriptionActive => _t('profileSubscriptionActive');
+  String get profileSubscriptionInactive => _t('profileSubscriptionInactive');
+  String get profileSubscriptionExpires => _t('profileSubscriptionExpires');
+  String get profilePlanLabel => _t('profilePlanLabel');
+  String get profileMemberLimitLabel => _t('profileMemberLimitLabel');
+  String get profileTimezoneLabel => _t('profileTimezoneLabel');
+  String get profilePermCreateAppointment => _t('profilePermCreateAppointment');
+  String get profilePermUploadResult => _t('profilePermUploadResult');
+  String get profilePermChangeStatus => _t('profilePermChangeStatus');
+  String get profilePermManageMembers => _t('profilePermManageMembers');
+  String get profilePermManageStatuses => _t('profilePermManageStatuses');
+  String get profilePermManageAppointmentFields =>
+      _t('profilePermManageAppointmentFields');
+
+  // ─── Brand Form ─────────────────────────────────────────────────────────────
+  String get homeBrandCreateTitle => _t('homeBrandCreateTitle');
+  String get homeBrandEditTitle => _t('homeBrandEditTitle');
+  String get homeBrandNameLabel => _t('homeBrandNameLabel');
+  String get homeBrandNameHint => _t('homeBrandNameHint');
+  String get homeBrandTimezoneLabel => _t('homeBrandTimezoneLabel');
+  String get homeBrandTimezoneHint => _t('homeBrandTimezoneHint');
+  String get homeBrandCreateButton => _t('homeBrandCreateButton');
+  String get homeBrandSaveButton => _t('homeBrandSaveButton');
+  String get homeBrandEditTooltip => _t('homeBrandEditTooltip');
+  String get homeBrandNameEmpty => _t('homeBrandNameEmpty');
+  String get homeBrandCreateSuccess => _t('homeBrandCreateSuccess');
+  String get homeBrandUpdateSuccess => _t('homeBrandUpdateSuccess');
+
+  // ─── Appointments ──────────────────────────────────────────────────────────
+  String get appointmentsTitle => _t('appointmentsTitle');
+
+  // ─── Members ───────────────────────────────────────────────────────────────
+  String get membersTitle => _t('membersTitle');
+
   // ─── Translations ──────────────────────────────────────────────────────────
   // Format: 'key': {'tr': '...', 'en': '...'}
   // ──────────────────────────────────────────────────────────────────────────
@@ -189,5 +265,127 @@ class AppStrings {
       'tr': 'Geçerli bir telefon numarası girin.',
       'en': 'Please enter a valid phone number.',
     },
+
+    // Home
+    'homeGreeting': {
+      'tr': 'Merhaba, {name}!',
+      'en': 'Hello, {name}!',
+    },
+    'homeBrandTitle': {'tr': 'Markanız', 'en': 'Your Brand'},
+    'homePlanLabel': {'tr': 'Plan', 'en': 'Plan'},
+    'homeSubscriptionStatusLabel': {
+      'tr': 'Abonelik Durumu',
+      'en': 'Subscription Status',
+    },
+    'homeSubscriptionActive': {'tr': 'Aktif', 'en': 'Active'},
+    'homeSubscriptionInactive': {'tr': 'Pasif', 'en': 'Inactive'},
+    'homeSubscriptionExpires': {
+      'tr': 'Abonelik Bitiyor',
+      'en': 'Subscription Expires',
+    },
+    'homeMemberLimitLabel': {'tr': 'Üye Limiti', 'en': 'Member Limit'},
+    'homeRoleLabel': {'tr': 'Rol', 'en': 'Role'},
+    'homePermissionsTitle': {'tr': 'İzinler', 'en': 'Permissions'},
+    'homeLogout': {'tr': 'Çıkış Yap', 'en': 'Log Out'},
+    'homeRetry': {'tr': 'Tekrar Dene', 'en': 'Retry'},
+    'homeTimezoneLabel': {'tr': 'Zaman Dilimi', 'en': 'Timezone'},
+    'homePermCreateAppointment': {
+      'tr': 'Randevu Oluştur',
+      'en': 'Create Appointment',
+    },
+    'homePermUploadResult': {'tr': 'Sonuç Yükle', 'en': 'Upload Result'},
+    'homePermChangeStatus': {'tr': 'Durum Değiştir', 'en': 'Change Status'},
+    'homePermManageMembers': {'tr': 'Üye Yönet', 'en': 'Manage Members'},
+    'homePermManageStatuses': {'tr': 'Durum Yönet', 'en': 'Manage Statuses'},
+    'homePermManageAppointmentFields': {
+      'tr': 'Randevu Alanları',
+      'en': 'Appointment Fields',
+    },
+    'homeMembershipsTitle': {'tr': 'Üyeliklerim', 'en': 'My Memberships'},
+    'homeNoMemberships': {
+      'tr': 'Henüz bir üyeliğiniz yok.',
+      'en': 'You have no memberships yet.',
+    },
+    'homeErrorTitle': {
+      'tr': 'Bir hata oluştu',
+      'en': 'An error occurred',
+    },
+
+    // Navigation
+    'navHome': {'tr': 'Anasayfa', 'en': 'Home'},
+    'navAppointments': {'tr': 'Randevular', 'en': 'Appointments'},
+    'navMembers': {'tr': 'Üyeler', 'en': 'Members'},
+    'navProfile': {'tr': 'Profil', 'en': 'Profile'},
+    'navComingSoon': {'tr': 'Yakında', 'en': 'Coming Soon'},
+
+    // Profile
+    'profileTitle': {'tr': 'Profil', 'en': 'Profile'},
+    'profileEmailLabel': {'tr': 'E-posta', 'en': 'Email'},
+    'profilePhoneLabel': {'tr': 'Telefon', 'en': 'Phone'},
+    'profileLogout': {'tr': 'Çıkış Yap', 'en': 'Log Out'},
+    'profileRetry': {'tr': 'Tekrar Dene', 'en': 'Retry'},
+    'profileMembershipsTitle': {'tr': 'Üyeliklerim', 'en': 'My Memberships'},
+    'profileRoleLabel': {'tr': 'Rol', 'en': 'Role'},
+    'profilePermissionsTitle': {'tr': 'İzinler', 'en': 'Permissions'},
+    'profileNoMemberships': {
+      'tr': 'Henüz bir üyeliğiniz yok.',
+      'en': 'You have no memberships yet.',
+    },
+    'profileSubscriptionActive': {'tr': 'Aktif', 'en': 'Active'},
+    'profileSubscriptionInactive': {'tr': 'Pasif', 'en': 'Inactive'},
+    'profileSubscriptionExpires': {
+      'tr': 'Abonelik Bitiyor',
+      'en': 'Subscription Expires',
+    },
+    'profilePlanLabel': {'tr': 'Plan', 'en': 'Plan'},
+    'profileMemberLimitLabel': {'tr': 'Üye Limiti', 'en': 'Member Limit'},
+    'profileTimezoneLabel': {'tr': 'Zaman Dilimi', 'en': 'Timezone'},
+    'profilePermCreateAppointment': {
+      'tr': 'Randevu Oluştur',
+      'en': 'Create Appointment',
+    },
+    'profilePermUploadResult': {'tr': 'Sonuç Yükle', 'en': 'Upload Result'},
+    'profilePermChangeStatus': {'tr': 'Durum Değiştir', 'en': 'Change Status'},
+    'profilePermManageMembers': {'tr': 'Üye Yönet', 'en': 'Manage Members'},
+    'profilePermManageStatuses': {'tr': 'Durum Yönet', 'en': 'Manage Statuses'},
+    'profilePermManageAppointmentFields': {
+      'tr': 'Randevu Alanları',
+      'en': 'Appointment Fields',
+    },
+
+    // Brand Form
+    'homeBrandCreateTitle': {'tr': 'Marka Oluştur', 'en': 'Create Brand'},
+    'homeBrandEditTitle': {'tr': 'Markayı Düzenle', 'en': 'Edit Brand'},
+    'homeBrandNameLabel': {'tr': 'Marka Adı', 'en': 'Brand Name'},
+    'homeBrandNameHint': {
+      'tr': 'Marka adını girin',
+      'en': 'Enter brand name',
+    },
+    'homeBrandTimezoneLabel': {'tr': 'Zaman Dilimi', 'en': 'Timezone'},
+    'homeBrandTimezoneHint': {
+      'tr': 'Örn: Europe/Istanbul',
+      'en': 'e.g. Europe/Istanbul',
+    },
+    'homeBrandCreateButton': {'tr': 'Oluştur', 'en': 'Create'},
+    'homeBrandSaveButton': {'tr': 'Kaydet', 'en': 'Save'},
+    'homeBrandEditTooltip': {'tr': 'Düzenle', 'en': 'Edit'},
+    'homeBrandNameEmpty': {
+      'tr': 'Marka adı boş olamaz.',
+      'en': 'Brand name cannot be empty.',
+    },
+    'homeBrandCreateSuccess': {
+      'tr': 'Marka başarıyla oluşturuldu.',
+      'en': 'Brand created successfully.',
+    },
+    'homeBrandUpdateSuccess': {
+      'tr': 'Marka başarıyla güncellendi.',
+      'en': 'Brand updated successfully.',
+    },
+
+    // Appointments
+    'appointmentsTitle': {'tr': 'Randevular', 'en': 'Appointments'},
+
+    // Members
+    'membersTitle': {'tr': 'Üyeler', 'en': 'Members'},
   };
 }

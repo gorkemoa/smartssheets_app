@@ -66,19 +66,30 @@ class ApiException implements Exception {
     String? message,
     Map<String, dynamic>? errors,
   }) {
+    // If we have detailed validation errors, prioritize the first one
+    String? finalMessage = message;
+    if (errors != null && errors.isNotEmpty) {
+      final firstErrorValue = errors.values.first;
+      if (firstErrorValue is List && firstErrorValue.isNotEmpty) {
+        finalMessage = firstErrorValue.first.toString();
+      } else if (firstErrorValue is String) {
+        finalMessage = firstErrorValue;
+      }
+    }
+
     switch (statusCode) {
       case 401:
-        return ApiException.unauthorized(message: message);
+        return ApiException.unauthorized(message: finalMessage);
       case 403:
-        return ApiException.forbidden(message: message);
+        return ApiException.forbidden(message: finalMessage);
       case 404:
-        return ApiException.notFound(message: message);
+        return ApiException.notFound(message: finalMessage);
       case >= 500:
-        return ApiException.serverError(message: message);
+        return ApiException.serverError(message: finalMessage);
       default:
         return ApiException(
           type: ApiExceptionType.unknown,
-          message: message ?? 'Bilinmeyen bir hata oluştu.',
+          message: finalMessage ?? 'Bilinmeyen bir hata oluştu.',
           statusCode: statusCode,
           errors: errors,
         );

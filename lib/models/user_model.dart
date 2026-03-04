@@ -1,3 +1,5 @@
+import 'membership_model.dart';
+
 class UserModel {
   final int? id;
   final String? name;
@@ -6,6 +8,7 @@ class UserModel {
   final String? emailVerifiedAt;
   final String? createdAt;
   final String? updatedAt;
+  final List<MembershipModel>? memberships;
 
   const UserModel({
     this.id,
@@ -15,6 +18,7 @@ class UserModel {
     this.emailVerifiedAt,
     this.createdAt,
     this.updatedAt,
+    this.memberships,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,9 @@ class UserModel {
       emailVerifiedAt: json['email_verified_at'] as String?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
+      memberships: (json['memberships'] as List<dynamic>?)
+          ?.map((e) => MembershipModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -38,6 +45,7 @@ class UserModel {
       'email_verified_at': emailVerifiedAt,
       'created_at': createdAt,
       'updated_at': updatedAt,
+      'memberships': memberships?.map((e) => e.toJson()).toList(),
     };
   }
 }

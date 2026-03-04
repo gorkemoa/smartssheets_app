@@ -46,14 +46,17 @@ class ApiClient {
     final headers = _buildHeaders(requiresAuth: requiresAuth);
     final encodedBody = jsonEncode(body);
 
-    AppLogger.request(_tag, 'POST $uri\nHeaders: $headers\nBody: $encodedBody');
+    AppLogger.request(
+      _tag,
+      'URL: $uri\nMETHOD: POST\nHEADERS: $headers\nBODY: $encodedBody',
+    );
 
     try {
       final response = await http
           .post(uri, headers: headers, body: encodedBody)
           .timeout(_timeout);
 
-      return _handleResponse(response);
+      return _handleResponse(response, uri.toString(), 'POST');
     } on SocketException catch (e) {
       AppLogger.error(_tag, 'Network error', e);
       return ApiFailure(ApiException.network());
@@ -80,14 +83,17 @@ class ApiClient {
         : baseUri;
     final headers = _buildHeaders(requiresAuth: requiresAuth);
 
-    AppLogger.request(_tag, 'GET $uri\nHeaders: $headers');
+    AppLogger.request(
+      _tag,
+      'URL: $uri\nMETHOD: GET\nHEADERS: $headers',
+    );
 
     try {
       final response = await http
           .get(uri, headers: headers)
           .timeout(_timeout);
 
-      return _handleResponse(response);
+      return _handleResponse(response, uri.toString(), 'GET');
     } on SocketException catch (e) {
       AppLogger.error(_tag, 'Network error', e);
       return ApiFailure(ApiException.network());
@@ -103,10 +109,49 @@ class ApiClient {
     }
   }
 
-  ApiResult<Map<String, dynamic>> _handleResponse(http.Response response) {
+  Future<ApiResult<Map<String, dynamic>>> patch(
+    String endpoint, {
+    required Map<String, dynamic> body,
+    bool requiresAuth = true,
+  }) async {
+    final uri = _buildUri(endpoint);
+    final headers = _buildHeaders(requiresAuth: requiresAuth);
+    final encodedBody = jsonEncode(body);
+
+    AppLogger.request(
+      _tag,
+      'URL: $uri\nMETHOD: PATCH\nHEADERS: $headers\nBODY: $encodedBody',
+    );
+
+    try {
+      final response = await http
+          .patch(uri, headers: headers, body: encodedBody)
+          .timeout(_timeout);
+
+      return _handleResponse(response, uri.toString(), 'PATCH');
+    } on SocketException catch (e) {
+      AppLogger.error(_tag, 'Network error', e);
+      return ApiFailure(ApiException.network());
+    } on TimeoutException catch (e) {
+      AppLogger.error(_tag, 'Timeout', e);
+      return ApiFailure(ApiException.timeout());
+    } catch (e) {
+      AppLogger.error(_tag, 'Unexpected error', e);
+      return ApiFailure(ApiException(
+        type: ApiExceptionType.unknown,
+        message: 'Beklenmeyen bir hata oluştu.',
+      ));
+    }
+  }
+
+  ApiResult<Map<String, dynamic>> _handleResponse(
+    http.Response response,
+    String url,
+    String method,
+  ) {
     AppLogger.response(
       _tag,
-      'Status: ${response.statusCode}\nBody: ${response.body}',
+      'URL: $url\nMETHOD: $method\nSTATUS: ${response.statusCode}\nBODY: ${response.body}',
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {

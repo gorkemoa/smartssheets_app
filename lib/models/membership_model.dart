@@ -1,5 +1,6 @@
 import 'brand_model.dart';
 import 'membership_permissions_model.dart';
+import 'user_model.dart';
 
 class MembershipModel {
   final int? id;
@@ -11,6 +12,7 @@ class MembershipModel {
   final String? createdAt;
   final String? updatedAt;
   final BrandModel? brand;
+  final UserModel? user;
 
   const MembershipModel({
     this.id,
@@ -22,6 +24,7 @@ class MembershipModel {
     this.createdAt,
     this.updatedAt,
     this.brand,
+    this.user,
   });
 
   factory MembershipModel.fromJson(Map<String, dynamic> json) {
@@ -41,6 +44,9 @@ class MembershipModel {
       brand: json['brand'] != null
           ? BrandModel.fromJson(json['brand'] as Map<String, dynamic>)
           : null,
+      user: json['user'] != null
+          ? UserModel.fromJson(json['user'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -55,6 +61,7 @@ class MembershipModel {
       'created_at': createdAt,
       'updated_at': updatedAt,
       'brand': brand?.toJson(),
+      'user': user?.toJson(),
     };
   }
 }

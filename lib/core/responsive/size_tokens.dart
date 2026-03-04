@@ -54,4 +54,8 @@ class SizeTokens {
 
   // ─── Logo / Branding ───────────────────────────────────────────────────────
   static double get logoSize => SizeConfig.r(64);
+
+  // ─── Avatar ────────────────────────────────────────────────────────────────
+  static double get avatarMD => SizeConfig.r(40);
+  static double get avatarLG => SizeConfig.r(52);
 }

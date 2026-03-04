@@ -148,6 +148,71 @@ class AppStrings {
 
   // ─── Members ───────────────────────────────────────────────────────────────
   String get membersTitle => _t('membersTitle');
+  String get membersEmpty => _t('membersEmpty');
+  String get membersRetry => _t('membersRetry');
+  String get membersSelectBrand => _t('membersSelectBrand');
+  String get membersRoleOwner => _t('membersRoleOwner');
+  String get membersRoleAdmin => _t('membersRoleAdmin');
+  String get membersRoleMember => _t('membersRoleMember');
+  String get membersStatusActive => _t('membersStatusActive');
+  String get membersStatusInactive => _t('membersStatusInactive');
+  String get membersPermissionsTitle => _t('membersPermissionsTitle');
+  String get membersPermCreateAppointment => _t('membersPermCreateAppointment');
+  String get membersPermUploadResult => _t('membersPermUploadResult');
+  String get membersPermChangeStatus => _t('membersPermChangeStatus');
+  String get membersPermManageMembers => _t('membersPermManageMembers');
+  String get membersPermManageStatuses => _t('membersPermManageStatuses');
+  String get membersPermManageAppointmentFields => _t('membersPermManageAppointmentFields');
+  // Create / Edit member form
+  String get memberFormCreateTitle => _t('memberFormCreateTitle');
+  String get memberFormEditTitle => _t('memberFormEditTitle');
+  String get memberFormNameLabel => _t('memberFormNameLabel');
+  String get memberFormNameHint => _t('memberFormNameHint');
+  String get memberFormEmailLabel => _t('memberFormEmailLabel');
+  String get memberFormEmailHint => _t('memberFormEmailHint');
+  String get memberFormPhoneLabel => _t('memberFormPhoneLabel');
+  String get memberFormPhoneHint => _t('memberFormPhoneHint');
+  String get memberFormPasswordLabel => _t('memberFormPasswordLabel');
+  String get memberFormPasswordHint => _t('memberFormPasswordHint');
+  String get memberFormRoleLabel => _t('memberFormRoleLabel');
+  String get memberFormStatusLabel => _t('memberFormStatusLabel');
+  String get memberFormStatusActive => _t('memberFormStatusActive');
+  String get memberFormStatusInactive => _t('memberFormStatusInactive');
+  String get memberFormPermissionsTitle => _t('memberFormPermissionsTitle');
+  String get memberFormSaveButton => _t('memberFormSaveButton');
+  String get memberFormCreateButton => _t('memberFormCreateButton');
+  String get memberFormDeleteButton => _t('memberFormDeleteButton');
+  String get memberFormDeleteConfirmTitle => _t('memberFormDeleteConfirmTitle');
+  String get memberFormDeleteConfirmMessage => _t('memberFormDeleteConfirmMessage');
+  String get memberFormDeleteConfirm => _t('memberFormDeleteConfirm');
+  String get memberFormDeleteCancel => _t('memberFormDeleteCancel');
+  String get memberCreateSuccess => _t('memberCreateSuccess');
+  String get memberUpdateSuccess => _t('memberUpdateSuccess');
+  String get memberDeleteSuccess => _t('memberDeleteSuccess');
+
+  // ─── Invitations ───────────────────────────────────────────────────────────
+  String get invitationsTitle => _t('invitationsTitle');
+  String get invitationsEmpty => _t('invitationsEmpty');
+  String get invitationsRetry => _t('invitationsRetry');
+  String get invitationsNavButton => _t('invitationsNavButton');
+  String get invitationEmailLabel => _t('invitationEmailLabel');
+  String get invitationEmailHint => _t('invitationEmailHint');
+  String get invitationRoleLabel => _t('invitationRoleLabel');
+  String get invitationPermissionsTitle => _t('invitationPermissionsTitle');
+  String get invitationFormCreateTitle => _t('invitationFormCreateTitle');
+  String get invitationFormCreateButton => _t('invitationFormCreateButton');
+  String get invitationExpiresLabel => _t('invitationExpiresLabel');
+  String get invitationAcceptedLabel => _t('invitationAcceptedLabel');
+  String get invitationPendingLabel => _t('invitationPendingLabel');
+  String get invitationResendButton => _t('invitationResendButton');
+  String get invitationDeleteButton => _t('invitationDeleteButton');
+  String get invitationDeleteConfirmTitle => _t('invitationDeleteConfirmTitle');
+  String get invitationDeleteConfirmMessage => _t('invitationDeleteConfirmMessage');
+  String get invitationDeleteConfirm => _t('invitationDeleteConfirm');
+  String get invitationDeleteCancel => _t('invitationDeleteCancel');
+  String get invitationCreateSuccess => _t('invitationCreateSuccess');
+  String get invitationResendSuccess => _t('invitationResendSuccess');
+  String get invitationDeleteSuccess => _t('invitationDeleteSuccess');
 
   // ─── Translations ──────────────────────────────────────────────────────────
   // Format: 'key': {'tr': '...', 'en': '...'}
@@ -387,5 +452,131 @@ class AppStrings {
 
     // Members
     'membersTitle': {'tr': 'Üyeler', 'en': 'Members'},
+    'membersEmpty': {
+      'tr': 'Bu markada henüz üye bulunmuyor.',
+      'en': 'No members found for this brand.',
+    },
+    'membersRetry': {'tr': 'Tekrar Dene', 'en': 'Retry'},
+    'membersSelectBrand': {
+      'tr': 'Üyeleri görmek için Anasayfa\'dan bir marka seçin.',
+      'en': 'Select a brand from Home to view its members.',
+    },
+    'membersRoleOwner': {'tr': 'Sahip', 'en': 'Owner'},
+    'membersRoleAdmin': {'tr': 'Yönetici', 'en': 'Admin'},
+    'membersRoleMember': {'tr': 'Üye', 'en': 'Member'},
+    'membersStatusActive': {'tr': 'Aktif', 'en': 'Active'},
+    'membersStatusInactive': {'tr': 'Pasif', 'en': 'Inactive'},
+    'membersPermissionsTitle': {'tr': 'İzinler', 'en': 'Permissions'},
+    'membersPermCreateAppointment': {
+      'tr': 'Randevu Oluştur',
+      'en': 'Create Appointment',
+    },
+    'membersPermUploadResult': {
+      'tr': 'Sonuç Yükle',
+      'en': 'Upload Result',
+    },
+    'membersPermChangeStatus': {
+      'tr': 'Durum Değiştir',
+      'en': 'Change Status',
+    },
+    'membersPermManageMembers': {
+      'tr': 'Üyeleri Yönet',
+      'en': 'Manage Members',
+    },
+    'membersPermManageStatuses': {
+      'tr': 'Durumları Yönet',
+      'en': 'Manage Statuses',
+    },
+    'membersPermManageAppointmentFields': {
+      'tr': 'Randevu Alanlarını Yönet',
+      'en': 'Manage Appointment Fields',
+    },
+
+    // Member Form
+    'memberFormCreateTitle': {'tr': 'Yeni Üye Ekle', 'en': 'Add New Member'},
+    'memberFormEditTitle': {'tr': 'Üyeyi Düzenle', 'en': 'Edit Member'},
+    'memberFormNameLabel': {'tr': 'İsim', 'en': 'Name'},
+    'memberFormNameHint': {'tr': 'Demo Üye', 'en': 'Demo Member'},
+    'memberFormEmailLabel': {'tr': 'E-posta', 'en': 'Email'},
+    'memberFormEmailHint': {'tr': 'uye@demo.local', 'en': 'member@demo.local'},
+    'memberFormPhoneLabel': {'tr': 'Telefon (isteğe bağlı)', 'en': 'Phone (optional)'},
+    'memberFormPhoneHint': {'tr': '+905550000000', 'en': '+10000000000'},
+    'memberFormPasswordLabel': {'tr': 'Şifre', 'en': 'Password'},
+    'memberFormPasswordHint': {'tr': 'En az 8 karakter', 'en': 'Min 8 characters'},
+    'memberFormRoleLabel': {'tr': 'Rol', 'en': 'Role'},
+    'memberFormStatusLabel': {'tr': 'Durum', 'en': 'Status'},
+    'memberFormStatusActive': {'tr': 'Aktif', 'en': 'Active'},
+    'memberFormStatusInactive': {'tr': 'Pasif', 'en': 'Inactive'},
+    'memberFormPermissionsTitle': {'tr': 'İzinler', 'en': 'Permissions'},
+    'memberFormSaveButton': {'tr': 'Kaydet', 'en': 'Save'},
+    'memberFormCreateButton': {'tr': 'Üye Ekle', 'en': 'Add Member'},
+    'memberFormDeleteButton': {'tr': 'Üyeyi Sil', 'en': 'Remove Member'},
+    'memberFormDeleteConfirmTitle': {'tr': 'Üye Silindi', 'en': 'Remove Member'},
+    'memberFormDeleteConfirmMessage': {
+      'tr': 'Bu üyeyi silmek istediğinizden emin misiniz?',
+      'en': 'Are you sure you want to remove this member?',
+    },
+    'memberFormDeleteConfirm': {'tr': 'Sil', 'en': 'Remove'},
+    'memberFormDeleteCancel': {'tr': 'İptal', 'en': 'Cancel'},
+    'memberCreateSuccess': {
+      'tr': 'Üye başarıyla eklendi.',
+      'en': 'Member added successfully.',
+    },
+    'memberUpdateSuccess': {
+      'tr': 'Üye başarıyla güncellendi.',
+      'en': 'Member updated successfully.',
+    },
+    'memberDeleteSuccess': {
+      'tr': 'Üye başarıyla silindi.',
+      'en': 'Member removed successfully.',
+    },
+
+    // Invitations
+    'invitationsTitle': {'tr': 'Davetler', 'en': 'Invitations'},
+    'invitationsEmpty': {
+      'tr': 'Bu marka için henüz davet bulunmuyor.',
+      'en': 'No invitations found for this brand.',
+    },
+    'invitationsRetry': {'tr': 'Tekrar Dene', 'en': 'Retry'},
+    'invitationsNavButton': {'tr': 'Davetler', 'en': 'Invitations'},
+    'invitationEmailLabel': {'tr': 'E-posta', 'en': 'Email'},
+    'invitationEmailHint': {
+      'tr': 'davet@ornek.com',
+      'en': 'invite@example.com',
+    },
+    'invitationRoleLabel': {'tr': 'Rol', 'en': 'Role'},
+    'invitationPermissionsTitle': {'tr': 'İzinler', 'en': 'Permissions'},
+    'invitationFormCreateTitle': {
+      'tr': 'Davet Gönder',
+      'en': 'Send Invitation',
+    },
+    'invitationFormCreateButton': {'tr': 'Davet Gönder', 'en': 'Send Invite'},
+    'invitationExpiresLabel': {'tr': 'Son Kullanma', 'en': 'Expires'},
+    'invitationAcceptedLabel': {'tr': 'Kabul Edildi', 'en': 'Accepted'},
+    'invitationPendingLabel': {'tr': 'Bekliyor', 'en': 'Pending'},
+    'invitationResendButton': {'tr': 'Yeniden Gönder', 'en': 'Resend'},
+    'invitationDeleteButton': {'tr': 'İptal Et', 'en': 'Cancel'},
+    'invitationDeleteConfirmTitle': {
+      'tr': 'Daveti İptal Et',
+      'en': 'Cancel Invitation',
+    },
+    'invitationDeleteConfirmMessage': {
+      'tr': 'Bu daveti iptal etmek istediğinizden emin misiniz?',
+      'en': 'Are you sure you want to cancel this invitation?',
+    },
+    'invitationDeleteConfirm': {'tr': 'İptal Et', 'en': 'Cancel'},
+    'invitationDeleteCancel': {'tr': 'Vazgeç', 'en': 'Go Back'},
+    'invitationCreateSuccess': {
+      'tr': 'Davet başarıyla gönderildi.',
+      'en': 'Invitation sent successfully.',
+    },
+    'invitationResendSuccess': {
+      'tr': 'Davet yeniden gönderildi.',
+      'en': 'Invitation resent successfully.',
+    },
+    'invitationDeleteSuccess': {
+      'tr': 'Davet başarıyla iptal edildi.',
+      'en': 'Invitation cancelled successfully.',
+    },
   };
 }

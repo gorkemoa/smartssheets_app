@@ -14,6 +14,7 @@ class BrandCard extends StatelessWidget {
   final String timezoneLabel;
   final String editTooltip;
   final VoidCallback? onEdit;
+  final VoidCallback? onTap;
 
   const BrandCard({
     super.key,
@@ -27,6 +28,7 @@ class BrandCard extends StatelessWidget {
     required this.timezoneLabel,
     required this.editTooltip,
     this.onEdit,
+    this.onTap,
   });
 
   @override
@@ -38,14 +40,19 @@ class BrandCard extends StatelessWidget {
     final statusBg =
         isActive ? AppTheme.accent.withValues(alpha: 0.1) : AppTheme.errorLight;
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(SizeTokens.paddingXL),
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
+    return Material(
+      color: AppTheme.surface,
+      borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
-        border: Border.all(color: AppTheme.border),
-      ),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(SizeTokens.paddingXL),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
+            border: Border.all(color: AppTheme.border),
+          ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -117,7 +124,9 @@ class BrandCard extends StatelessWidget {
           ],
         ],
       ),
-    );
+    ),
+  ),
+);
   }
 
   String _formatDate(String iso) {

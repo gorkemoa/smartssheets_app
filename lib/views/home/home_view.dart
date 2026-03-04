@@ -8,6 +8,7 @@ import '../../models/brand_model.dart';
 import '../../viewmodels/home_view_model.dart';
 import 'widgets/brand_card.dart';
 import 'widgets/brand_form_bottom_sheet.dart';
+import '../members/members_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -133,6 +134,16 @@ class _HomeBodyState extends State<_HomeBody> {
                                 );
                               }
                             },
+                            onTapBrand: (brand) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => MembersView(
+                                    brandId: brand.id,
+                                    brandName: brand.name,
+                                  ),
+                                ),
+                              );
+                            },
                           )
                         : const SizedBox.shrink(),
           );
@@ -146,11 +157,13 @@ class _HomeContent extends StatelessWidget {
   final HomeViewModel viewModel;
   final AppStrings l10n;
   final void Function(BrandModel brand) onEditBrand;
+  final void Function(BrandModel brand) onTapBrand;
 
   const _HomeContent({
     required this.viewModel,
     required this.l10n,
     required this.onEditBrand,
+    required this.onTapBrand,
   });
 
   @override
@@ -192,6 +205,7 @@ class _HomeContent extends StatelessWidget {
                   timezoneLabel: l10n.homeTimezoneLabel,
                   editTooltip: l10n.homeBrandEditTooltip,
                   onEdit: () => onEditBrand(brand),
+                  onTap: () => onTapBrand(brand),
                 ),
               ),
             ),

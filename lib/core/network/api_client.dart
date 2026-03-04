@@ -144,6 +144,39 @@ class ApiClient {
     }
   }
 
+  Future<ApiResult<Map<String, dynamic>>> delete(
+    String endpoint, {
+    bool requiresAuth = true,
+  }) async {
+    final uri = _buildUri(endpoint);
+    final headers = _buildHeaders(requiresAuth: requiresAuth);
+
+    AppLogger.request(
+      _tag,
+      'URL: $uri\nMETHOD: DELETE\nHEADERS: $headers',
+    );
+
+    try {
+      final response = await http
+          .delete(uri, headers: headers)
+          .timeout(_timeout);
+
+      return _handleResponse(response, uri.toString(), 'DELETE');
+    } on SocketException catch (e) {
+      AppLogger.error(_tag, 'Network error', e);
+      return ApiFailure(ApiException.network());
+    } on TimeoutException catch (e) {
+      AppLogger.error(_tag, 'Timeout', e);
+      return ApiFailure(ApiException.timeout());
+    } catch (e) {
+      AppLogger.error(_tag, 'Unexpected error', e);
+      return ApiFailure(ApiException(
+        type: ApiExceptionType.unknown,
+        message: 'Beklenmeyen bir hata oluştu.',
+      ));
+    }
+  }
+
   ApiResult<Map<String, dynamic>> _handleResponse(
     http.Response response,
     String url,
@@ -155,6 +188,10 @@ class ApiClient {
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      // 204 No Content — body is empty, return an empty map
+      if (response.statusCode == 204 || response.body.isEmpty) {
+        return const ApiSuccess({});
+      }
       try {
         final decoded = jsonDecode(response.body) as Map<String, dynamic>;
         return ApiSuccess(decoded);

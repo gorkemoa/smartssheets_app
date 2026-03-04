@@ -1,0 +1,633 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../app/app_theme.dart';
+import '../../../core/responsive/size_config.dart';
+import '../../../core/responsive/size_tokens.dart';
+import '../../../l10n/strings.dart';
+import '../../../models/membership_model.dart';
+import '../../../viewmodels/members_view_model.dart';
+
+class MemberFormBottomSheet extends StatefulWidget {
+  final MembershipModel? member;
+
+  const MemberFormBottomSheet({super.key, this.member});
+
+  bool get _isEditing => member != null;
+
+  static Future<MemberFormResult?> show(
+    BuildContext context, {
+    MembershipModel? member,
+  }) {
+    final viewModel = Provider.of<MembersViewModel>(context, listen: false);
+    return showModalBottomSheet<MemberFormResult>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ChangeNotifierProvider.value(
+        value: viewModel,
+        child: MemberFormBottomSheet(member: member),
+      ),
+    );
+  }
+
+  @override
+  State<MemberFormBottomSheet> createState() =>
+      _MemberFormBottomSheetState();
+}
+
+enum MemberFormResult { created, updated, deleted }
+
+class _MemberFormBottomSheetState extends State<MemberFormBottomSheet> {
+  final _formKey = GlobalKey<FormState>();
+
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _passwordController;
+
+  late String _selectedRole;
+  late String _selectedStatus;
+
+  late bool _permCreateAppointment;
+  late bool _permUploadResult;
+  late bool _permChangeStatus;
+  late bool _permManageMembers;
+  late bool _permManageStatuses;
+  late bool _permManageAppointmentFields;
+
+  static const List<String> _roles = ['member', 'admin', 'owner'];
+  static const List<String> _statuses = ['active', 'inactive'];
+
+  @override
+  void initState() {
+    super.initState();
+    final m = widget.member;
+    final perms = m?.permissionsJson;
+
+    _nameController = TextEditingController(text: m?.user?.name ?? '');
+    _emailController = TextEditingController(text: m?.user?.email ?? '');
+    _phoneController = TextEditingController();
+    _passwordController = TextEditingController();
+
+    _selectedRole = m?.role ?? 'member';
+    _selectedStatus = m?.status ?? 'active';
+
+    _permCreateAppointment = perms?.createAppointment ?? false;
+    _permUploadResult = perms?.uploadResult ?? false;
+    _permChangeStatus = perms?.changeStatus ?? false;
+    _permManageMembers = perms?.manageMembers ?? false;
+    _permManageStatuses = perms?.manageStatuses ?? false;
+    _permManageAppointmentFields = perms?.manageAppointmentFields ?? false;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onSubmit(
+    MembersViewModel viewModel,
+    AppStrings l10n,
+  ) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    bool success;
+    if (widget._isEditing) {
+      success = await viewModel.updateMember(
+        widget.member!.id!,
+        role: _selectedRole,
+        status: _selectedStatus,
+        permCreateAppointment: _permCreateAppointment,
+        permUploadResult: _permUploadResult,
+        permChangeStatus: _permChangeStatus,
+        permManageMembers: _permManageMembers,
+        permManageStatuses: _permManageStatuses,
+        permManageAppointmentFields: _permManageAppointmentFields,
+      );
+    } else {
+      success = await viewModel.createMember(
+        email: _emailController.text.trim(),
+        name: _nameController.text.trim(),
+        password: _passwordController.text,
+        role: _selectedRole,
+        phone: _phoneController.text.trim().isEmpty
+            ? null
+            : _phoneController.text.trim(),
+        permCreateAppointment: _permCreateAppointment,
+        permUploadResult: _permUploadResult,
+        permChangeStatus: _permChangeStatus,
+        permManageMembers: _permManageMembers,
+        permManageStatuses: _permManageStatuses,
+        permManageAppointmentFields: _permManageAppointmentFields,
+      );
+    }
+
+    if (!mounted) return;
+    if (success) {
+      Navigator.of(context).pop(
+        widget._isEditing
+            ? MemberFormResult.updated
+            : MemberFormResult.created,
+      );
+    }
+  }
+
+  Future<void> _onDelete(
+    MembersViewModel viewModel,
+    AppStrings l10n,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.memberFormDeleteConfirmTitle),
+        content: Text(l10n.memberFormDeleteConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              l10n.memberFormDeleteCancel,
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(
+              l10n.memberFormDeleteConfirm,
+              style: TextStyle(color: AppTheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final success = await viewModel.deleteMember(widget.member!.id!);
+    if (!mounted) return;
+    if (success) Navigator.of(context).pop(MemberFormResult.deleted);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SizeConfig.init(context);
+    final l10n = AppStrings.of(context);
+    final viewModel = context.watch<MembersViewModel>();
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(SizeTokens.radiusXL),
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            SizeTokens.paddingPage,
+            SizeTokens.spaceXL,
+            SizeTokens.paddingPage,
+            SizeTokens.spaceXXXL,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ── Title ──────────────────────────────────────────────────
+                Text(
+                  widget._isEditing
+                      ? l10n.memberFormEditTitle
+                      : l10n.memberFormCreateTitle,
+                  style: TextStyle(
+                    fontSize: SizeTokens.fontXXL,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                SizedBox(height: SizeTokens.spaceXXL),
+
+                // ── Create-only fields ──────────────────────────────────────
+                if (!widget._isEditing) ...[
+                  _MemberTextField(
+                    controller: _nameController,
+                    label: l10n.memberFormNameLabel,
+                    hint: l10n.memberFormNameHint,
+                    textInputAction: TextInputAction.next,
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? '*' : null,
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                  _MemberTextField(
+                    controller: _emailController,
+                    label: l10n.memberFormEmailLabel,
+                    hint: l10n.memberFormEmailHint,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? '*' : null,
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                  _MemberTextField(
+                    controller: _phoneController,
+                    label: l10n.memberFormPhoneLabel,
+                    hint: l10n.memberFormPhoneHint,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                  _MemberTextField(
+                    controller: _passwordController,
+                    label: l10n.memberFormPasswordLabel,
+                    hint: l10n.memberFormPasswordHint,
+                    obscureText: true,
+                    textInputAction: TextInputAction.done,
+                    validator: (v) =>
+                        (v == null || v.length < 8) ? '*' : null,
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                ],
+
+                // ── Role dropdown ───────────────────────────────────────────
+                _SectionLabel(label: l10n.memberFormRoleLabel),
+                SizedBox(height: SizeTokens.spaceSM),
+                _RoleDropdown(
+                  value: _selectedRole,
+                  roles: _roles,
+                  l10n: l10n,
+                  onChanged: (v) => setState(() => _selectedRole = v!),
+                ),
+                SizedBox(height: SizeTokens.spaceMD),
+
+                // ── Status dropdown (edit only) ─────────────────────────────
+                if (widget._isEditing) ...[
+                  _SectionLabel(label: l10n.memberFormStatusLabel),
+                  SizedBox(height: SizeTokens.spaceSM),
+                  _StatusDropdown(
+                    value: _selectedStatus,
+                    statuses: _statuses,
+                    l10n: l10n,
+                    onChanged: (v) => setState(() => _selectedStatus = v!),
+                  ),
+                  SizedBox(height: SizeTokens.spaceMD),
+                ],
+
+                // ── Permissions ─────────────────────────────────────────────
+                _SectionLabel(label: l10n.memberFormPermissionsTitle),
+                SizedBox(height: SizeTokens.spaceSM),
+                _PermSwitch(
+                  label: l10n.membersPermCreateAppointment,
+                  value: _permCreateAppointment,
+                  onChanged: (v) =>
+                      setState(() => _permCreateAppointment = v),
+                ),
+                _PermSwitch(
+                  label: l10n.membersPermUploadResult,
+                  value: _permUploadResult,
+                  onChanged: (v) => setState(() => _permUploadResult = v),
+                ),
+                _PermSwitch(
+                  label: l10n.membersPermChangeStatus,
+                  value: _permChangeStatus,
+                  onChanged: (v) => setState(() => _permChangeStatus = v),
+                ),
+                _PermSwitch(
+                  label: l10n.membersPermManageMembers,
+                  value: _permManageMembers,
+                  onChanged: (v) => setState(() => _permManageMembers = v),
+                ),
+                _PermSwitch(
+                  label: l10n.membersPermManageStatuses,
+                  value: _permManageStatuses,
+                  onChanged: (v) =>
+                      setState(() => _permManageStatuses = v),
+                ),
+                _PermSwitch(
+                  label: l10n.membersPermManageAppointmentFields,
+                  value: _permManageAppointmentFields,
+                  onChanged: (v) =>
+                      setState(() => _permManageAppointmentFields = v),
+                ),
+                SizedBox(height: SizeTokens.spaceSM),
+
+                // ── Submit error ────────────────────────────────────────────
+                if (viewModel.submitError != null) ...[
+                  SizedBox(height: SizeTokens.spaceMD),
+                  Text(
+                    viewModel.submitError!,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontSM,
+                      color: AppTheme.error,
+                    ),
+                  ),
+                ],
+                SizedBox(height: SizeTokens.spaceXXL),
+
+                // ── Submit button ───────────────────────────────────────────
+                SizedBox(
+                  width: double.infinity,
+                  height: SizeTokens.buttonHeight,
+                  child: ElevatedButton(
+                    onPressed: viewModel.isSubmitting
+                        ? null
+                        : () => _onSubmit(viewModel, l10n),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primary,
+                      disabledBackgroundColor: AppTheme.primaryLight,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(SizeTokens.radiusLG),
+                      ),
+                    ),
+                    child: viewModel.isSubmitting
+                        ? SizedBox(
+                            width: SizeTokens.iconMD,
+                            height: SizeTokens.iconMD,
+                            child: CircularProgressIndicator(
+                              strokeWidth: SizeConfig.w(2),
+                              color: AppTheme.textOnPrimary,
+                            ),
+                          )
+                        : Text(
+                            widget._isEditing
+                                ? l10n.memberFormSaveButton
+                                : l10n.memberFormCreateButton,
+                            style: TextStyle(
+                              fontSize: SizeTokens.fontLG,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textOnPrimary,
+                            ),
+                          ),
+                  ),
+                ),
+
+                // ── Delete button (edit only) ───────────────────────────────
+                if (widget._isEditing) ...[
+                  SizedBox(height: SizeTokens.spaceMD),
+                  SizedBox(
+                    width: double.infinity,
+                    height: SizeTokens.buttonHeight,
+                    child: OutlinedButton(
+                      onPressed: viewModel.isSubmitting
+                          ? null
+                          : () => _onDelete(viewModel, l10n),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: AppTheme.error),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(SizeTokens.radiusLG),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.memberFormDeleteButton,
+                        style: TextStyle(
+                          fontSize: SizeTokens.fontLG,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.error,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Internal widgets ─────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  const _SectionLabel({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: TextStyle(
+        fontSize: SizeTokens.fontSM,
+        fontWeight: FontWeight.w600,
+        color: AppTheme.textSecondary,
+      ),
+    );
+  }
+}
+
+class _PermSwitch extends StatelessWidget {
+  final String label;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _PermSwitch({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: SizeTokens.fontMD,
+              color: AppTheme.textPrimary,
+            ),
+          ),
+        ),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeColor: AppTheme.primary,
+        ),
+      ],
+    );
+  }
+}
+
+class _RoleDropdown extends StatelessWidget {
+  final String value;
+  final List<String> roles;
+  final AppStrings l10n;
+  final ValueChanged<String?> onChanged;
+
+  const _RoleDropdown({
+    required this.value,
+    required this.roles,
+    required this.l10n,
+    required this.onChanged,
+  });
+
+  String _roleLabel(String role, AppStrings l10n) {
+    switch (role) {
+      case 'owner':
+        return l10n.membersRoleOwner;
+      case 'admin':
+        return l10n.membersRoleAdmin;
+      default:
+        return l10n.membersRoleMember;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      onChanged: onChanged,
+      decoration: _dropdownDecoration(),
+      items: roles
+          .map((r) => DropdownMenuItem(
+                value: r,
+                child: Text(_roleLabel(r, l10n)),
+              ))
+          .toList(),
+    );
+  }
+}
+
+class _StatusDropdown extends StatelessWidget {
+  final String value;
+  final List<String> statuses;
+  final AppStrings l10n;
+  final ValueChanged<String?> onChanged;
+
+  const _StatusDropdown({
+    required this.value,
+    required this.statuses,
+    required this.l10n,
+    required this.onChanged,
+  });
+
+  String _statusLabel(String status, AppStrings l10n) {
+    switch (status) {
+      case 'active':
+        return l10n.memberFormStatusActive;
+      default:
+        return l10n.memberFormStatusInactive;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      onChanged: onChanged,
+      decoration: _dropdownDecoration(),
+      items: statuses
+          .map((s) => DropdownMenuItem(
+                value: s,
+                child: Text(_statusLabel(s, l10n)),
+              ))
+          .toList(),
+    );
+  }
+}
+
+InputDecoration _dropdownDecoration() {
+  return InputDecoration(
+    filled: true,
+    fillColor: AppTheme.inputFill,
+    contentPadding: EdgeInsets.symmetric(
+      horizontal: SizeTokens.paddingMD,
+      vertical: SizeTokens.paddingSM,
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+      borderSide: const BorderSide(color: AppTheme.border),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+      borderSide: const BorderSide(color: AppTheme.border),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+      borderSide: const BorderSide(color: AppTheme.borderFocused, width: 1.5),
+    ),
+  );
+}
+
+class _MemberTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final String hint;
+  final TextInputAction textInputAction;
+  final TextInputType? keyboardType;
+  final bool obscureText;
+  final String? Function(String?)? validator;
+
+  const _MemberTextField({
+    required this.controller,
+    required this.label,
+    required this.hint,
+    required this.textInputAction,
+    this.keyboardType,
+    this.obscureText = false,
+    this.validator,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      textInputAction: textInputAction,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      validator: validator,
+      style: TextStyle(
+        fontSize: SizeTokens.fontLG,
+        color: AppTheme.textPrimary,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        filled: true,
+        fillColor: AppTheme.inputFill,
+        labelStyle: TextStyle(
+          fontSize: SizeTokens.fontMD,
+          color: AppTheme.textSecondary,
+        ),
+        hintStyle: TextStyle(
+          fontSize: SizeTokens.fontMD,
+          color: AppTheme.textHint,
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: SizeTokens.paddingMD,
+          vertical: SizeTokens.paddingSM,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+          borderSide: const BorderSide(color: AppTheme.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+          borderSide: const BorderSide(color: AppTheme.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+          borderSide:
+              const BorderSide(color: AppTheme.borderFocused, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+          borderSide: const BorderSide(color: AppTheme.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+          borderSide: const BorderSide(color: AppTheme.error, width: 1.5),
+        ),
+      ),
+    );
+  }
+}

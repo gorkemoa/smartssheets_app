@@ -214,6 +214,79 @@ class AppStrings {
   String get invitationResendSuccess => _t('invitationResendSuccess');
   String get invitationDeleteSuccess => _t('invitationDeleteSuccess');
 
+  // ─── Appointment Statuses ────────────────────────────────────────────
+  String get statusesTitle => _t('statusesTitle');
+  String get statusesEmpty => _t('statusesEmpty');
+  String get statusesRetry => _t('statusesRetry');
+  String get statusesNavButton => _t('statusesNavButton');
+  String get statusFormCreateTitle => _t('statusFormCreateTitle');
+  String get statusFormEditTitle => _t('statusFormEditTitle');
+  String get statusFormNameLabel => _t('statusFormNameLabel');
+  String get statusFormNameHint => _t('statusFormNameHint');
+  String get statusFormColorLabel => _t('statusFormColorLabel');
+  String get statusFormSortOrderLabel => _t('statusFormSortOrderLabel');
+  String get statusFormSortOrderHint => _t('statusFormSortOrderHint');
+  String get statusFormStatusTypeLabel => _t('statusFormStatusTypeLabel');
+  String get statusFormIsDefaultLabel => _t('statusFormIsDefaultLabel');
+  String get statusFormIsActiveLabel => _t('statusFormIsActiveLabel');
+  String get statusFormCreateButton => _t('statusFormCreateButton');
+  String get statusFormSaveButton => _t('statusFormSaveButton');
+  String get statusFormDeleteButton => _t('statusFormDeleteButton');
+  String get statusFormDeleteConfirmTitle => _t('statusFormDeleteConfirmTitle');
+  String get statusFormDeleteConfirmMessage =>
+      _t('statusFormDeleteConfirmMessage');
+  String get statusFormDeleteConfirm => _t('statusFormDeleteConfirm');
+  String get statusFormDeleteCancel => _t('statusFormDeleteCancel');
+  String get statusTypeNeutral => _t('statusTypeNeutral');
+  String get statusTypeActive => _t('statusTypeActive');
+  String get statusTypeInvalid => _t('statusTypeInvalid');
+  String get statusDefaultBadge => _t('statusDefaultBadge');
+  String get statusCreateSuccess => _t('statusCreateSuccess');
+  String get statusUpdateSuccess => _t('statusUpdateSuccess');
+  String get statusDeleteSuccess => _t('statusDeleteSuccess');
+
+  // ─── Appointment Custom Fields ───────────────────────────────────────
+  String get fieldsTitle => _t('fieldsTitle');
+  String get fieldsEmpty => _t('fieldsEmpty');
+  String get fieldsRetry => _t('fieldsRetry');
+  String get fieldsNavButton => _t('fieldsNavButton');
+  String get fieldFormCreateTitle => _t('fieldFormCreateTitle');
+  String get fieldFormEditTitle => _t('fieldFormEditTitle');
+  String get fieldKeyLabel => _t('fieldKeyLabel');
+  String get fieldKeyHint => _t('fieldKeyHint');
+  String get fieldLabelLabel => _t('fieldLabelLabel');
+  String get fieldLabelHint => _t('fieldLabelHint');
+  String get fieldTypeLabel => _t('fieldTypeLabel');
+  String get fieldSortOrderLabel => _t('fieldSortOrderLabel');
+  String get fieldSortOrderHint => _t('fieldSortOrderHint');
+  String get fieldHelpTextLabel => _t('fieldHelpTextLabel');
+  String get fieldHelpTextHint => _t('fieldHelpTextHint');
+  String get fieldRequiredLabel => _t('fieldRequiredLabel');
+  String get fieldIsActiveLabel => _t('fieldIsActiveLabel');
+  String get fieldTypeText => _t('fieldTypeText');
+  String get fieldTypeNumber => _t('fieldTypeNumber');
+  String get fieldTypeSelect => _t('fieldTypeSelect');
+  String get fieldTypeCheckbox => _t('fieldTypeCheckbox');
+  String get fieldTypeDate => _t('fieldTypeDate');
+  String get fieldOptionsTitle => _t('fieldOptionsTitle');
+  String get fieldOptionValueLabel => _t('fieldOptionValueLabel');
+  String get fieldOptionLabelLabel => _t('fieldOptionLabelLabel');
+  String get fieldAddOptionButton => _t('fieldAddOptionButton');
+  String get fieldValidationsTitle => _t('fieldValidationsTitle');
+  String get fieldValidationMinLabel => _t('fieldValidationMinLabel');
+  String get fieldValidationMaxLabel => _t('fieldValidationMaxLabel');
+  String get fieldFormCreateButton => _t('fieldFormCreateButton');
+  String get fieldFormSaveButton => _t('fieldFormSaveButton');
+  String get fieldFormDeleteButton => _t('fieldFormDeleteButton');
+  String get fieldFormDeleteConfirmTitle => _t('fieldFormDeleteConfirmTitle');
+  String get fieldFormDeleteConfirmMessage =>
+      _t('fieldFormDeleteConfirmMessage');
+  String get fieldFormDeleteConfirm => _t('fieldFormDeleteConfirm');
+  String get fieldFormDeleteCancel => _t('fieldFormDeleteCancel');
+  String get fieldCreateSuccess => _t('fieldCreateSuccess');
+  String get fieldUpdateSuccess => _t('fieldUpdateSuccess');
+  String get fieldDeleteSuccess => _t('fieldDeleteSuccess');
+
   // ─── Translations ──────────────────────────────────────────────────────────
   // Format: 'key': {'tr': '...', 'en': '...'}
   // ──────────────────────────────────────────────────────────────────────────
@@ -577,6 +650,110 @@ class AppStrings {
     'invitationDeleteSuccess': {
       'tr': 'Davet başarıyla iptal edildi.',
       'en': 'Invitation cancelled successfully.',
+    },
+
+    // Appointment Statuses
+    'statusesTitle': {'tr': 'Durum Tanımları', 'en': 'Appointment Statuses'},
+    'statusesEmpty': {
+      'tr': 'Bu marka için henüz durum tanımı yok.',
+      'en': 'No statuses defined for this brand.',
+    },
+    'statusesRetry': {'tr': 'Tekrar Dene', 'en': 'Retry'},
+    'statusesNavButton': {'tr': 'Durumlar', 'en': 'Statuses'},
+    'statusFormCreateTitle': {'tr': 'Yeni Durum Ekle', 'en': 'Add New Status'},
+    'statusFormEditTitle': {'tr': 'Durumu Düzenle', 'en': 'Edit Status'},
+    'statusFormNameLabel': {'tr': 'Durum Adı', 'en': 'Status Name'},
+    'statusFormNameHint': {'tr': 'Planlandı', 'en': 'Planned'},
+    'statusFormColorLabel': {'tr': 'Renk', 'en': 'Color'},
+    'statusFormSortOrderLabel': {'tr': 'Sıralama', 'en': 'Sort Order'},
+    'statusFormSortOrderHint': {'tr': '1', 'en': '1'},
+    'statusFormStatusTypeLabel': {'tr': 'Durum Tipi', 'en': 'Status Type'},
+    'statusFormIsDefaultLabel': {'tr': 'Varsayılan', 'en': 'Default Status'},
+    'statusFormIsActiveLabel': {'tr': 'Aktif', 'en': 'Active'},
+    'statusFormCreateButton': {'tr': 'Ekle', 'en': 'Add'},
+    'statusFormSaveButton': {'tr': 'Kaydet', 'en': 'Save'},
+    'statusFormDeleteButton': {'tr': 'Durumu Sil', 'en': 'Delete Status'},
+    'statusFormDeleteConfirmTitle': {'tr': 'Durum Sil', 'en': 'Delete Status'},
+    'statusFormDeleteConfirmMessage': {
+      'tr': 'Bu durumu silmek istediğinizden emin misiniz?',
+      'en': 'Are you sure you want to delete this status?',
+    },
+    'statusFormDeleteConfirm': {'tr': 'Sil', 'en': 'Delete'},
+    'statusFormDeleteCancel': {'tr': 'İptal', 'en': 'Cancel'},
+    'statusTypeNeutral': {'tr': 'Nötr', 'en': 'Neutral'},
+    'statusTypeActive': {'tr': 'Aktif', 'en': 'Active'},
+    'statusTypeInvalid': {'tr': 'Geçersiz', 'en': 'Invalid'},
+    'statusDefaultBadge': {'tr': 'Varsayılan', 'en': 'Default'},
+    'statusCreateSuccess': {
+      'tr': 'Durum başarıyla eklendi.',
+      'en': 'Status added successfully.',
+    },
+    'statusUpdateSuccess': {
+      'tr': 'Durum başarıyla güncellendi.',
+      'en': 'Status updated successfully.',
+    },
+    'statusDeleteSuccess': {
+      'tr': 'Durum başarıyla silindi.',
+      'en': 'Status deleted successfully.',
+    },
+
+    // Appointment Custom Fields
+    'fieldsTitle': {'tr': 'Özel Alanlar', 'en': 'Custom Fields'},
+    'fieldsEmpty': {
+      'tr': 'Bu marka için henüz özel alan tanımlanmamış.',
+      'en': 'No custom fields defined for this brand.',
+    },
+    'fieldsRetry': {'tr': 'Tekrar Dene', 'en': 'Retry'},
+    'fieldsNavButton': {'tr': 'Özel Alanlar', 'en': 'Custom Fields'},
+    'fieldFormCreateTitle': {'tr': 'Yeni Alan Ekle', 'en': 'Add New Field'},
+    'fieldFormEditTitle': {'tr': 'Alanı Düzenle', 'en': 'Edit Field'},
+    'fieldKeyLabel': {'tr': 'Alan Anahtarı', 'en': 'Field Key'},
+    'fieldKeyHint': {'tr': 'ornek_alan', 'en': 'example_field'},
+    'fieldLabelLabel': {'tr': 'Etiket', 'en': 'Label'},
+    'fieldLabelHint': {'tr': 'Örnek Alan', 'en': 'Example Field'},
+    'fieldTypeLabel': {'tr': 'Alan Tipi', 'en': 'Field Type'},
+    'fieldSortOrderLabel': {'tr': 'Sıralama', 'en': 'Sort Order'},
+    'fieldSortOrderHint': {'tr': '0', 'en': '0'},
+    'fieldHelpTextLabel': {'tr': 'Yardım Metni', 'en': 'Help Text'},
+    'fieldHelpTextHint': {
+      'tr': 'İsteğe bağlı açıklama...',
+      'en': 'Optional description...',
+    },
+    'fieldRequiredLabel': {'tr': 'Zorunlu Alan', 'en': 'Required Field'},
+    'fieldIsActiveLabel': {'tr': 'Aktif', 'en': 'Active'},
+    'fieldTypeText': {'tr': 'Metin', 'en': 'Text'},
+    'fieldTypeNumber': {'tr': 'Sayı', 'en': 'Number'},
+    'fieldTypeSelect': {'tr': 'Seçim Listesi', 'en': 'Select'},
+    'fieldTypeCheckbox': {'tr': 'Onay Kutusu', 'en': 'Checkbox'},
+    'fieldTypeDate': {'tr': 'Tarih', 'en': 'Date'},
+    'fieldOptionsTitle': {'tr': 'Seçenekler', 'en': 'Options'},
+    'fieldOptionValueLabel': {'tr': 'Değer', 'en': 'Value'},
+    'fieldOptionLabelLabel': {'tr': 'Etiket', 'en': 'Label'},
+    'fieldAddOptionButton': {'tr': 'Seçenek Ekle', 'en': 'Add Option'},
+    'fieldValidationsTitle': {'tr': 'Kısıtlamalar', 'en': 'Validations'},
+    'fieldValidationMinLabel': {'tr': 'Min', 'en': 'Min'},
+    'fieldValidationMaxLabel': {'tr': 'Maks', 'en': 'Max'},
+    'fieldFormCreateButton': {'tr': 'Ekle', 'en': 'Add'},
+    'fieldFormSaveButton': {'tr': 'Kaydet', 'en': 'Save'},
+    'fieldFormDeleteButton': {'tr': 'Alanı Sil', 'en': 'Delete Field'},
+    'fieldFormDeleteConfirmTitle': {'tr': 'Alanı Sil', 'en': 'Delete Field'},
+    'fieldFormDeleteConfirmMessage': {
+      'tr': 'Bu alanı silmek istediğinizden emin misiniz?',
+      'en': 'Are you sure you want to delete this field?',
+    },
+    'fieldFormDeleteConfirm': {'tr': 'Sil', 'en': 'Delete'},
+    'fieldFormDeleteCancel': {'tr': 'İptal', 'en': 'Cancel'},
+    'fieldCreateSuccess': {
+      'tr': 'Alan başarıyla eklendi.',
+      'en': 'Field added successfully.',
+    },
+    'fieldUpdateSuccess': {
+      'tr': 'Alan başarıyla güncellendi.',
+      'en': 'Field updated successfully.',
+    },
+    'fieldDeleteSuccess': {
+      'tr': 'Alan başarıyla silindi.',
+      'en': 'Field deleted successfully.',
     },
   };
 }

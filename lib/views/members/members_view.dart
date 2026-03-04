@@ -8,6 +8,7 @@ import '../../l10n/strings.dart';
 import '../../models/membership_model.dart';
 import '../../viewmodels/members_view_model.dart';
 import '../invitations/invitations_view.dart';
+import '../statuses/appointment_statuses_view.dart';
 import 'widgets/member_card.dart';
 import 'widgets/member_form_bottom_sheet.dart';
 
@@ -120,6 +121,23 @@ class _MembersBodyState extends State<_MembersBody> {
           ),
         ),
         actions: [
+          // Navigate to statuses screen
+          IconButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => AppointmentStatusesView(
+                  brandId: widget.brandId,
+                  brandName: widget.brandName,
+                ),
+              ),
+            ),
+            icon: Icon(
+              Icons.palette_outlined,
+              size: SizeTokens.iconMD,
+              color: AppTheme.textSecondary,
+            ),
+            tooltip: l10n.statusesNavButton,
+          ),
           // Navigate to invitations screen
           IconButton(
             onPressed: () => Navigator.of(context).push(

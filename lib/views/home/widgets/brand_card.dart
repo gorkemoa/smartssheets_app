@@ -13,8 +13,12 @@ class BrandCard extends StatelessWidget {
   final String memberLimitLabel;
   final String timezoneLabel;
   final String editTooltip;
+  final String statusesTooltip;
+  final String fieldsTooltip;
   final VoidCallback? onEdit;
   final VoidCallback? onTap;
+  final VoidCallback? onTapStatuses;
+  final VoidCallback? onTapFields;
 
   const BrandCard({
     super.key,
@@ -27,8 +31,12 @@ class BrandCard extends StatelessWidget {
     required this.memberLimitLabel,
     required this.timezoneLabel,
     required this.editTooltip,
+    required this.statusesTooltip,
+    required this.fieldsTooltip,
     this.onEdit,
     this.onTap,
+    this.onTapStatuses,
+    this.onTapFields,
   });
 
   @override
@@ -75,6 +83,40 @@ class BrandCard extends StatelessWidget {
                 color: statusColor,
                 background: statusBg,
               ),
+              if (onTapStatuses != null) ...[  
+                SizedBox(width: SizeTokens.spaceXS),
+                SizedBox(
+                  width: SizeTokens.iconXL,
+                  height: SizeTokens.iconXL,
+                  child: IconButton(
+                    onPressed: onTapStatuses,
+                    tooltip: statusesTooltip,
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.palette_outlined,
+                      size: SizeTokens.iconMD,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+              if (onTapFields != null) ...[  
+                SizedBox(width: SizeTokens.spaceXS),
+                SizedBox(
+                  width: SizeTokens.iconXL,
+                  height: SizeTokens.iconXL,
+                  child: IconButton(
+                    onPressed: onTapFields,
+                    tooltip: fieldsTooltip,
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.tune_rounded,
+                      size: SizeTokens.iconMD,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
               if (onEdit != null) ...[  
                 SizedBox(width: SizeTokens.spaceXS),
                 SizedBox(

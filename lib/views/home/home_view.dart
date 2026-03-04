@@ -9,6 +9,8 @@ import '../../viewmodels/home_view_model.dart';
 import 'widgets/brand_card.dart';
 import 'widgets/brand_form_bottom_sheet.dart';
 import '../members/members_view.dart';
+import '../statuses/appointment_statuses_view.dart';
+import '../appointment_fields/appointment_fields_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -144,6 +146,26 @@ class _HomeBodyState extends State<_HomeBody> {
                                 ),
                               );
                             },
+                            onTapStatuses: (brand) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => AppointmentStatusesView(
+                                    brandId: brand.id!,
+                                    brandName: brand.name,
+                                  ),
+                                ),
+                              );
+                            },
+                            onTapFields: (brand) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => AppointmentFieldsView(
+                                    brandId: brand.id!,
+                                    brandName: brand.name,
+                                  ),
+                                ),
+                              );
+                            },
                           )
                         : const SizedBox.shrink(),
           );
@@ -158,12 +180,16 @@ class _HomeContent extends StatelessWidget {
   final AppStrings l10n;
   final void Function(BrandModel brand) onEditBrand;
   final void Function(BrandModel brand) onTapBrand;
+  final void Function(BrandModel brand) onTapStatuses;
+  final void Function(BrandModel brand) onTapFields;
 
   const _HomeContent({
     required this.viewModel,
     required this.l10n,
     required this.onEditBrand,
     required this.onTapBrand,
+    required this.onTapStatuses,
+    required this.onTapFields,
   });
 
   @override
@@ -204,8 +230,12 @@ class _HomeContent extends StatelessWidget {
                   memberLimitLabel: l10n.homeMemberLimitLabel,
                   timezoneLabel: l10n.homeTimezoneLabel,
                   editTooltip: l10n.homeBrandEditTooltip,
+                  statusesTooltip: l10n.statusesNavButton,
+                  fieldsTooltip: l10n.fieldsNavButton,
                   onEdit: () => onEditBrand(brand),
                   onTap: () => onTapBrand(brand),
+                  onTapStatuses: () => onTapStatuses(brand),
+                  onTapFields: () => onTapFields(brand),
                 ),
               ),
             ),

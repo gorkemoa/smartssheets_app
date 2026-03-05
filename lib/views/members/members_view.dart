@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../app/app_theme.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
+import '../../core/ui_components/brand_picker_scaffold.dart';
 import '../../core/ui_components/main_app_bar.dart';
 import '../../l10n/strings.dart';
 import '../../models/membership_model.dart';
@@ -23,24 +24,20 @@ class MembersView extends StatelessWidget {
     SizeConfig.init(context);
     final l10n = AppStrings.of(context);
 
-    // No brand selected — shown when reached via bottom tab
+    // No brand selected — show brand picker
     if (brandId == null) {
-      return Scaffold(
-        backgroundColor: AppTheme.surfaceVariant,
-        appBar: MainAppBar(title: l10n.membersTitle),
-        body: Center(
-          child: Padding(
-            padding: EdgeInsets.all(SizeTokens.paddingPage),
-            child: Text(
-              l10n.membersSelectBrand,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: SizeTokens.fontLG,
-                color: AppTheme.textSecondary,
+      return BrandPickerScaffold(
+        title: l10n.membersTitle,
+        onBrandSelected: (brand) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => MembersView(
+                brandId: brand.id!,
+                brandName: brand.name,
               ),
             ),
-          ),
-        ),
+          );
+        },
       );
     }
 

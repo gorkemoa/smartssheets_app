@@ -287,6 +287,48 @@ class AppStrings {
   String get fieldUpdateSuccess => _t('fieldUpdateSuccess');
   String get fieldDeleteSuccess => _t('fieldDeleteSuccess');
 
+  // ─── Appointments (Calendar & CRUD) ────────────────────────────
+  String get appointmentsSelectBrand => _t('appointmentsSelectBrand');
+  String get appointmentsEmpty => _t('appointmentsEmpty');
+  String get appointmentsRetry => _t('appointmentsRetry');
+  String get appointmentsNavButton => _t('appointmentsNavButton');
+  // Form
+  String get appointmentFormCreateTitle => _t('appointmentFormCreateTitle');
+  String get appointmentFormEditTitle => _t('appointmentFormEditTitle');
+  String get appointmentTitleLabel => _t('appointmentTitleLabel');
+  String get appointmentTitleHint => _t('appointmentTitleHint');
+  String get appointmentStartsAtLabel => _t('appointmentStartsAtLabel');
+  String get appointmentEndsAtLabel => _t('appointmentEndsAtLabel');
+  String get appointmentStatusLabel => _t('appointmentStatusLabel');
+  String get appointmentNotesLabel => _t('appointmentNotesLabel');
+  String get appointmentNotesHint => _t('appointmentNotesHint');
+  String get appointmentResultNotesLabel => _t('appointmentResultNotesLabel');
+  String get appointmentResultNotesHint => _t('appointmentResultNotesHint');
+  String get appointmentAssigneesLabel => _t('appointmentAssigneesLabel');
+  String get appointmentCustomFieldsTitle => _t('appointmentCustomFieldsTitle');
+  String get appointmentFormCreateButton => _t('appointmentFormCreateButton');
+  String get appointmentFormSaveButton => _t('appointmentFormSaveButton');
+  // Detail
+  String get appointmentDetailTitle => _t('appointmentDetailTitle');
+  String get appointmentDetailNotes => _t('appointmentDetailNotes');
+  String get appointmentDetailResultNotes => _t('appointmentDetailResultNotes');
+  String get appointmentDetailAssignees => _t('appointmentDetailAssignees');
+  String get appointmentDetailCustomFields => _t('appointmentDetailCustomFields');
+  String get appointmentDetailCompletedAt => _t('appointmentDetailCompletedAt');
+  String get appointmentDetailEdit => _t('appointmentDetailEdit');
+  // Snackbars
+  String get appointmentCreateSuccess => _t('appointmentCreateSuccess');
+  String get appointmentUpdateSuccess => _t('appointmentUpdateSuccess');
+  // Loading
+  String get appointmentLoadingFields => _t('appointmentLoadingFields');
+  String get appointmentLoadingMembers => _t('appointmentLoadingMembers');
+  String get appointmentNoStatus => _t('appointmentNoStatus');
+  // Date/time picker helpers
+  String get appointmentStartDateButton => _t('appointmentStartDateButton');
+  String get appointmentEndDateButton => _t('appointmentEndDateButton');
+  String get appointmentStartTimeButton => _t('appointmentStartTimeButton');
+  String get appointmentEndTimeButton => _t('appointmentEndTimeButton');
+
   // ─── Translations ──────────────────────────────────────────────────────────
   // Format: 'key': {'tr': '...', 'en': '...'}
   // ──────────────────────────────────────────────────────────────────────────
@@ -755,5 +797,75 @@ class AppStrings {
       'tr': 'Alan başarıyla silindi.',
       'en': 'Field deleted successfully.',
     },
+
+    // Appointments (Calendar & CRUD)
+    'appointmentsSelectBrand': {
+      'tr': 'Randevuları görmek için ana sayfadan bir marka seçin.',
+      'en': 'Select a brand from home to view appointments.',
+    },
+    'appointmentsEmpty': {
+      'tr': 'Bu gün için randevu bulunmuyor.',
+      'en': 'No appointments for this day.',
+    },
+    'appointmentsRetry': {'tr': 'Tekrar Dene', 'en': 'Retry'},
+    'appointmentsNavButton': {'tr': 'Randevular', 'en': 'Appointments'},
+    'appointmentFormCreateTitle': {
+      'tr': 'Yeni Randevu',
+      'en': 'New Appointment',
+    },
+    'appointmentFormEditTitle': {
+      'tr': 'Randevuyu Düzenle',
+      'en': 'Edit Appointment',
+    },
+    'appointmentTitleLabel': {'tr': 'Başlık', 'en': 'Title'},
+    'appointmentTitleHint': {'tr': 'Saç kesimi', 'en': 'Haircut'},
+    'appointmentStartsAtLabel': {'tr': 'Başlangıç', 'en': 'Start'},
+    'appointmentEndsAtLabel': {'tr': 'Bitiş', 'en': 'End'},
+    'appointmentStatusLabel': {'tr': 'Durum', 'en': 'Status'},
+    'appointmentNotesLabel': {'tr': 'Notlar', 'en': 'Notes'},
+    'appointmentNotesHint': {
+      'tr': 'İsteğe bağlı notlar...',
+      'en': 'Optional notes...',
+    },
+    'appointmentResultNotesLabel': {'tr': 'Sonuç Notu', 'en': 'Result Notes'},
+    'appointmentResultNotesHint': {
+      'tr': 'Randevu sonucu...',
+      'en': 'Appointment result...',
+    },
+    'appointmentAssigneesLabel': {'tr': 'Atananlar', 'en': 'Assignees'},
+    'appointmentCustomFieldsTitle': {
+      'tr': 'Özel Alanlar',
+      'en': 'Custom Fields',
+    },
+    'appointmentFormCreateButton': {'tr': 'Oluştur', 'en': 'Create'},
+    'appointmentFormSaveButton': {'tr': 'Kaydet', 'en': 'Save'},
+    'appointmentDetailTitle': {'tr': 'Randevu Detayı', 'en': 'Appointment Detail'},
+    'appointmentDetailNotes': {'tr': 'Notlar', 'en': 'Notes'},
+    'appointmentDetailResultNotes': {'tr': 'Sonuç Notu', 'en': 'Result Notes'},
+    'appointmentDetailAssignees': {'tr': 'Atananlar', 'en': 'Assignees'},
+    'appointmentDetailCustomFields': {'tr': 'Özel Alanlar', 'en': 'Custom Fields'},
+    'appointmentDetailCompletedAt': {'tr': 'Tamamlandı', 'en': 'Completed At'},
+    'appointmentDetailEdit': {'tr': 'Düzenle', 'en': 'Edit'},
+    'appointmentCreateSuccess': {
+      'tr': 'Randevu başarıyla oluşturuldu.',
+      'en': 'Appointment created successfully.',
+    },
+    'appointmentUpdateSuccess': {
+      'tr': 'Randevu başarıyla güncellendi.',
+      'en': 'Appointment updated successfully.',
+    },
+    'appointmentLoadingFields': {
+      'tr': 'Özel alanlar yükleniyor...',
+      'en': 'Loading custom fields...',
+    },
+    'appointmentLoadingMembers': {
+      'tr': 'Üyeler yükleniyor...',
+      'en': 'Loading members...',
+    },
+    'appointmentNoStatus': {'tr': 'Durum yok', 'en': 'No status'},
+    'appointmentStartDateButton': {'tr': 'Tarih Seç', 'en': 'Select Date'},
+    'appointmentEndDateButton': {'tr': 'Tarih Seç', 'en': 'Select Date'},
+    'appointmentStartTimeButton': {'tr': 'Saat Seç', 'en': 'Select Time'},
+    'appointmentEndTimeButton': {'tr': 'Saat Seç', 'en': 'Select Time'},
   };
 }

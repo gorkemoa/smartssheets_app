@@ -15,10 +15,12 @@ class BrandCard extends StatelessWidget {
   final String editTooltip;
   final String statusesTooltip;
   final String fieldsTooltip;
+  final String appointmentsTooltip;
   final VoidCallback? onEdit;
   final VoidCallback? onTap;
   final VoidCallback? onTapStatuses;
   final VoidCallback? onTapFields;
+  final VoidCallback? onTapAppointments;
 
   const BrandCard({
     super.key,
@@ -33,10 +35,12 @@ class BrandCard extends StatelessWidget {
     required this.editTooltip,
     required this.statusesTooltip,
     required this.fieldsTooltip,
+    required this.appointmentsTooltip,
     this.onEdit,
     this.onTap,
     this.onTapStatuses,
     this.onTapFields,
+    this.onTapAppointments,
   });
 
   @override
@@ -111,6 +115,23 @@ class BrandCard extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     icon: Icon(
                       Icons.tune_rounded,
+                      size: SizeTokens.iconMD,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+              if (onTapAppointments != null) ...[
+                SizedBox(width: SizeTokens.spaceXS),
+                SizedBox(
+                  width: SizeTokens.iconXL,
+                  height: SizeTokens.iconXL,
+                  child: IconButton(
+                    onPressed: onTapAppointments,
+                    tooltip: appointmentsTooltip,
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.calendar_month_rounded,
                       size: SizeTokens.iconMD,
                       color: AppTheme.textSecondary,
                     ),

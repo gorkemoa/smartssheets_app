@@ -35,4 +35,11 @@ class ApiConstants {
       '/brands/$brandId/settings/appointment-fields';
   static String brandAppointmentFieldById(int brandId, int fieldId) =>
       '/brands/$brandId/settings/appointment-fields/$fieldId';
+
+  // Appointments / Calendar
+  static String brandCalendar(int brandId) => '/brands/$brandId/calendar';
+  static String brandAppointments(int brandId) =>
+      '/brands/$brandId/appointments';
+  static String brandAppointmentById(int brandId, int appointmentId) =>
+      '/brands/$brandId/appointments/$appointmentId';
 }

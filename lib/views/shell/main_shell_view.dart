@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smartssheets_app/views/home/home_view.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/ui_components/app_bottom_bar.dart';
 import '../../l10n/strings.dart';
 import '../../viewmodels/home_view_model.dart';
 import '../appointments/appointments_view.dart';
-import '../home/home_view.dart';
 import '../members/members_view.dart';
 import '../profile/profile_view.dart';
 
@@ -30,11 +30,11 @@ class _MainShellViewState extends State<MainShellView> {
     4: 3, // Profile
   };
 
-  static const List<Widget> _pages = [
+  static final List<Widget> _pages = [
     HomeView(),
-    AppointmentsView(),
-    MembersView(),
-    ProfileView(),
+    const AppointmentsView(),
+    const MembersView(),
+    const ProfileView(),
   ];
 
   void _onBarTap(int barIndex) {

@@ -3,9 +3,12 @@ import '../core/network/api_result.dart';
 import '../models/brands_response_model.dart';
 import '../models/create_brand_request_model.dart';
 import '../models/me_response_model.dart';
+import '../models/stats_monthly_response_model.dart';
+import '../models/stats_summary_model.dart';
 import '../models/update_brand_request_model.dart';
 import '../services/auth_service.dart';
 import '../services/brand_service.dart';
+import '../services/stats_service.dart';
 
 class HomeViewModel extends ChangeNotifier {
   bool _isLoading = false;
@@ -14,6 +17,8 @@ class HomeViewModel extends ChangeNotifier {
   BrandsResponseModel? _brandsResponse;
   bool _isSubmitting = false;
   String? _submitError;
+  final Map<int, StatsSummaryModel> _statsSummaryMap = {};
+  final Map<int, StatsMonthlyResponseModel> _statsMonthlyMap = {};
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -21,6 +26,10 @@ class HomeViewModel extends ChangeNotifier {
   BrandsResponseModel? get brandsResponse => _brandsResponse;
   bool get isSubmitting => _isSubmitting;
   String? get submitError => _submitError;
+  Map<int, StatsSummaryModel> get statsSummaryMap =>
+      Map.unmodifiable(_statsSummaryMap);
+  Map<int, StatsMonthlyResponseModel> get statsMonthlyMap =>
+      Map.unmodifiable(_statsMonthlyMap);
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -44,6 +53,7 @@ class HomeViewModel extends ChangeNotifier {
       _fetchMe(),
       _fetchBrands(),
     ]);
+    await _fetchStatsForAllBrands();
     _setLoading(false);
   }
 
@@ -54,6 +64,7 @@ class HomeViewModel extends ChangeNotifier {
       _fetchMe(),
       _fetchBrands(),
     ]);
+    await _fetchStatsForAllBrands();
     _setLoading(false);
   }
 
@@ -84,6 +95,40 @@ class HomeViewModel extends ChangeNotifier {
       case ApiFailure(:final exception):
         _setError(exception.message);
     }
+  }
+
+  Future<void> _fetchStatsForAllBrands() async {
+    final brands = _brandsResponse?.data;
+    if (brands == null || brands.isEmpty) return;
+    await Future.wait(
+      brands
+          .where((b) => b.id != null)
+          .map((b) async {
+            final id = b.id!;
+            await Future.wait([
+              _fetchStatsSummary(id),
+              _fetchStatsMonthly(id),
+            ]);
+          }),
+    );
+  }
+
+  Future<void> _fetchStatsSummary(int brandId) async {
+    final result = await StatsService.instance.getStatsSummary(brandId);
+    if (result case ApiSuccess(:final data)) {
+      _statsSummaryMap[brandId] = data;
+      notifyListeners();
+    }
+    // Stats errors are non-fatal — home still renders without stats
+  }
+
+  Future<void> _fetchStatsMonthly(int brandId) async {
+    final result = await StatsService.instance.getStatsMonthly(brandId);
+    if (result case ApiSuccess(:final data)) {
+      _statsMonthlyMap[brandId] = data;
+      notifyListeners();
+    }
+    // Stats errors are non-fatal — home still renders without stats
   }
 
   Future<bool> createBrand({required String name, String? timezone}) async {

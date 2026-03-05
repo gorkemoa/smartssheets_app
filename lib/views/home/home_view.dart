@@ -8,6 +8,7 @@ import '../../models/brand_model.dart';
 import '../../viewmodels/home_view_model.dart';
 import 'widgets/brand_card.dart';
 import 'widgets/brand_form_bottom_sheet.dart';
+import 'widgets/brand_stats_card.dart';
 import '../members/members_view.dart';
 import '../statuses/appointment_statuses_view.dart';
 import '../appointment_fields/appointment_fields_view.dart';
@@ -222,24 +223,37 @@ class _HomeContent extends StatelessWidget {
             ...brands.map(
               (brand) => Padding(
                 padding: EdgeInsets.only(bottom: SizeTokens.spaceXL),
-                child: BrandCard(
-                  brand: brand,
-                  subscriptionActiveLabel: l10n.homeSubscriptionActive,
-                  subscriptionInactiveLabel: l10n.homeSubscriptionInactive,
-                  planLabel: l10n.homePlanLabel,
-                  subscriptionStatusLabel: l10n.homeSubscriptionStatusLabel,
-                  subscriptionExpiresLabel: l10n.homeSubscriptionExpires,
-                  memberLimitLabel: l10n.homeMemberLimitLabel,
-                  timezoneLabel: l10n.homeTimezoneLabel,
-                  editTooltip: l10n.homeBrandEditTooltip,
-                  statusesTooltip: l10n.statusesNavButton,
-                  fieldsTooltip: l10n.fieldsNavButton,
-                  appointmentsTooltip: l10n.appointmentsNavButton,
-                  onEdit: () => onEditBrand(brand),
-                  onTap: () => onTapBrand(brand),
-                  onTapStatuses: () => onTapStatuses(brand),
-                  onTapFields: () => onTapFields(brand),
-                  onTapAppointments: () => onTapAppointments(brand),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    BrandCard(
+                      brand: brand,
+                      subscriptionActiveLabel: l10n.homeSubscriptionActive,
+                      subscriptionInactiveLabel: l10n.homeSubscriptionInactive,
+                      planLabel: l10n.homePlanLabel,
+                      subscriptionStatusLabel: l10n.homeSubscriptionStatusLabel,
+                      subscriptionExpiresLabel: l10n.homeSubscriptionExpires,
+                      memberLimitLabel: l10n.homeMemberLimitLabel,
+                      timezoneLabel: l10n.homeTimezoneLabel,
+                      editTooltip: l10n.homeBrandEditTooltip,
+                      statusesTooltip: l10n.statusesNavButton,
+                      fieldsTooltip: l10n.fieldsNavButton,
+                      appointmentsTooltip: l10n.appointmentsNavButton,
+                      onEdit: () => onEditBrand(brand),
+                      onTap: () => onTapBrand(brand),
+                      onTapStatuses: () => onTapStatuses(brand),
+                      onTapFields: () => onTapFields(brand),
+                      onTapAppointments: () => onTapAppointments(brand),
+                    ),
+                    if (brand.id != null) ...[  
+                      SizedBox(height: SizeTokens.spaceSM),
+                      BrandStatsCard(
+                        summary: viewModel.statsSummaryMap[brand.id],
+                        monthly: viewModel.statsMonthlyMap[brand.id],
+                        l10n: l10n,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),

@@ -69,4 +69,10 @@ class ApiConstants {
 
   static String brandResultFileDownload(int brandId, int fileId) =>
       '/brands/$brandId/results/files/$fileId/download';
+
+  // Stats
+  static String brandStatsSummary(int brandId) =>
+      '/brands/$brandId/stats/summary';
+  static String brandStatsMonthly(int brandId) =>
+      '/brands/$brandId/stats/monthly';
 }

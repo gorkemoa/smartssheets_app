@@ -98,6 +98,16 @@ class AppStrings {
   String get homeNoMemberships => _t('homeNoMemberships');
   String get homeErrorTitle => _t('homeErrorTitle');
 
+  // ─── Home Stats ────────────────────────────────────────────────────────────
+  String get homeStatsTitle => _t('homeStatsTitle');
+  String get homeStatsTotalLabel => _t('homeStatsTotalLabel');
+  String get homeStatsThisMonthLabel => _t('homeStatsThisMonthLabel');
+  String get homeStatsActiveLabel => _t('homeStatsActiveLabel');
+  String get homeStatsInvalidLabel => _t('homeStatsInvalidLabel');
+  String get homeStatsUpcoming7DaysLabel => _t('homeStatsUpcoming7DaysLabel');
+  String get homeStatsMonthlyTitle => _t('homeStatsMonthlyTitle');
+  String get homeStatsByStatusTitle => _t('homeStatsByStatusTitle');
+
   // ─── Navigation ────────────────────────────────────────────────────────────
   String get navHome => _t('navHome');
   String get navAppointments => _t('navAppointments');
@@ -523,6 +533,25 @@ class AppStrings {
     'homeErrorTitle': {
       'tr': 'Bir hata oluştu',
       'en': 'An error occurred',
+    },
+
+    // Home Stats
+    'homeStatsTitle': {'tr': 'İstatistikler', 'en': 'Statistics'},
+    'homeStatsTotalLabel': {
+      'tr': 'Toplam Randevu',
+      'en': 'Total Appointments',
+    },
+    'homeStatsThisMonthLabel': {'tr': 'Bu Ay', 'en': 'This Month'},
+    'homeStatsActiveLabel': {'tr': 'Aktif', 'en': 'Active'},
+    'homeStatsInvalidLabel': {'tr': 'İptal', 'en': 'Canceled'},
+    'homeStatsUpcoming7DaysLabel': {'tr': '7 Gün İçinde', 'en': 'Next 7 Days'},
+    'homeStatsMonthlyTitle': {
+      'tr': 'Aylık Randevu',
+      'en': 'Monthly Appointments',
+    },
+    'homeStatsByStatusTitle': {
+      'tr': 'Durum Dağılımı',
+      'en': 'By Status',
     },
 
     // Navigation

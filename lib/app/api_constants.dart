@@ -42,4 +42,31 @@ class ApiConstants {
       '/brands/$brandId/appointments';
   static String brandAppointmentById(int brandId, int appointmentId) =>
       '/brands/$brandId/appointments/$appointmentId';
+  static String brandAppointmentAssignments(
+    int brandId,
+    int appointmentId,
+  ) =>
+      '/brands/$brandId/appointments/$appointmentId/assignments';
+
+  static String brandAppointmentResultNotes(
+    int brandId,
+    int appointmentId,
+  ) =>
+      '/brands/$brandId/appointments/$appointmentId/results/notes';
+
+  static String brandAppointmentResultFiles(
+    int brandId,
+    int appointmentId,
+  ) =>
+      '/brands/$brandId/appointments/$appointmentId/results/files';
+
+  static String brandAppointmentResultFileById(
+    int brandId,
+    int appointmentId,
+    int fileId,
+  ) =>
+      '/brands/$brandId/appointments/$appointmentId/results/files/$fileId';
+
+  static String brandResultFileDownload(int brandId, int fileId) =>
+      '/brands/$brandId/results/files/$fileId/download';
 }

@@ -1,8 +1,12 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../core/network/api_result.dart';
 import '../models/appointment_model.dart';
+import '../models/assign_appointment_request_model.dart';
 import '../models/create_appointment_request_model.dart';
 import '../models/update_appointment_request_model.dart';
+import '../models/update_result_notes_request_model.dart';
+import '../models/appointment_result_file_model.dart';
 import '../services/appointment_service.dart';
 
 class AppointmentsViewModel extends ChangeNotifier {
@@ -19,6 +23,12 @@ class AppointmentsViewModel extends ChangeNotifier {
   bool _isSubmitting = false;
   String? _submitError;
 
+  // Result files
+  bool _isLoadingFiles = false;
+  String? _filesError;
+  List<AppointmentResultFileModel> _resultFiles = [];
+  bool _isUploadingFiles = false;
+
   // Track current loaded range
   late DateTime _rangeFrom;
   late DateTime _rangeTo;
@@ -30,6 +40,11 @@ class AppointmentsViewModel extends ChangeNotifier {
   List<AppointmentModel> get appointments => _appointments;
   bool get isSubmitting => _isSubmitting;
   String? get submitError => _submitError;
+
+  bool get isLoadingFiles => _isLoadingFiles;
+  String? get filesError => _filesError;
+  List<AppointmentResultFileModel> get resultFiles => _resultFiles;
+  bool get isUploadingFiles => _isUploadingFiles;
 
   List<AppointmentModel> get selectedDayAppointments {
     return _appointments.where((a) {
@@ -176,5 +191,177 @@ class AppointmentsViewModel extends ChangeNotifier {
         notifyListeners();
         return false;
     }
+  }
+
+  Future<bool> assignAppointment(
+    int appointmentId,
+    AssignAppointmentRequestModel request,
+  ) async {
+    _isSubmitting = true;
+    _submitError = null;
+    notifyListeners();
+
+    final result = await AppointmentService.instance.assignAppointment(
+      brandId,
+      appointmentId,
+      request,
+    );
+
+    _isSubmitting = false;
+    switch (result) {
+      case ApiSuccess():
+        await _fetchCalendar();
+        notifyListeners();
+        return true;
+      case ApiFailure(:final exception):
+        _submitError = exception.message;
+        notifyListeners();
+        return false;
+    }
+  }
+
+  Future<bool> updateResultNotes(
+    int appointmentId,
+    UpdateResultNotesRequestModel request,
+  ) async {
+    _isSubmitting = true;
+    _submitError = null;
+    notifyListeners();
+
+    final result = await AppointmentService.instance.updateResultNotes(
+      brandId,
+      appointmentId,
+      request,
+    );
+
+    _isSubmitting = false;
+    switch (result) {
+      case ApiSuccess():
+        await _fetchCalendar();
+        notifyListeners();
+        return true;
+      case ApiFailure(:final exception):
+        _submitError = exception.message;
+        notifyListeners();
+        return false;
+    }
+  }
+
+  Future<bool> deleteAppointment(int appointmentId) async {
+    _isSubmitting = true;
+    _submitError = null;
+    notifyListeners();
+
+    final result = await AppointmentService.instance.deleteAppointment(
+      brandId,
+      appointmentId,
+    );
+
+    _isSubmitting = false;
+    switch (result) {
+      case ApiSuccess():
+        await _fetchCalendar();
+        notifyListeners();
+        return true;
+      case ApiFailure(:final exception):
+        _submitError = exception.message;
+        notifyListeners();
+        return false;
+    }
+  }
+
+  // ── Result Files ─────────────────────────────────────────────
+
+  Future<void> loadResultFiles(int appointmentId) async {
+    _isLoadingFiles = true;
+    _filesError = null;
+    notifyListeners();
+
+    final result = await AppointmentService.instance.listResultFiles(
+      brandId,
+      appointmentId,
+    );
+
+    _isLoadingFiles = false;
+    switch (result) {
+      case ApiSuccess(:final data):
+        _resultFiles = data.files;
+      case ApiFailure(:final exception):
+        _filesError = exception.message;
+    }
+    notifyListeners();
+  }
+
+  Future<bool> uploadResultFiles(
+    int appointmentId,
+    List<File> files,
+  ) async {
+    _isUploadingFiles = true;
+    _submitError = null;
+    notifyListeners();
+
+    final result = await AppointmentService.instance.uploadResultFiles(
+      brandId,
+      appointmentId,
+      files,
+    );
+
+    _isUploadingFiles = false;
+    switch (result) {
+      case ApiSuccess(:final data):
+        _resultFiles = data.files;
+        notifyListeners();
+        return true;
+      case ApiFailure(:final exception):
+        _submitError = exception.message;
+        notifyListeners();
+        return false;
+    }
+  }
+
+  Future<String?> getResultFileDownloadUrl(
+    int appointmentId,
+    int fileId,
+  ) async {
+    final result = await AppointmentService.instance.getResultFileDownloadUrl(
+      brandId,
+      fileId,
+    );
+    return switch (result) {
+      ApiSuccess(:final data) => data.url,
+      ApiFailure() => null,
+    };
+  }
+
+  Future<bool> deleteResultFile(
+    int appointmentId,
+    int fileId,
+  ) async {
+    _submitError = null;
+    notifyListeners();
+
+    final result = await AppointmentService.instance.deleteResultFile(
+      brandId,
+      appointmentId,
+      fileId,
+    );
+
+    switch (result) {
+      case ApiSuccess():
+        _resultFiles.removeWhere((f) => f.id == fileId);
+        notifyListeners();
+        return true;
+      case ApiFailure(:final exception):
+        _submitError = exception.message;
+        notifyListeners();
+        return false;
+    }
+  }
+
+  void clearResultFiles() {
+    _resultFiles = [];
+    _filesError = null;
+    _isLoadingFiles = false;
+    notifyListeners();
   }
 }

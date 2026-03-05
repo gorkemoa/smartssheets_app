@@ -37,6 +37,48 @@ class ApiClient {
     return Uri.parse('${ApiConstants.baseUrl}$endpoint');
   }
 
+  Future<ApiResult<Map<String, dynamic>>> postMultipart(
+    String endpoint, {
+    required List<File> files,
+    String fieldName = 'files[]',
+    bool requiresAuth = true,
+  }) async {
+    final uri = _buildUri(endpoint);
+
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (requiresAuth && _authToken != null) {
+      headers['Authorization'] = 'Bearer $_authToken';
+    }
+
+    AppLogger.request(
+      _tag,
+      'URL: $uri\nMETHOD: POST (multipart)\nHEADERS: $headers\nFILES: ${files.map((f) => f.path).join(', ')}',
+    );
+
+    try {
+      final request = http.MultipartRequest('POST', uri);
+      request.headers.addAll(headers);
+      for (final file in files) {
+        request.files.add(await http.MultipartFile.fromPath(fieldName, file.path));
+      }
+      final streamed = await request.send().timeout(_timeout);
+      final response = await http.Response.fromStream(streamed);
+      return _handleResponse(response, uri.toString(), 'POST multipart');
+    } on SocketException catch (e) {
+      AppLogger.error(_tag, 'Network error', e);
+      return ApiFailure(ApiException.network());
+    } on TimeoutException catch (e) {
+      AppLogger.error(_tag, 'Timeout', e);
+      return ApiFailure(ApiException.timeout());
+    } catch (e) {
+      AppLogger.error(_tag, 'Unexpected error', e);
+      return ApiFailure(ApiException(
+        type: ApiExceptionType.unknown,
+        message: 'Beklenmeyen bir hata oluştu.',
+      ));
+    }
+  }
+
   Future<ApiResult<Map<String, dynamic>>> post(
     String endpoint, {
     required Map<String, dynamic> body,

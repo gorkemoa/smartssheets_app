@@ -312,6 +312,9 @@ class AppStrings {
   String get appointmentDetailTitle => _t('appointmentDetailTitle');
   String get appointmentDetailNotes => _t('appointmentDetailNotes');
   String get appointmentDetailResultNotes => _t('appointmentDetailResultNotes');
+  String get appointmentDetailResultNotesEdit => _t('appointmentDetailResultNotesEdit');
+  String get appointmentDetailResultNotesEmpty => _t('appointmentDetailResultNotesEmpty');
+  String get appointmentResultNotesSuccess => _t('appointmentResultNotesSuccess');
   String get appointmentDetailAssignees => _t('appointmentDetailAssignees');
   String get appointmentDetailCustomFields => _t('appointmentDetailCustomFields');
   String get appointmentDetailCompletedAt => _t('appointmentDetailCompletedAt');
@@ -319,6 +322,37 @@ class AppStrings {
   // Snackbars
   String get appointmentCreateSuccess => _t('appointmentCreateSuccess');
   String get appointmentUpdateSuccess => _t('appointmentUpdateSuccess');
+  String get appointmentDeleteSuccess => _t('appointmentDeleteSuccess');
+  String get appointmentAssignSuccess => _t('appointmentAssignSuccess');
+  // Result files
+  String get appointmentResultFilesTitle => _t('appointmentResultFilesTitle');
+  String get appointmentResultFilesEmpty => _t('appointmentResultFilesEmpty');
+  String get appointmentResultFilesUpload => _t('appointmentResultFilesUpload');
+  String get appointmentResultFilesDownload => _t('appointmentResultFilesDownload');
+  String get appointmentResultFilesDelete => _t('appointmentResultFilesDelete');
+  String get appointmentResultFilesDeleteConfirmTitle => _t('appointmentResultFilesDeleteConfirmTitle');
+  String get appointmentResultFilesDeleteConfirmMessage => _t('appointmentResultFilesDeleteConfirmMessage');
+  String get appointmentResultFilesDeleteConfirmCancel => _t('appointmentResultFilesDeleteConfirmCancel');
+  String get appointmentResultFilesDeleteConfirmAction => _t('appointmentResultFilesDeleteConfirmAction');
+  String get appointmentResultFilesDeleteSuccess => _t('appointmentResultFilesDeleteSuccess');
+  String get appointmentResultFilesUploadSuccess => _t('appointmentResultFilesUploadSuccess');
+  String get appointmentResultFilesDownloadError => _t('appointmentResultFilesDownloadError');
+  // PDF Viewer
+  String get pdfViewerTitle => _t('pdfViewerTitle');
+  String get pdfViewerLoading => _t('pdfViewerLoading');
+  String get pdfViewerError => _t('pdfViewerError');
+  String get pdfViewerZoomIn => _t('pdfViewerZoomIn');
+  String get pdfViewerZoomOut => _t('pdfViewerZoomOut');
+  String get pdfViewerOpen => _t('pdfViewerOpen');
+  // Delete confirm dialog
+  String get appointmentDeleteConfirmTitle =>
+      _t('appointmentDeleteConfirmTitle');
+  String get appointmentDeleteConfirmMessage =>
+      _t('appointmentDeleteConfirmMessage');
+  String get appointmentDeleteConfirmCancel =>
+      _t('appointmentDeleteConfirmCancel');
+  String get appointmentDeleteConfirmAction =>
+      _t('appointmentDeleteConfirmAction');
   // Loading
   String get appointmentLoadingFields => _t('appointmentLoadingFields');
   String get appointmentLoadingMembers => _t('appointmentLoadingMembers');
@@ -842,6 +876,43 @@ class AppStrings {
     'appointmentDetailTitle': {'tr': 'Randevu Detayı', 'en': 'Appointment Detail'},
     'appointmentDetailNotes': {'tr': 'Notlar', 'en': 'Notes'},
     'appointmentDetailResultNotes': {'tr': 'Sonuç Notu', 'en': 'Result Notes'},
+    'appointmentDetailResultNotesEdit': {'tr': 'Sonuç Notunu Düzenle', 'en': 'Edit Result Notes'},
+    'appointmentDetailResultNotesEmpty': {'tr': 'Henüz sonuç notu girilmemiş.', 'en': 'No result notes yet.'},
+    'appointmentResultNotesSuccess': {
+      'tr': 'Sonuç notu başarıyla güncellendi.',
+      'en': 'Result notes updated successfully.',
+    },
+    // Result files
+    'appointmentResultFilesTitle': {'tr': 'Sonuç Dosyaları', 'en': 'Result Files'},
+    'appointmentResultFilesEmpty': {
+      'tr': 'Henüz sonuç dosyası eklenmemiş.',
+      'en': 'No result files uploaded yet.',
+    },
+    'appointmentResultFilesUpload': {'tr': 'Dosya Ekle', 'en': 'Upload File'},
+    'appointmentResultFilesDownload': {'tr': 'İndir', 'en': 'Download'},
+    'appointmentResultFilesDelete': {'tr': 'Sil', 'en': 'Delete'},
+    'appointmentResultFilesDeleteConfirmTitle': {
+      'tr': 'Dosyayı Sil',
+      'en': 'Delete File',
+    },
+    'appointmentResultFilesDeleteConfirmMessage': {
+      'tr': 'Bu dosyayı silmek istediğinizden emin misiniz?',
+      'en': 'Are you sure you want to delete this file?',
+    },
+    'appointmentResultFilesDeleteConfirmCancel': {'tr': 'İptal', 'en': 'Cancel'},
+    'appointmentResultFilesDeleteConfirmAction': {'tr': 'Sil', 'en': 'Delete'},
+    'appointmentResultFilesDeleteSuccess': {
+      'tr': 'Dosya başarıyla silindi.',
+      'en': 'File deleted successfully.',
+    },
+    'appointmentResultFilesUploadSuccess': {
+      'tr': 'Dosya başarıyla yüklündü.',
+      'en': 'File uploaded successfully.',
+    },
+    'appointmentResultFilesDownloadError': {
+      'tr': 'Dosya indirme bağlantısı alınamadı.',
+      'en': 'Could not get download link.',
+    },
     'appointmentDetailAssignees': {'tr': 'Atananlar', 'en': 'Assignees'},
     'appointmentDetailCustomFields': {'tr': 'Özel Alanlar', 'en': 'Custom Fields'},
     'appointmentDetailCompletedAt': {'tr': 'Tamamlandı', 'en': 'Completed At'},
@@ -854,6 +925,24 @@ class AppStrings {
       'tr': 'Randevu başarıyla güncellendi.',
       'en': 'Appointment updated successfully.',
     },
+    'appointmentDeleteSuccess': {
+      'tr': 'Randevu başarıyla silindi.',
+      'en': 'Appointment deleted successfully.',
+    },
+    'appointmentAssignSuccess': {
+      'tr': 'Atamalar başarıyla güncellendi.',
+      'en': 'Assignments updated successfully.',
+    },
+    'appointmentDeleteConfirmTitle': {
+      'tr': 'Randevuyu Sil',
+      'en': 'Delete Appointment',
+    },
+    'appointmentDeleteConfirmMessage': {
+      'tr': 'Bu randevuyu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+      'en': 'Are you sure you want to delete this appointment? This action cannot be undone.',
+    },
+    'appointmentDeleteConfirmCancel': {'tr': 'İptal', 'en': 'Cancel'},
+    'appointmentDeleteConfirmAction': {'tr': 'Sil', 'en': 'Delete'},
     'appointmentLoadingFields': {
       'tr': 'Özel alanlar yükleniyor...',
       'en': 'Loading custom fields...',
@@ -867,5 +956,15 @@ class AppStrings {
     'appointmentEndDateButton': {'tr': 'Tarih Seç', 'en': 'Select Date'},
     'appointmentStartTimeButton': {'tr': 'Saat Seç', 'en': 'Select Time'},
     'appointmentEndTimeButton': {'tr': 'Saat Seç', 'en': 'Select Time'},
+    // PDF Viewer
+    'pdfViewerTitle': {'tr': 'PDF Görüntüleyici', 'en': 'PDF Viewer'},
+    'pdfViewerLoading': {'tr': 'PDF yükleniyor...', 'en': 'Loading PDF...'},
+    'pdfViewerError': {
+      'tr': 'PDF dosyası açılamadı. Lütfen tekrar deneyin.',
+      'en': 'Could not open PDF file. Please try again.',
+    },
+    'pdfViewerZoomIn': {'tr': 'Yakınlaştır', 'en': 'Zoom In'},
+    'pdfViewerZoomOut': {'tr': 'Uzaklaştır', 'en': 'Zoom Out'},
+    'pdfViewerOpen': {'tr': 'Görüntüle', 'en': 'View'},
   };
 }

@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
 import '../core/network/api_result.dart';
+import '../models/appointment_model.dart';
+import '../models/brand_model.dart';
 import '../models/brands_response_model.dart';
 import '../models/create_brand_request_model.dart';
 import '../models/me_response_model.dart';
 import '../models/stats_monthly_response_model.dart';
 import '../models/stats_summary_model.dart';
 import '../models/update_brand_request_model.dart';
+import '../services/appointment_service.dart';
 import '../services/auth_service.dart';
 import '../services/brand_service.dart';
 import '../services/stats_service.dart';
@@ -17,18 +20,35 @@ class HomeViewModel extends ChangeNotifier {
   BrandsResponseModel? _brandsResponse;
   bool _isSubmitting = false;
   String? _submitError;
+  int _selectedBrandIndex = 0;
   final Map<int, StatsSummaryModel> _statsSummaryMap = {};
   final Map<int, StatsMonthlyResponseModel> _statsMonthlyMap = {};
+  final Map<int, List<AppointmentModel>> _upcomingAppointmentsMap = {};
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   MeResponseModel? get meResponse => _meResponse;
   BrandsResponseModel? get brandsResponse => _brandsResponse;
   bool get isSubmitting => _isSubmitting;
   String? get submitError => _submitError;
+  int get selectedBrandIndex => _selectedBrandIndex;
   Map<int, StatsSummaryModel> get statsSummaryMap =>
       Map.unmodifiable(_statsSummaryMap);
   Map<int, StatsMonthlyResponseModel> get statsMonthlyMap =>
       Map.unmodifiable(_statsMonthlyMap);
+  Map<int, List<AppointmentModel>> get upcomingAppointmentsMap =>
+      Map.unmodifiable(_upcomingAppointmentsMap);
+
+  BrandModel? get selectedBrand {
+    final brands = _brandsResponse?.data;
+    if (brands == null || brands.isEmpty) return null;
+    final safeIndex = _selectedBrandIndex.clamp(0, brands.length - 1);
+    return brands[safeIndex];
+  }
+
+  void setSelectedBrandIndex(int index) {
+    _selectedBrandIndex = index;
+    notifyListeners();
+  }
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -98,6 +118,7 @@ class HomeViewModel extends ChangeNotifier {
         await Future.wait([
           _fetchStatsSummary(id),
           _fetchStatsMonthly(id),
+          _fetchUpcomingAppointments(id),
         ]);
       }),
     );
@@ -119,6 +140,25 @@ class HomeViewModel extends ChangeNotifier {
       notifyListeners();
     }
     // Stats errors are non-fatal — home still renders without stats
+  }
+
+  Future<void> _fetchUpcomingAppointments(int brandId) async {
+    final now = DateTime.now();
+    final from =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final to7 = now.add(const Duration(days: 7));
+    final to =
+        '${to7.year}-${to7.month.toString().padLeft(2, '0')}-${to7.day.toString().padLeft(2, '0')}';
+    final result = await AppointmentService.instance.calendar(
+      brandId,
+      from: from,
+      to: to,
+    );
+    if (result case ApiSuccess(:final data)) {
+      _upcomingAppointmentsMap[brandId] = data.appointments;
+      notifyListeners();
+    }
+    // Appointment errors are non-fatal — home still renders without slider
   }
 
   Future<bool> createBrand({required String name, String? timezone}) async {

@@ -29,7 +29,9 @@ class SizeTokens {
   static double get radiusMD => SizeConfig.r(10);
   static double get radiusLG => SizeConfig.r(14);
   static double get radiusXL => SizeConfig.r(20);
+  static double get radiusXXL => SizeConfig.r(32);
   static double get radiusCircle => SizeConfig.r(100);
+
 
   // ─── Font Sizes ────────────────────────────────────────────────────────────
   static double get fontXS => SizeConfig.sp(11);

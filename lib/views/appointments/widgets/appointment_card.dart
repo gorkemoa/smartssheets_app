@@ -50,19 +50,14 @@ class AppointmentCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
             border: Border.all(color: AppTheme.border),
           ),
+          clipBehavior: Clip.antiAlias,
           child: IntrinsicHeight(
             child: Row(
               children: [
                 // Status color strip
                 Container(
                   width: 4,
-                  decoration: BoxDecoration(
-                    color: statusColor,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(SizeTokens.radiusXL),
-                      bottomLeft: Radius.circular(SizeTokens.radiusXL),
-                    ),
-                  ),
+                  color: statusColor,
                 ),
                 Expanded(
                   child: Padding(

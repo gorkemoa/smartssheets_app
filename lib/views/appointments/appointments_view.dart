@@ -4,10 +4,11 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../app/app_theme.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
-import '../../core/ui_components/brand_picker_scaffold.dart';
 import '../../core/ui_components/main_app_bar.dart';
 import '../../l10n/strings.dart';
+import '../../models/appointment_model.dart';
 import '../../viewmodels/appointments_view_model.dart';
+import '../../viewmodels/home_view_model.dart';
 import 'appointment_detail_view.dart';
 import 'appointment_form_view.dart';
 import 'widgets/appointment_card.dart';
@@ -23,17 +24,24 @@ class AppointmentsView extends StatelessWidget {
     SizeConfig.init(context);
     final l10n = AppStrings.of(context);
 
-    // Shell tab — no brand selected: show brand picker
+    // Shell tab — use active brand from HomeViewModel
     if (brandId == null) {
-      return BrandPickerScaffold(
-        title: l10n.appointmentsTitle,
-        onBrandSelected: (brand) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => AppointmentsView(
-                brandId: brand.id!,
-                brandName: brand.name,
-              ),
+      return Consumer<HomeViewModel>(
+        builder: (context, homeVm, _) {
+          final brand = homeVm.selectedBrand;
+          if (homeVm.isLoading || brand == null || brand.id == null) {
+            return Scaffold(
+              appBar: MainAppBar(title: l10n.appointmentsTitle),
+              backgroundColor: AppTheme.surfaceVariant,
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
+          return ChangeNotifierProvider(
+            key: ValueKey(brand.id),
+            create: (_) => AppointmentsViewModel(brandId: brand.id!)..init(),
+            child: _AppointmentsBody(
+              brandId: brand.id!,
+              brandName: brand.name,
             ),
           );
         },
@@ -129,7 +137,7 @@ class _AppointmentsBody extends StatelessWidget {
               // ── Monthly calendar ──────────────────────────────────
               Container(
                 color: AppTheme.surface,
-                child: TableCalendar<dynamic>(
+                child: TableCalendar<AppointmentModel>(
                   firstDay: DateTime(2020),
                   lastDay: DateTime(2030),
                   focusedDay: viewModel.focusedDay,
@@ -159,7 +167,7 @@ class _AppointmentsBody extends StatelessWidget {
                   calendarStyle: CalendarStyle(
                     outsideDaysVisible: false,
                     todayDecoration: BoxDecoration(
-                      color: AppTheme.primary.withValues(alpha: 0.15),
+                      color: AppTheme.primary.withOpacity(0.12),
                       shape: BoxShape.circle,
                     ),
                     todayTextStyle: TextStyle(
@@ -168,11 +176,15 @@ class _AppointmentsBody extends StatelessWidget {
                       fontSize: SizeTokens.fontSM,
                     ),
                     selectedDecoration: BoxDecoration(
-                      color: AppTheme.primary,
+                      color: AppTheme.accent.withOpacity(0.10),
                       shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppTheme.accent,
+                        width: 2.5,
+                      ),
                     ),
                     selectedTextStyle: TextStyle(
-                      color: Colors.white,
+                      color: AppTheme.accent,
                       fontWeight: FontWeight.w700,
                       fontSize: SizeTokens.fontSM,
                     ),
@@ -184,11 +196,7 @@ class _AppointmentsBody extends StatelessWidget {
                       fontSize: SizeTokens.fontSM,
                       color: AppTheme.textPrimary,
                     ),
-                    markerDecoration: BoxDecoration(
-                      color: AppTheme.accent,
-                      shape: BoxShape.circle,
-                    ),
-                    markerSize: 5,
+                    markersMaxCount: 0,
                   ),
                   daysOfWeekStyle: DaysOfWeekStyle(
                     weekdayStyle: TextStyle(
@@ -201,6 +209,35 @@ class _AppointmentsBody extends StatelessWidget {
                       color: AppTheme.textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
+                  ),
+                  calendarBuilders: CalendarBuilders<AppointmentModel>(
+                    markerBuilder: (context, day, events) {
+                      if (events.isEmpty) return const SizedBox.shrink();
+                      final dots = events.take(4).map((appt) {
+                        final hex = appt.status?.color;
+                        Color dotColor = AppTheme.accent;
+                        if (hex != null && hex.length >= 6) {
+                          final h = hex.replaceAll('#', '');
+                          try {
+                            dotColor = Color(
+                              int.parse(h.length == 6 ? 'FF$h' : h, radix: 16),
+                            );
+                          } catch (_) {}
+                        }
+                        return Container(
+                          width: 7,
+                          height: 7,
+                          margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                          decoration: BoxDecoration(
+                            color: dotColor,
+                            shape: BoxShape.circle,
+                          ),
+                        );
+                      }).toList();
+                      return Positioned(
+                        child: Row(mainAxisSize: MainAxisSize.min, children: dots),
+                      );
+                    },
                   ),
                   onDaySelected: viewModel.onDaySelected,
                   onPageChanged: viewModel.onPageChanged,

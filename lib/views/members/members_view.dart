@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 import '../../app/app_theme.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
-import '../../core/ui_components/brand_picker_scaffold.dart';
 import '../../core/ui_components/main_app_bar.dart';
 import '../../l10n/strings.dart';
 import '../../models/membership_model.dart';
+import '../../viewmodels/home_view_model.dart';
 import '../../viewmodels/members_view_model.dart';
 import '../invitations/invitations_view.dart';
 import '../statuses/appointment_statuses_view.dart';
@@ -24,18 +24,22 @@ class MembersView extends StatelessWidget {
     SizeConfig.init(context);
     final l10n = AppStrings.of(context);
 
-    // No brand selected — show brand picker
+    // Shell tab — use active brand from HomeViewModel
     if (brandId == null) {
-      return BrandPickerScaffold(
-        title: l10n.membersTitle,
-        onBrandSelected: (brand) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => MembersView(
-                brandId: brand.id!,
-                brandName: brand.name,
-              ),
-            ),
+      return Consumer<HomeViewModel>(
+        builder: (context, homeVm, _) {
+          final brand = homeVm.selectedBrand;
+          if (homeVm.isLoading || brand == null || brand.id == null) {
+            return Scaffold(
+              appBar: MainAppBar(title: l10n.membersTitle),
+              backgroundColor: AppTheme.surfaceVariant,
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
+          return ChangeNotifierProvider(
+            key: ValueKey(brand.id),
+            create: (_) => MembersViewModel(brandId: brand.id!)..init(),
+            child: _MembersBody(brandId: brand.id!, brandName: brand.name),
           );
         },
       );

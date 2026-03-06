@@ -127,6 +127,8 @@ class AppStrings {
   String get homeStatsUpcoming7DaysLabel => _t('homeStatsUpcoming7DaysLabel');
   String get homeStatsMonthlyTitle => _t('homeStatsMonthlyTitle');
   String get homeStatsByStatusTitle => _t('homeStatsByStatusTitle');
+  String get homeUpcomingTitle => _t('homeUpcomingTitle');
+  String get homeUpcomingEmpty => _t('homeUpcomingEmpty');
 
   // ─── Navigation ────────────────────────────────────────────────────────────
   String get navHome => _t('navHome');
@@ -572,6 +574,14 @@ class AppStrings {
     'homeStatsByStatusTitle': {
       'tr': 'Durum Dağılımı',
       'en': 'By Status',
+    },
+    'homeUpcomingTitle': {
+      'tr': 'Yaklaşan Randevular',
+      'en': 'Upcoming Appointments',
+    },
+    'homeUpcomingEmpty': {
+      'tr': 'Yaklaşan randevu yok',
+      'en': 'No upcoming appointments',
     },
     'homeDashboardQuickActions': {
       'tr': 'Hızlı İşlemler',

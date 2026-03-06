@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smartssheets_app/viewmodels/appointments_view_model.dart';
 import 'package:smartssheets_app/views/home/home_view.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/ui_components/app_bottom_bar.dart';
 import '../../l10n/strings.dart';
 import '../../viewmodels/home_view_model.dart';
+import '../appointments/appointment_form_view.dart';
 import '../appointments/appointments_view.dart';
 import '../members/members_view.dart';
 import '../profile/profile_view.dart';
@@ -37,15 +39,26 @@ class _MainShellViewState extends State<MainShellView> {
     const ProfileView(),
   ];
 
-  void _onBarTap(int barIndex) {
+  void _onBarTap(BuildContext context, int barIndex) {
     if (barIndex == 2) {
-      // Center FAB — feature coming soon
+      // Center FAB — Open Appointment Form
+      final homeVm = Provider.of<HomeViewModel>(context, listen: false);
+      final brandId = homeVm.selectedBrand?.id;
       final l10n = AppStrings.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.navComingSoon),
-          duration: const Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
+
+      if (brandId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.navComingSoon)),
+        );
+        return;
+      }
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChangeNotifierProvider(
+            create: (_) => AppointmentsViewModel(brandId: brandId)..init(),
+            child: AppointmentFormView(brandId: brandId),
+          ),
         ),
       );
       return;
@@ -88,7 +101,7 @@ class _MainShellViewState extends State<MainShellView> {
             bottomNavigationBar: AppBottomBar(
               currentIndex: _activeBarIndex,
               centerIndex: 2,
-              onTap: _onBarTap,
+              onTap: (index) => _onBarTap(ctx, index),
               items: [
                 AppBottomBarItem(
                   activeIcon: Icons.home_rounded,

@@ -4,6 +4,8 @@ import '../../app/app_theme.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
 import '../../l10n/strings.dart';
+import '../../models/billing_plans_response_model.dart';
+import '../../models/billing_status_model.dart';
 import '../../viewmodels/profile_view_model.dart';
 import '../login/login_view.dart';
 import 'widgets/profile_membership_item.dart';
@@ -170,29 +172,49 @@ class _ProfileContent extends StatelessWidget {
               ),
             )
           else
-            ...memberships.map((m) => Padding(
-                  padding: EdgeInsets.only(bottom: SizeTokens.spaceXL),
-                  child: ProfileMembershipItem(
-                    membership: m,
-                    roleLabel: l10n.profileRoleLabel,
-                    permissionsTitle: l10n.profilePermissionsTitle,
-                    planLabel: l10n.profilePlanLabel,
-                    subscriptionActiveLabel: l10n.profileSubscriptionActive,
-                    subscriptionInactiveLabel: l10n.profileSubscriptionInactive,
-                    subscriptionExpiresLabel: l10n.profileSubscriptionExpires,
-                    memberLimitLabel: l10n.profileMemberLimitLabel,
-                    timezoneLabel: l10n.profileTimezoneLabel,
-                    permissionLabels: {
-                      'create_appointment': l10n.profilePermCreateAppointment,
-                      'upload_result': l10n.profilePermUploadResult,
-                      'change_status': l10n.profilePermChangeStatus,
-                      'manage_members': l10n.profilePermManageMembers,
-                      'manage_statuses': l10n.profilePermManageStatuses,
-                      'manage_appointment_fields':
-                          l10n.profilePermManageAppointmentFields,
-                    },
-                  ),
-                )),
+            ...memberships.map((m) {
+              final brandId = m.brand?.id ?? m.brandId;
+              final hasBilling = brandId != null &&
+                  (viewModel.billingStatusMap[brandId] != null ||
+                      viewModel.billingPlansMap[brandId] != null);
+              return Padding(
+                padding: EdgeInsets.only(bottom: SizeTokens.spaceXL),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ProfileMembershipItem(
+                      membership: m,
+                      roleLabel: l10n.profileRoleLabel,
+                      permissionsTitle: l10n.profilePermissionsTitle,
+                      planLabel: l10n.profilePlanLabel,
+                      subscriptionActiveLabel: l10n.profileSubscriptionActive,
+                      subscriptionInactiveLabel: l10n.profileSubscriptionInactive,
+                      subscriptionExpiresLabel: l10n.profileSubscriptionExpires,
+                      memberLimitLabel: l10n.profileMemberLimitLabel,
+                      timezoneLabel: l10n.profileTimezoneLabel,
+                      permissionLabels: {
+                        'create_appointment': l10n.profilePermCreateAppointment,
+                        'upload_result': l10n.profilePermUploadResult,
+                        'change_status': l10n.profilePermChangeStatus,
+                        'manage_members': l10n.profilePermManageMembers,
+                        'manage_statuses': l10n.profilePermManageStatuses,
+                        'manage_appointment_fields':
+                            l10n.profilePermManageAppointmentFields,
+                      },
+                    ),
+                    if (hasBilling) ...
+                      [
+                        SizedBox(height: SizeTokens.spaceSM),
+                        _BillingCard(
+                          billingStatus: viewModel.billingStatusMap[brandId],
+                          billingPlans: viewModel.billingPlansMap[brandId],
+                          l10n: l10n,
+                        ),
+                      ],
+                  ],
+                ),
+              );
+            }),
         ],
       ),
     );
@@ -368,6 +390,192 @@ class _ErrorState extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Billing Card
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _BillingCard extends StatelessWidget {
+  final BillingStatusModel? billingStatus;
+  final BillingPlansResponseModel? billingPlans;
+  final AppStrings l10n;
+
+  const _BillingCard({
+    required this.l10n,
+    this.billingStatus,
+    this.billingPlans,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final status = billingStatus;
+    final plans = billingPlans?.data ?? [];
+    final isActive = status?.status == 'active';
+    final statusColor = isActive ? AppTheme.success : AppTheme.warning;
+    final statusBg = isActive ? AppTheme.successLight : AppTheme.warningLight;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              horizontal: SizeTokens.paddingXL,
+              vertical: SizeTokens.paddingMD,
+            ),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceVariant,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(SizeTokens.radiusXL),
+              ),
+              border: Border(
+                bottom: BorderSide(color: AppTheme.divider),
+              ),
+            ),
+            child: Text(
+              l10n.homeBillingTitle,
+              style: TextStyle(
+                fontSize: SizeTokens.fontSM,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textSecondary,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+          // Body
+          Padding(
+            padding: EdgeInsets.all(SizeTokens.paddingXL),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Status + Plan row
+                Row(
+                  children: [
+                    if (status?.status != null) ...[
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: SizeTokens.paddingSM,
+                          vertical: SizeTokens.spaceXXS,
+                        ),
+                        decoration: BoxDecoration(
+                          color: statusBg,
+                          borderRadius:
+                              BorderRadius.circular(SizeTokens.radiusCircle),
+                        ),
+                        child: Text(
+                          status!.status!,
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontXS,
+                            fontWeight: FontWeight.w700,
+                            color: statusColor,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: SizeTokens.spaceSM),
+                    ],
+                    if (status?.plan != null)
+                      Expanded(
+                        child: Text(
+                          status!.plan!,
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontMD,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                ),
+                if (status?.expiresAt != null) ...[
+                  SizedBox(height: SizeTokens.spaceXS),
+                  Text(
+                    '${l10n.homeBillingExpiresLabel}: ${status!.expiresAt!}',
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontSM,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+                if (status?.trialEndsAt != null) ...[
+                  SizedBox(height: SizeTokens.spaceXS),
+                  Text(
+                    '${l10n.homeBillingTrialLabel}: ${status!.trialEndsAt!}',
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontSM,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+                if (status?.locked == true) ...[
+                  SizedBox(height: SizeTokens.spaceXS),
+                  Text(
+                    l10n.homeBillingLockedLabel,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontSM,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.error,
+                    ),
+                  ),
+                ],
+                if (plans.isNotEmpty) ...[
+                  SizedBox(height: SizeTokens.spaceSM),
+                  Divider(height: 1, color: AppTheme.divider),
+                  SizedBox(height: SizeTokens.spaceSM),
+                  ...plans.map(
+                    (plan) => Padding(
+                      padding: EdgeInsets.only(bottom: SizeTokens.spaceXS),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              plan.name ?? '',
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontSM,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                          ),
+                          if (plan.memberLimit != null)
+                            Text(
+                              '${l10n.homeBillingMemberLimitLabel}: ${plan.memberLimit}',
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontXS,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                          if (plan.priceDisplay != null) ...[
+                            SizedBox(width: SizeTokens.spaceSM),
+                            Text(
+                              plan.priceDisplay!,
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontSM,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

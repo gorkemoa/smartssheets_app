@@ -97,6 +97,26 @@ class AppStrings {
   String get homeMembershipsTitle => _t('homeMembershipsTitle');
   String get homeNoMemberships => _t('homeNoMemberships');
   String get homeErrorTitle => _t('homeErrorTitle');
+  String get homeDashboardQuickActions => _t('homeDashboardQuickActions');
+  String get homeQuickAppointments => _t('homeQuickAppointments');
+  String get homeQuickBrandInfo => _t('homeQuickBrandInfo');
+
+  // ─── Billing ──────────────────────────────────────────────────────────────
+  String get homeBillingTitle => _t('homeBillingTitle');
+  String get homeBillingStatusLabel => _t('homeBillingStatusLabel');
+  String get homeBillingPlanLabel => _t('homeBillingPlanLabel');
+  String get homeBillingExpiresLabel => _t('homeBillingExpiresLabel');
+  String get homeBillingTrialLabel => _t('homeBillingTrialLabel');
+  String get homeBillingLockedLabel => _t('homeBillingLockedLabel');
+  String get homeBillingMemberLimitLabel => _t('homeBillingMemberLimitLabel');
+  String get homeBillingPriceLabel => _t('homeBillingPriceLabel');
+
+  // ─── Brand Info page ──────────────────────────────────────────────────
+  String get brandInfoTitle => _t('brandInfoTitle');
+  String get brandInfoMembers => _t('brandInfoMembers');
+  String get brandInfoStatuses => _t('brandInfoStatuses');
+  String get brandInfoFields => _t('brandInfoFields');
+  String get seeAll => _t('seeAll');
 
   // ─── Home Stats ────────────────────────────────────────────────────────────
   String get homeStatsTitle => _t('homeStatsTitle');
@@ -552,6 +572,84 @@ class AppStrings {
     'homeStatsByStatusTitle': {
       'tr': 'Durum Dağılımı',
       'en': 'By Status',
+    },
+    'homeDashboardQuickActions': {
+      'tr': 'Hızlı İşlemler',
+      'en': 'Quick Actions',
+    },
+    'homeQuickAppointments': {
+      'tr': 'Randevular',
+      'en': 'Appointments',
+    },
+    'homeQuickBrandInfo': {
+      'tr': 'Marka Bilgisi',
+      'en': 'Brand Info',
+    },
+    'homeQuickMembers': {
+      'tr': 'Üyeler',
+      'en': 'Members',
+    },
+    'homeQuickStatuses': {
+      'tr': 'Durumlar',
+      'en': 'Statuses',
+    },
+    'homeQuickFields': {
+      'tr': 'Alanlar',
+      'en': 'Fields',
+    },
+    // Billing
+    'homeBillingTitle': {
+      'tr': 'Paket Bilgisi',
+      'en': 'Subscription',
+    },
+    'homeBillingStatusLabel': {
+      'tr': 'Durum',
+      'en': 'Status',
+    },
+    'homeBillingPlanLabel': {
+      'tr': 'Plan',
+      'en': 'Plan',
+    },
+    'homeBillingExpiresLabel': {
+      'tr': 'Bitiş Tarihi',
+      'en': 'Expires',
+    },
+    'homeBillingTrialLabel': {
+      'tr': 'Deneme Sonu',
+      'en': 'Trial Ends',
+    },
+    'homeBillingLockedLabel': {
+      'tr': 'Hesap Kilitli',
+      'en': 'Account Locked',
+    },
+    'homeBillingMemberLimitLabel': {
+      'tr': 'Üye Limiti',
+      'en': 'Member Limit',
+    },
+    'homeBillingPriceLabel': {
+      'tr': 'Fiyat',
+      'en': 'Price',
+    },
+    // Brand Info page
+    'brandInfoTitle': {
+      'tr': 'Marka Bilgisi',
+      'en': 'Brand Info',
+    },
+    'brandInfoMembers': {
+      'tr': 'Üyeler',
+      'en': 'Members',
+    },
+    'brandInfoStatuses': {
+      'tr': 'Randevu Durumları',
+      'en': 'Appointment Statuses',
+    },
+    'brandInfoFields': {
+      'tr': 'Randevu Alanları',
+      'en': 'Appointment Fields',
+    },
+    'seeAll': {
+      'tr': 'Tümünü Gör',
+      'en': 'See All',
     },
 
     // Navigation

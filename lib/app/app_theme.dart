@@ -19,6 +19,11 @@ class AppTheme {
   static const Color textHint = Color(0xFF9EA8BB);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
 
+  static const Color success = Color(0xFF34C759);
+  static const Color successLight = Color(0xFFE8F9ED);
+  static const Color warning = Color(0xFFFF9500);
+  static const Color warningLight = Color(0xFFFFF4E5);
+
   static const Color error = Color(0xFFD93025);
   static const Color errorLight = Color(0xFFFCE8E6);
 

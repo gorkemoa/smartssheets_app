@@ -19,7 +19,6 @@ class HomeViewModel extends ChangeNotifier {
   String? _submitError;
   final Map<int, StatsSummaryModel> _statsSummaryMap = {};
   final Map<int, StatsMonthlyResponseModel> _statsMonthlyMap = {};
-
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   MeResponseModel? get meResponse => _meResponse;
@@ -30,7 +29,6 @@ class HomeViewModel extends ChangeNotifier {
       Map.unmodifiable(_statsSummaryMap);
   Map<int, StatsMonthlyResponseModel> get statsMonthlyMap =>
       Map.unmodifiable(_statsMonthlyMap);
-
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -49,10 +47,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> init() async {
     _setLoading(true);
     _setError(null);
-    await Future.wait([
-      _fetchMe(),
-      _fetchBrands(),
-    ]);
+    await Future.wait([_fetchMe(), _fetchBrands()]);
     await _fetchStatsForAllBrands();
     _setLoading(false);
   }
@@ -60,10 +55,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> refresh() async {
     _setLoading(true);
     _setError(null);
-    await Future.wait([
-      _fetchMe(),
-      _fetchBrands(),
-    ]);
+    await Future.wait([_fetchMe(), _fetchBrands()]);
     await _fetchStatsForAllBrands();
     _setLoading(false);
   }
@@ -101,15 +93,13 @@ class HomeViewModel extends ChangeNotifier {
     final brands = _brandsResponse?.data;
     if (brands == null || brands.isEmpty) return;
     await Future.wait(
-      brands
-          .where((b) => b.id != null)
-          .map((b) async {
-            final id = b.id!;
-            await Future.wait([
-              _fetchStatsSummary(id),
-              _fetchStatsMonthly(id),
-            ]);
-          }),
+      brands.where((b) => b.id != null).map((b) async {
+        final id = b.id!;
+        await Future.wait([
+          _fetchStatsSummary(id),
+          _fetchStatsMonthly(id),
+        ]);
+      }),
     );
   }
 
@@ -137,7 +127,10 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
 
     final result = await BrandService.instance.createBrand(
-      CreateBrandRequestModel(name: name, timezone: timezone?.isEmpty == true ? null : timezone),
+      CreateBrandRequestModel(
+        name: name,
+        timezone: timezone?.isEmpty == true ? null : timezone,
+      ),
     );
 
     _isSubmitting = false;

@@ -75,4 +75,10 @@ class ApiConstants {
       '/brands/$brandId/stats/summary';
   static String brandStatsMonthly(int brandId) =>
       '/brands/$brandId/stats/monthly';
+
+  // Billing
+  static String brandBillingPlans(int brandId) =>
+      '/brands/$brandId/billing/plans';
+  static String brandBillingStatus(int brandId) =>
+      '/brands/$brandId/billing/status';
 }

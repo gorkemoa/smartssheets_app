@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../app/app_theme.dart';
+import '../../../core/responsive/size_config.dart';
 import '../../../core/responsive/size_tokens.dart';
 
 class DashboardStatTile extends StatelessWidget {
@@ -21,50 +22,59 @@ class DashboardStatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(SizeTokens.paddingMD),
       decoration: BoxDecoration(
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
         border: Border.all(color: AppTheme.divider),
+
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: SizeTokens.iconXL,
-            height: SizeTokens.iconXL,
-            decoration: BoxDecoration(
+      clipBehavior: Clip.antiAlias,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── Colored left column ────────────────────────────────────
+            Container(
               color: iconBackground,
-              borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
+              width: SizeConfig.r(30),
+              alignment: Alignment.center,
+              child: Icon(icon, size: SizeConfig.r(16), color: Colors.white),
             ),
-            child: Icon(
-              icon,
-              size: SizeTokens.iconMD,
-              color: iconColor,
+            // ── White right content ────────────────────────────────────
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizeTokens.paddingSM,
+                  vertical: SizeTokens.spaceSM,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: SizeTokens.fontXL,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: SizeTokens.fontXS,
+                        fontWeight: FontWeight.w400,
+                        color: AppTheme.textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          SizedBox(height: SizeTokens.spaceSM),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: SizeTokens.fontXXL,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textPrimary,
-            ),
-          ),
-          SizedBox(height: SizeTokens.spaceXXS),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: SizeTokens.fontSM,
-              fontWeight: FontWeight.w400,
-              color: AppTheme.textSecondary,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

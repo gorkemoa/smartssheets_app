@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/app_theme.dart';
@@ -5,10 +6,12 @@ import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
 import '../../l10n/strings.dart';
 import '../../models/brand_model.dart';
+import '../../models/stats_monthly_item_model.dart';
+import '../../models/stats_monthly_response_model.dart';
+import '../../models/stats_summary_model.dart';
 import '../../viewmodels/appointments_view_model.dart';
 import '../../viewmodels/home_view_model.dart';
 import 'widgets/brand_form_bottom_sheet.dart';
-import 'widgets/brand_stats_card.dart';
 import 'widgets/dashboard_stat_tile.dart';
 import 'widgets/dashboard_quick_action.dart';
 import '../appointments/appointments_view.dart';
@@ -232,14 +235,14 @@ class _DashboardContent extends StatelessWidget {
           _StatsGrid(summary: summary, l10n: l10n),
           SizedBox(height: SizeTokens.spaceMD),
 
-          // ── By Status ───────────────────────────────────────────────
-          if (summary?.byStatus?.isNotEmpty == true) ...[
-            _ByStatusSection(
-              byStatus: summary!.byStatus!,
+          // ── Charts row: Durum Pasta + Aylık Bar ──────────────────────
+          if (summary != null || monthly != null)
+            _StatsAndMonthlyCard(
+              summary: summary,
+              monthly: monthly,
               l10n: l10n,
             ),
-            SizedBox(height: SizeTokens.spaceMD),
-          ],
+          SizedBox(height: SizeTokens.spaceMD),
 
           // ── Quick Actions ───────────────────────────────────────────
           _QuickActionsSection(
@@ -249,16 +252,6 @@ class _DashboardContent extends StatelessWidget {
             onTapBrandInfo: () => onTapBrandInfo(brand),
           ),
           SizedBox(height: SizeTokens.spaceMD),
-
-          // ── Monthly Chart ───────────────────────────────────────────
-          if (monthly?.data?.isNotEmpty == true) ...[
-            SizedBox(height: SizeTokens.spaceMD),
-            BrandStatsCard(
-              summary: null,
-              monthly: monthly,
-              l10n: l10n,
-            ),
-          ],
         ],
       ),
     );
@@ -591,8 +584,8 @@ class _StatsGrid extends StatelessWidget {
                 icon: Icons.calendar_month_rounded,
                 value: '${summary?.totalAppointments ?? 0}',
                 label: l10n.homeStatsTotalLabel,
-                iconColor: AppTheme.accent,
-                iconBackground: AppTheme.accent.withValues(alpha: 0.1),
+                iconColor: Colors.white,
+                iconBackground: AppTheme.accent,
               ),
             ),
             SizedBox(width: SizeTokens.spaceSM),
@@ -601,8 +594,8 @@ class _StatsGrid extends StatelessWidget {
                 icon: Icons.date_range_rounded,
                 value: '${summary?.thisMonthCreated ?? 0}',
                 label: l10n.homeStatsThisMonthLabel,
-                iconColor: AppTheme.primary,
-                iconBackground: AppTheme.primary.withValues(alpha: 0.08),
+                iconColor: Colors.white,
+                iconBackground: AppTheme.primary,
               ),
             ),
           ],
@@ -615,8 +608,8 @@ class _StatsGrid extends StatelessWidget {
                 icon: Icons.check_circle_outline_rounded,
                 value: '${summary?.activeCount ?? 0}',
                 label: l10n.homeStatsActiveLabel,
-                iconColor: AppTheme.success,
-                iconBackground: AppTheme.successLight,
+                iconColor: Colors.white,
+                iconBackground: AppTheme.success,
               ),
             ),
             SizedBox(width: SizeTokens.spaceSM),
@@ -625,8 +618,8 @@ class _StatsGrid extends StatelessWidget {
                 icon: Icons.schedule_rounded,
                 value: '${summary?.upcoming7Days ?? 0}',
                 label: l10n.homeStatsUpcoming7DaysLabel,
-                iconColor: AppTheme.warning,
-                iconBackground: AppTheme.warningLight,
+                iconColor: Colors.white,
+                iconBackground: AppTheme.warning,
               ),
             ),
           ],
@@ -637,96 +630,382 @@ class _StatsGrid extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// By Status Section
+// Stats & Monthly Card
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _ByStatusSection extends StatelessWidget {
-  final List<dynamic> byStatus;
+class _StatsAndMonthlyCard extends StatelessWidget {
+  final StatsSummaryModel? summary;
+  final StatsMonthlyResponseModel? monthly;
   final AppStrings l10n;
 
-  const _ByStatusSection({required this.byStatus, required this.l10n});
+  const _StatsAndMonthlyCard({
+    this.summary,
+    this.monthly,
+    required this.l10n,
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (summary?.byStatus?.isNotEmpty != true && monthly?.data?.isNotEmpty != true) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(SizeTokens.paddingMD),
       decoration: BoxDecoration(
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
         border: Border.all(color: AppTheme.divider),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            l10n.homeStatsByStatusTitle,
-            style: TextStyle(
-              fontSize: SizeTokens.fontMD,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
+          // ── Header ──────────────────────────────────────────────────
+          Padding(
+            padding: EdgeInsets.all(SizeTokens.paddingMD),
+            child: Row(
+              children: [
+                Icon(Icons.analytics_outlined, 
+                  size: SizeTokens.iconSM, color: AppTheme.primary),
+                SizedBox(width: SizeTokens.spaceXS),
+                Text(
+                  l10n.homeStatsTitle,
+                  style: TextStyle(
+                    fontSize: SizeTokens.fontMD,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: SizeTokens.spaceSM),
-          Wrap(
-            spacing: SizeTokens.spaceXS,
-            runSpacing: SizeTokens.spaceXS,
-            children: byStatus.map<Widget>((item) {
-              return Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: SizeTokens.spaceSM,
-                  vertical: SizeTokens.spaceXXS,
-                ),
-                decoration: BoxDecoration(
-                  color: AppTheme.surfaceVariant,
-                  borderRadius:
-                      BorderRadius.circular(SizeTokens.radiusCircle),
-                ),
+          Divider(height: 1, color: AppTheme.divider),
+
+          // ── Pie Chart (Durum Dağılımı) ──────────────────────────────
+          if (summary?.byStatus?.isNotEmpty == true) ...[
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                SizeTokens.paddingMD,
+                SizeTokens.paddingMD,
+                SizeTokens.paddingMD,
+                0,
+              ),
+              child: IntrinsicHeight(
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      '${item.name ?? ''}',
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontSM,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.textPrimary,
-                      ),
-                    ),
-                    SizedBox(width: SizeTokens.spaceXXS),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: SizeTokens.spaceXXS,
-                        vertical: SizeConfig.h(1),
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.accent.withValues(alpha: 0.15),
-                        borderRadius:
-                            BorderRadius.circular(SizeTokens.radiusCircle),
-                      ),
-                      child: Text(
-                        '${item.count ?? 0}',
-                        style: TextStyle(
-                          fontSize: SizeTokens.fontXS,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.accent,
+                    SizedBox(
+                      width: SizeConfig.w(80),
+                      height: SizeConfig.h(80),
+                      child: CustomPaint(
+                        painter: _PieChartPainter(
+                          items: summary!.byStatus!,
+                          colors: _kPieColors,
                         ),
                       ),
                     ),
+                    SizedBox(width: SizeTokens.spaceLG),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.homeStatsByStatusTitle,
+                            style: TextStyle(
+                              fontSize: SizeTokens.fontSM,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          SizedBox(height: SizeTokens.spaceXS),
+                          Text(
+                            '${summary?.totalAppointments ?? 0}',
+                            style: TextStyle(
+                              fontSize: SizeTokens.fontXXL,
+                              fontWeight: FontWeight.w800,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            l10n.homeStatsTotalLabel,
+                            style: TextStyle(
+                              fontSize: SizeTokens.fontXS,
+                              color: AppTheme.textHint,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (_) => _StatusDetailDialog(
+                          byStatus: summary!.byStatus!,
+                          title: l10n.homeStatsByStatusTitle,
+                        ),
+                      ),
+                      icon: Icon(Icons.open_in_new_rounded, 
+                        size: SizeTokens.iconSM, color: AppTheme.primary),
+                    ),
                   ],
                 ),
-              );
-            }).toList(),
-          ),
+              ),
+            ),
+            SizedBox(height: SizeTokens.spaceMD),
+          ],
+
+          Divider(height: 1, color: AppTheme.divider),
+
+          // ── Monthly List (Aylık Randevular) ─────────────────────────
+          if (monthly?.data?.isNotEmpty == true) ...[
+            Padding(
+              padding: EdgeInsets.all(SizeTokens.paddingMD),
+              child: Text(
+                l10n.homeStatsMonthlyTitle,
+                style: TextStyle(
+                  fontSize: SizeTokens.fontSM,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+            ),
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: SizeTokens.paddingMD),
+              itemCount: monthly!.data!.length,
+              separatorBuilder: (_, __) => SizedBox(height: SizeTokens.spaceXS),
+              itemBuilder: (context, index) {
+                final item = monthly!.data![index];
+                final count = item.count ?? 0;
+                if (count == 0) return const SizedBox.shrink();
+
+                return Container(
+                  padding: EdgeInsets.all(SizeTokens.spaceSM),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceVariant.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: SizeConfig.w(65),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          _formatMonth(item.month),
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontSM,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(SizeTokens.radiusCircle),
+                          child: LinearProgressIndicator(
+                            value: _getProgress(monthly!.data!, count),
+                            minHeight: 6,
+                            backgroundColor: AppTheme.divider,
+                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accent),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: SizeTokens.spaceSM),
+                      Text(
+                        '$count',
+                        style: TextStyle(
+                          fontSize: SizeTokens.fontSM,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: SizeTokens.paddingMD),
+          ],
         ],
       ),
     );
+  }
+
+  String _formatMonth(String? month) {
+    if (month == null || month.length < 7) return '—';
+    try {
+      final mIdx = int.parse(month.substring(5, 7));
+      final months = [
+        'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+        'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      ];
+      return months[mIdx - 1];
+    } catch (_) {
+      return month;
+    }
+  }
+
+  double _getProgress(List<StatsMonthlyItemModel> data, int current) {
+    final maxVal = data.fold<int>(0, (maxV, e) => max(maxV, e.count ?? 0));
+    return maxVal > 0 ? (current / maxVal).clamp(0, 1) : 0;
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Quick Actions Section (2×2 grid)
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Palette for pie slices (cycles if more statuses than colors)
+const _kPieColors = [
+  Color(0xFF5C6BC0), Color(0xFF26A69A), Color(0xFFEF5350),
+  Color(0xFFFF7043), Color(0xFF66BB6A), Color(0xFFAB47BC),
+  Color(0xFF29B6F6), Color(0xFFFFCA28), Color(0xFF8D6E63),
+  Color(0xFF78909C),
+];
+
+class _PieChartPainter extends CustomPainter {
+  final List<dynamic> items;
+  final List<Color> colors;
+
+  const _PieChartPainter({required this.items, required this.colors});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final total = items.fold<int>(0, (s, e) => s + ((e.count as int?) ?? 0));
+    if (total == 0) return;
+
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    double startAngle = -pi / 2;
+
+    for (var i = 0; i < items.length; i++) {
+      final count = (items[i].count as int?) ?? 0;
+      if (count == 0) continue;
+      final sweep = (count / total) * 2 * pi;
+      final paint = Paint()
+        ..color = colors[i % colors.length]
+        ..style = PaintingStyle.fill;
+      canvas.drawArc(rect, startAngle, sweep, true, paint);
+      startAngle += sweep;
+    }
+    // Inner circle for donut effect
+    final innerPaint = Paint()
+      ..color = AppTheme.surface
+      ..style = PaintingStyle.fill;
+    final innerRadius = size.width * 0.32;
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      innerRadius,
+      innerPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_PieChartPainter old) => old.items != items;
+}
+
+// Detail dialog shown on pie tap
+class _StatusDetailDialog extends StatelessWidget {
+  final List<dynamic> byStatus;
+  final String title;
+
+  const _StatusDetailDialog({required this.byStatus, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final total = byStatus.fold<int>(0, (s, e) => s + ((e.count as int?) ?? 0));
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
+      ),
+      backgroundColor: AppTheme.surface,
+      child: Padding(
+        padding: EdgeInsets.all(SizeTokens.paddingXL),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontLG,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(Icons.close_rounded, color: AppTheme.textSecondary),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+            SizedBox(height: SizeTokens.spaceMD),
+            ...List.generate(byStatus.length, (i) {
+              final item = byStatus[i];
+              final count = (item.count as int?) ?? 0;
+              final pct = total > 0 ? count / total : 0.0;
+              final color = _kPieColors[i % _kPieColors.length];
+              return Padding(
+                padding: EdgeInsets.only(bottom: SizeTokens.spaceSM),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        SizedBox(width: SizeTokens.spaceXS),
+                        Expanded(
+                          child: Text(
+                            item.name ?? '—',
+                            style: TextStyle(
+                              fontSize: SizeTokens.fontSM,
+                              color: AppTheme.textPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '$count  (${(pct * 100).toStringAsFixed(1)}%)',
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontSM,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: SizeTokens.spaceXXS),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(SizeTokens.radiusCircle),
+                      child: LinearProgressIndicator(
+                        value: pct,
+                        minHeight: SizeConfig.h(5),
+                        backgroundColor: AppTheme.surfaceVariant,
+                        valueColor: AlwaysStoppedAnimation<Color>(color),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _QuickActionsSection extends StatelessWidget {
   final AppStrings l10n;

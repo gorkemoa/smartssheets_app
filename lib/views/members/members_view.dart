@@ -9,7 +9,6 @@ import '../../models/membership_model.dart';
 import '../../viewmodels/home_view_model.dart';
 import '../../viewmodels/members_view_model.dart';
 import '../invitations/invitations_view.dart';
-import '../statuses/appointment_statuses_view.dart';
 import 'widgets/member_card.dart';
 import 'widgets/member_form_bottom_sheet.dart';
 
@@ -122,23 +121,6 @@ class _MembersBodyState extends State<_MembersBody> {
           ),
         ),
         actions: [
-          // Navigate to statuses screen
-          IconButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => AppointmentStatusesView(
-                  brandId: widget.brandId,
-                  brandName: widget.brandName,
-                ),
-              ),
-            ),
-            icon: Icon(
-              Icons.palette_outlined,
-              size: SizeTokens.iconMD,
-              color: AppTheme.textSecondary,
-            ),
-            tooltip: l10n.statusesNavButton,
-          ),
           // Navigate to invitations screen
           IconButton(
             onPressed: () => Navigator.of(context).push(
@@ -185,13 +167,33 @@ class _MembersBodyState extends State<_MembersBody> {
             return Center(
               child: Padding(
                 padding: EdgeInsets.all(SizeTokens.paddingPage),
-                child: Text(
-                  l10n.membersEmpty,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: SizeTokens.fontLG,
-                    color: AppTheme.textSecondary,
-                  ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: SizeTokens.iconXL * 2,
+                      height: SizeTokens.iconXL * 2,
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceVariant,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.group_outlined,
+                        size: SizeTokens.iconXL,
+                        color: AppTheme.textHint,
+                      ),
+                    ),
+                    SizedBox(height: SizeTokens.spaceLG),
+                    Text(
+                      l10n.membersEmpty,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: SizeTokens.fontLG,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -200,20 +202,79 @@ class _MembersBodyState extends State<_MembersBody> {
           return RefreshIndicator(
             color: AppTheme.primary,
             onRefresh: () => viewModel.refresh(),
-            child: ListView.separated(
-              padding: EdgeInsets.all(SizeTokens.paddingPage),
-              itemCount: viewModel.members.length,
-              separatorBuilder: (_, __) =>
-                  SizedBox(height: SizeTokens.spaceMD),
-              itemBuilder: (_, index) => MemberCard(
-                member: viewModel.members[index],
-                l10n: l10n,
-                onEdit: () => _openEditMember(
-                  context,
-                  l10n,
-                  viewModel.members[index],
+            child: CustomScrollView(
+              slivers: [
+                // ── Member count header ───────────────────────────────────
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      SizeTokens.paddingPage,
+                      SizeTokens.paddingPage,
+                      SizeTokens.paddingPage,
+                      SizeTokens.spaceSM,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: SizeTokens.spaceXXS * 1.5,
+                          height: SizeTokens.spaceMD,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary,
+                            borderRadius:
+                                BorderRadius.circular(SizeTokens.radiusCircle),
+                          ),
+                        ),
+                        SizedBox(width: SizeTokens.spaceXS),
+                        Text(
+                          '${viewModel.members.length}',
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontXL,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textPrimary,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        SizedBox(width: SizeTokens.spaceXXS),
+                        Text(
+                          l10n.membersTitle,
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontMD,
+                            fontWeight: FontWeight.w400,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                // ── Member list ───────────────────────────────────────────
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                    SizeTokens.paddingPage,
+                    SizeTokens.spaceSM,
+                    SizeTokens.paddingPage,
+                    SizeTokens.paddingPage,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, index) => Padding(
+                        padding:
+                            EdgeInsets.only(bottom: SizeTokens.spaceMD),
+                        child: MemberCard(
+                          member: viewModel.members[index],
+                          l10n: l10n,
+                          onEdit: () => _openEditMember(
+                            context,
+                            l10n,
+                            viewModel.members[index],
+                          ),
+                        ),
+                      ),
+                      childCount: viewModel.members.length,
+                    ),
+                  ),
+                ),
+              ],
             ),
           );
         },
@@ -241,12 +302,20 @@ class _ErrorState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline_rounded,
-              size: SizeTokens.iconXL,
-              color: AppTheme.error,
+            Container(
+              width: SizeTokens.iconXL * 2,
+              height: SizeTokens.iconXL * 2,
+              decoration: BoxDecoration(
+                color: AppTheme.errorLight,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: SizeTokens.iconXL,
+                color: AppTheme.error,
+              ),
             ),
-            SizedBox(height: SizeTokens.spaceMD),
+            SizedBox(height: SizeTokens.spaceLG),
             Text(
               message,
               textAlign: TextAlign.center,
@@ -260,6 +329,15 @@ class _ErrorState extends StatelessWidget {
               height: SizeTokens.buttonHeight,
               child: ElevatedButton(
                 onPressed: onRetry,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(SizeTokens.radiusLG),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeTokens.paddingXL),
+                ),
                 child: Text(
                   retryLabel,
                   style: TextStyle(

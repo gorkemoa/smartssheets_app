@@ -4,7 +4,7 @@ import '../../../core/responsive/size_tokens.dart';
 import '../../../l10n/strings.dart';
 import '../../../models/membership_model.dart';
 
-class MemberCard extends StatelessWidget {
+class MemberCard extends StatefulWidget {
   final MembershipModel member;
   final AppStrings l10n;
   final VoidCallback? onEdit;
@@ -16,19 +16,26 @@ class MemberCard extends StatelessWidget {
     this.onEdit,
   });
 
+  @override
+  State<MemberCard> createState() => _MemberCardState();
+}
+
+class _MemberCardState extends State<MemberCard> {
+  bool _isExpanded = false;
+
   String _roleLabel() {
-    switch (member.role) {
+    switch (widget.member.role) {
       case 'owner':
-        return l10n.membersRoleOwner;
+        return widget.l10n.membersRoleOwner;
       case 'admin':
-        return l10n.membersRoleAdmin;
+        return widget.l10n.membersRoleAdmin;
       default:
-        return l10n.membersRoleMember;
+        return widget.l10n.membersRoleMember;
     }
   }
 
   Color _roleColor() {
-    switch (member.role) {
+    switch (widget.member.role) {
       case 'owner':
         return AppTheme.primary;
       case 'admin':
@@ -38,182 +45,187 @@ class MemberCard extends StatelessWidget {
     }
   }
 
-  Color _roleBg() => _roleColor().withValues(alpha: 0.1);
 
   @override
   Widget build(BuildContext context) {
-    final isActive = member.status == 'active';
-    final perms = member.permissionsJson;
+    final isActive = widget.member.status == 'active';
+    final perms = widget.member.permissionsJson;
+    final roleColor = _roleColor();
 
     return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(SizeTokens.paddingXL),
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
-        border: Border.all(color: AppTheme.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header row ───────────────────────────────────────────────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Avatar circle
-              Container(
-                width: SizeTokens.avatarMD,
-                height: SizeTokens.avatarMD,
-                decoration: BoxDecoration(
-                  color: _roleColor().withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    (member.user?.name ?? '?').substring(0, 1).toUpperCase(),
-                    style: TextStyle(
-                      fontSize: SizeTokens.fontLG,
-                      fontWeight: FontWeight.w700,
-                      color: _roleColor(),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: SizeTokens.spaceMD),
-              // Name & email
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      member.user?.name ?? '—',
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontLG,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: SizeTokens.spaceXXS),
-                    Text(
-                      member.user?.email ?? '—',
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontSM,
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: SizeTokens.spaceXS),
-              // Status badge
-              _Badge(
-                label: isActive
-                    ? l10n.membersStatusActive
-                    : l10n.membersStatusInactive,
-                color: isActive ? AppTheme.accent : AppTheme.error,
-                background: isActive
-                    ? AppTheme.accent.withValues(alpha: 0.1)
-                    : AppTheme.errorLight,
-              ),
-              if (onEdit != null) ...[  
-                SizedBox(width: SizeTokens.spaceXS),
-                SizedBox(
-                  width: SizeTokens.iconXL,
-                  height: SizeTokens.iconXL,
-                  child: IconButton(
-                    onPressed: onEdit,
-                    padding: EdgeInsets.zero,
-                    icon: Icon(
-                      Icons.edit_outlined,
-                      size: SizeTokens.iconMD,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                ),
-              ],
-            ],
+        borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+        border: Border(
+          left: BorderSide(color: roleColor, width: SizeTokens.spaceXXS),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primary.withValues(alpha: 0.05),
+            blurRadius: SizeTokens.spaceXS,
+            offset: const Offset(0, 2),
           ),
-          SizedBox(height: SizeTokens.spaceMD),
-          // ── Role badge ───────────────────────────────────────────────────
-          _Badge(
-            label: _roleLabel(),
-            color: _roleColor(),
-            background: _roleBg(),
-          ),
-          // ── Permissions ──────────────────────────────────────────────────
-          if (perms != null) ...[
-            SizedBox(height: SizeTokens.spaceMD),
-            Divider(color: AppTheme.divider, height: SizeTokens.spaceXS),
-            SizedBox(height: SizeTokens.spaceSM),
-            Text(
-              l10n.membersPermissionsTitle,
-              style: TextStyle(
-                fontSize: SizeTokens.fontSM,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-            SizedBox(height: SizeTokens.spaceSM),
-            Wrap(
-              spacing: SizeTokens.spaceXS,
-              runSpacing: SizeTokens.spaceXS,
-              children: [
-                if (perms.createAppointment == true)
-                  _PermChip(label: l10n.membersPermCreateAppointment),
-                if (perms.uploadResult == true)
-                  _PermChip(label: l10n.membersPermUploadResult),
-                if (perms.changeStatus == true)
-                  _PermChip(label: l10n.membersPermChangeStatus),
-                if (perms.manageMembers == true)
-                  _PermChip(label: l10n.membersPermManageMembers),
-                if (perms.manageStatuses == true)
-                  _PermChip(label: l10n.membersPermManageStatuses),
-                if (perms.manageAppointmentFields == true)
-                  _PermChip(label: l10n.membersPermManageAppointmentFields),
-              ],
-            ),
-          ],
         ],
       ),
-    );
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: SizeTokens.paddingMD,
+          vertical: SizeTokens.paddingSM,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+                      // ── Header row ────────────────────────────────────────
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Status dot
+                          Container(
+                            width: SizeTokens.spaceXXS * 1.5,
+                            height: SizeTokens.spaceXXS * 1.5,
+                            decoration: BoxDecoration(
+                              color: isActive ? AppTheme.success : AppTheme.textHint,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          SizedBox(width: SizeTokens.spaceXS),
+                          // Name
+                          Expanded(
+                            child: Text(
+                              widget.member.user?.name ?? '—',
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontMD,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(width: SizeTokens.spaceXS),
+                          // Role chip
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: SizeTokens.paddingSM,
+                              vertical: SizeTokens.spaceXXS,
+                            ),
+                            decoration: BoxDecoration(
+                              color: roleColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(SizeTokens.radiusCircle),
+                            ),
+                            child: Text(
+                              _roleLabel(),
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontXS,
+                                fontWeight: FontWeight.w600,
+                                color: roleColor,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: SizeTokens.spaceXS),
+                          // Edit button
+                          if (widget.onEdit != null)
+                            GestureDetector(
+                              onTap: widget.onEdit,
+                              child: Icon(
+                                Icons.edit_outlined,
+                                size: SizeTokens.iconMD,
+                                color: AppTheme.textHint,
+                              ),
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: SizeTokens.spaceXXS),
+                      // Email
+                      Text(
+                        widget.member.user?.email ?? '—',
+                        style: TextStyle(
+                          fontSize: SizeTokens.fontXS,
+                          color: AppTheme.textSecondary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      // ── Permissions section (Accordion) ───────────────────
+                      if (perms != null) ...[
+                        SizedBox(height: SizeTokens.spaceMD),
+                        Divider(
+                            color: AppTheme.divider,
+                            height: SizeTokens.spaceXS),
+                        InkWell(
+                          onTap: () => setState(() => _isExpanded = !_isExpanded),
+                          borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: SizeTokens.spaceSM),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.lock_outline_rounded,
+                                  size: SizeTokens.iconSM,
+                                  color: AppTheme.textHint,
+                                ),
+                                SizedBox(width: SizeTokens.spaceXXS),
+                                Text(
+                                  widget.l10n.membersPermissionsTitle,
+                                  style: TextStyle(
+                                    fontSize: SizeTokens.fontXS,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppTheme.textHint,
+                                    letterSpacing: 0.4,
+                                  ),
+                                ),
+                                const Spacer(),
+                                AnimatedRotation(
+                                  duration: const Duration(milliseconds: 200),
+                                  turns: _isExpanded ? 0.5 : 0,
+                                  child: Icon(
+                                    Icons.expand_more_rounded,
+                                    size: SizeTokens.iconMD,
+                                    color: AppTheme.textHint,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        AnimatedCrossFade(
+                          firstChild: const SizedBox(width: double.infinity),
+                          secondChild: Padding(
+                            padding: EdgeInsets.only(bottom: SizeTokens.spaceSM),
+                            child: Wrap(
+                              spacing: SizeTokens.spaceXS,
+                              runSpacing: SizeTokens.spaceXS,
+                              children: [
+                                if (perms.createAppointment == true)
+                                  _PermChip(label: widget.l10n.membersPermCreateAppointment),
+                                if (perms.uploadResult == true)
+                                  _PermChip(label: widget.l10n.membersPermUploadResult),
+                                if (perms.changeStatus == true)
+                                  _PermChip(label: widget.l10n.membersPermChangeStatus),
+                                if (perms.manageMembers == true)
+                                  _PermChip(label: widget.l10n.membersPermManageMembers),
+                                if (perms.manageStatuses == true)
+                                  _PermChip(label: widget.l10n.membersPermManageStatuses),
+                                if (perms.manageAppointmentFields == true)
+                                  _PermChip(
+                                      label: widget.l10n.membersPermManageAppointmentFields),
+                              ],
+                            ),
+                          ),
+                          crossFadeState: _isExpanded
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: const Duration(milliseconds: 200),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+            );
   }
 }
 
 // ─── Internal widgets ─────────────────────────────────────────────────────────
-
-class _Badge extends StatelessWidget {
-  final String label;
-  final Color color;
-  final Color background;
-
-  const _Badge({
-    required this.label,
-    required this.color,
-    required this.background,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: SizeTokens.paddingSM,
-        vertical: SizeTokens.spaceXXS,
-      ),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(SizeTokens.radiusCircle),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: SizeTokens.fontXS,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
 
 class _PermChip extends StatelessWidget {
   final String label;
@@ -228,16 +240,15 @@ class _PermChip extends StatelessWidget {
         vertical: SizeTokens.spaceXXS,
       ),
       decoration: BoxDecoration(
-        color: AppTheme.primary.withValues(alpha: 0.08),
+        color: AppTheme.surfaceVariant,
         borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
-        border: Border.all(color: AppTheme.primary.withValues(alpha: 0.2)),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: SizeTokens.fontXS,
           fontWeight: FontWeight.w500,
-          color: AppTheme.primary,
+          color: AppTheme.textSecondary,
         ),
       ),
     );

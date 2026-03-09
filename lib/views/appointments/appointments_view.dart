@@ -39,10 +39,7 @@ class AppointmentsView extends StatelessWidget {
           return ChangeNotifierProvider(
             key: ValueKey(brand.id),
             create: (_) => AppointmentsViewModel(brandId: brand.id!)..init(),
-            child: _AppointmentsBody(
-              brandId: brand.id!,
-              brandName: brand.name,
-            ),
+            child: _AppointmentsBody(brandId: brand.id!, brandName: brand.name),
           );
         },
       );
@@ -50,10 +47,7 @@ class AppointmentsView extends StatelessWidget {
 
     return ChangeNotifierProvider(
       create: (_) => AppointmentsViewModel(brandId: brandId!)..init(),
-      child: _AppointmentsBody(
-        brandId: brandId!,
-        brandName: brandName,
-      ),
+      child: _AppointmentsBody(brandId: brandId!, brandName: brandName),
     );
   }
 }
@@ -72,9 +66,7 @@ class _AppointmentsBody extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.surfaceVariant,
       appBar: MainAppBar(
-        title: brandName != null
-            ? '${brandName!} — ${l10n.appointmentsTitle}'
-            : l10n.appointmentsTitle,
+        title: l10n.appointmentsTitle,
         leading: Navigator.of(context).canPop()
             ? IconButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -178,10 +170,7 @@ class _AppointmentsBody extends StatelessWidget {
                     selectedDecoration: BoxDecoration(
                       color: AppTheme.accent.withOpacity(0.10),
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppTheme.accent,
-                        width: 2.5,
-                      ),
+                      border: Border.all(color: AppTheme.accent, width: 2.5),
                     ),
                     selectedTextStyle: TextStyle(
                       color: AppTheme.accent,
@@ -235,7 +224,10 @@ class _AppointmentsBody extends StatelessWidget {
                         );
                       }).toList();
                       return Positioned(
-                        child: Row(mainAxisSize: MainAxisSize.min, children: dots),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: dots,
+                        ),
                       );
                     },
                   ),
@@ -253,67 +245,60 @@ class _AppointmentsBody extends StatelessWidget {
                   child: viewModel.isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : viewModel.selectedDayAppointments.isEmpty
-                          ? ListView(
-                              padding:
-                                  EdgeInsets.all(SizeTokens.paddingPage),
-                              children: [
-                                SizedBox(height: SizeTokens.spaceXXL),
-                                Center(
-                                  child: Text(
-                                    l10n.appointmentsEmpty,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: SizeTokens.fontLG,
-                                      color: AppTheme.textSecondary,
-                                    ),
-                                  ),
+                      ? ListView(
+                          padding: EdgeInsets.all(SizeTokens.paddingPage),
+                          children: [
+                            SizedBox(height: SizeTokens.spaceXXL),
+                            Center(
+                              child: Text(
+                                l10n.appointmentsEmpty,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: SizeTokens.fontLG,
+                                  color: AppTheme.textSecondary,
                                 ),
-                              ],
-                            )
-                          : ListView.separated(
-                              padding:
-                                  EdgeInsets.all(SizeTokens.paddingPage),
-                              itemCount: viewModel
-                                  .selectedDayAppointments.length,
-                              separatorBuilder: (_, __) =>
-                                  SizedBox(height: SizeTokens.spaceMD),
-                              itemBuilder: (_, index) {
-                                final appt = viewModel
-                                    .selectedDayAppointments[index];
-                                return AppointmentCard(
-                                  appointment: appt,
-                                  onTap: () async {
-                                    final result = await Navigator.of(
-                                            context)
-                                        .push<bool>(
+                              ),
+                            ),
+                          ],
+                        )
+                      : ListView.separated(
+                          padding: EdgeInsets.all(SizeTokens.paddingPage),
+                          itemCount: viewModel.selectedDayAppointments.length,
+                          separatorBuilder: (_, __) =>
+                              SizedBox(height: SizeTokens.spaceMD),
+                          itemBuilder: (_, index) {
+                            final appt =
+                                viewModel.selectedDayAppointments[index];
+                            return AppointmentCard(
+                              appointment: appt,
+                              onTap: () async {
+                                final result = await Navigator.of(context)
+                                    .push<bool>(
                                       MaterialPageRoute(
                                         builder: (_) =>
                                             ChangeNotifierProvider.value(
-                                          value: viewModel,
-                                          child: AppointmentDetailView(
-                                            brandId: brandId,
-                                            appointment: appt,
-                                          ),
-                                        ),
+                                              value: viewModel,
+                                              child: AppointmentDetailView(
+                                                brandId: brandId,
+                                                appointment: appt,
+                                              ),
+                                            ),
                                       ),
                                     );
-                                    if (result == true &&
-                                        context.mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            l10n.appointmentUpdateSuccess,
-                                          ),
-                                          behavior:
-                                              SnackBarBehavior.floating,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                );
+                                if (result == true && context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        l10n.appointmentUpdateSuccess,
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                }
                               },
-                            ),
+                            );
+                          },
+                        ),
                 ),
               ),
             ],
@@ -352,10 +337,7 @@ class _ErrorState extends StatelessWidget {
               ),
             ),
             SizedBox(height: SizeTokens.spaceLG),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(retryLabel),
-            ),
+            TextButton(onPressed: onRetry, child: Text(retryLabel)),
           ],
         ),
       ),

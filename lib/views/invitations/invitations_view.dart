@@ -13,11 +13,7 @@ class InvitationsView extends StatelessWidget {
   final int brandId;
   final String? brandName;
 
-  const InvitationsView({
-    super.key,
-    required this.brandId,
-    this.brandName,
-  });
+  const InvitationsView({super.key, required this.brandId, this.brandName});
 
   @override
   Widget build(BuildContext context) {
@@ -140,9 +136,7 @@ class _InvitationsBodyState extends State<_InvitationsBody> {
     return Scaffold(
       backgroundColor: AppTheme.surfaceVariant,
       appBar: MainAppBar(
-        title: widget.brandName != null
-            ? '${widget.brandName} — ${l10n.invitationsTitle}'
-            : l10n.invitationsTitle,
+        title: l10n.invitationsTitle,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(
@@ -250,8 +244,7 @@ class _InvitationsBodyState extends State<_InvitationsBody> {
                     foregroundColor: AppTheme.textOnPrimary,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(SizeTokens.radiusMD),
+                      borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
                     ),
                   ),
                 ),
@@ -292,10 +285,7 @@ class _ErrorState extends StatelessWidget {
               ),
             ),
             SizedBox(height: SizeTokens.spaceLG),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(retryLabel),
-            ),
+            TextButton(onPressed: onRetry, child: Text(retryLabel)),
           ],
         ),
       ),

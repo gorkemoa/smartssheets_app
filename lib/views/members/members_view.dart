@@ -108,7 +108,7 @@ class _MembersBodyState extends State<_MembersBody> {
     return Scaffold(
       backgroundColor: AppTheme.surfaceVariant,
       appBar: MainAppBar(
-        title: widget.brandName ?? l10n.membersTitle,
+        title: l10n.membersTitle,
         leading: Navigator.of(context).canPop()
             ? IconButton(
                 onPressed: () => Navigator.of(context).pop(),

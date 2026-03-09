@@ -35,8 +35,7 @@ class _AppointmentFieldsBody extends StatefulWidget {
   const _AppointmentFieldsBody({this.brandName});
 
   @override
-  State<_AppointmentFieldsBody> createState() =>
-      _AppointmentFieldsBodyState();
+  State<_AppointmentFieldsBody> createState() => _AppointmentFieldsBodyState();
 }
 
 class _AppointmentFieldsBodyState extends State<_AppointmentFieldsBody> {
@@ -90,9 +89,7 @@ class _AppointmentFieldsBodyState extends State<_AppointmentFieldsBody> {
     return Scaffold(
       backgroundColor: AppTheme.surfaceVariant,
       appBar: MainAppBar(
-        title: widget.brandName != null
-            ? '${widget.brandName} — ${l10n.fieldsTitle}'
-            : l10n.fieldsTitle,
+        title: l10n.fieldsTitle,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(
@@ -149,8 +146,7 @@ class _AppointmentFieldsBodyState extends State<_AppointmentFieldsBody> {
             child: ListView.separated(
               padding: EdgeInsets.all(SizeTokens.paddingPage),
               itemCount: viewModel.fields.length,
-              separatorBuilder: (_, __) =>
-                  SizedBox(height: SizeTokens.spaceMD),
+              separatorBuilder: (_, __) => SizedBox(height: SizeTokens.spaceMD),
               itemBuilder: (_, index) => AppointmentFieldCard(
                 field: viewModel.fields[index],
                 l10n: l10n,
@@ -192,10 +188,7 @@ class _ErrorState extends StatelessWidget {
               ),
             ),
             SizedBox(height: SizeTokens.spaceLG),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(retryLabel),
-            ),
+            TextButton(onPressed: onRetry, child: Text(retryLabel)),
           ],
         ),
       ),

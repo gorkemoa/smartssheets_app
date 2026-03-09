@@ -23,8 +23,7 @@ class AppointmentStatusesView extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig.init(context);
     return ChangeNotifierProvider(
-      create: (_) =>
-          AppointmentStatusesViewModel(brandId: brandId)..init(),
+      create: (_) => AppointmentStatusesViewModel(brandId: brandId)..init(),
       child: _AppointmentStatusesBody(brandName: brandName),
     );
   }
@@ -40,8 +39,7 @@ class _AppointmentStatusesBody extends StatefulWidget {
       _AppointmentStatusesBodyState();
 }
 
-class _AppointmentStatusesBodyState
-    extends State<_AppointmentStatusesBody> {
+class _AppointmentStatusesBodyState extends State<_AppointmentStatusesBody> {
   Future<void> _openCreate(BuildContext context, AppStrings l10n) async {
     context.read<AppointmentStatusesViewModel>().clearSubmitError();
     final result = await AppointmentStatusFormBottomSheet.show(context);
@@ -92,9 +90,7 @@ class _AppointmentStatusesBodyState
     return Scaffold(
       backgroundColor: AppTheme.surfaceVariant,
       appBar: MainAppBar(
-        title: widget.brandName != null
-            ? '${widget.brandName} — ${l10n.statusesTitle}'
-            : l10n.statusesTitle,
+        title: l10n.statusesTitle,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(
@@ -151,8 +147,7 @@ class _AppointmentStatusesBodyState
             child: ListView.separated(
               padding: EdgeInsets.all(SizeTokens.paddingPage),
               itemCount: viewModel.statuses.length,
-              separatorBuilder: (_, __) =>
-                  SizedBox(height: SizeTokens.spaceMD),
+              separatorBuilder: (_, __) => SizedBox(height: SizeTokens.spaceMD),
               itemBuilder: (_, index) => AppointmentStatusCard(
                 status: viewModel.statuses[index],
                 l10n: l10n,
@@ -194,10 +189,7 @@ class _ErrorState extends StatelessWidget {
               ),
             ),
             SizedBox(height: SizeTokens.spaceLG),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(retryLabel),
-            ),
+            TextButton(onPressed: onRetry, child: Text(retryLabel)),
           ],
         ),
       ),

@@ -219,27 +219,8 @@ class _DashboardContentState extends State<_DashboardContent> {
           SizeTokens.spaceXXXL,
         ),
         children: [
-          // ── Brand Selector ──────────────────────────────────────────
-          _BrandSelectorBox(
-            brands: brands,
-            selectedIndex: safeIndex,
-            onSelected: widget.onBrandSelected,
-            onCreateBrand: () async {
-              final vm = context.read<HomeViewModel>();
-              vm.clearSubmitError();
-              final success = await BrandFormBottomSheet.show(context);
-              if (success == true) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.homeBrandCreateSuccess),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
-            },
-            createLabel: l10n.homeBrandCreateTitle,
-            selectLabel: l10n.homeBrandTitle,
-          ),
+          // ── Brand Header ───────────────────────────────────────────
+          _BrandHeader(name: brand.name),
           SizedBox(height: SizeTokens.spaceMD),
           // ── Upcoming Appointments Slider ────────────────────────────
           _UpcomingAppointmentsSlider(
@@ -351,306 +332,56 @@ class _NoBrandYetState extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Brand Selector Box — opens a bottom sheet
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Brand Header (Static) ───────────────────────────────────────────────
 
-class _BrandSelectorBox extends StatelessWidget {
-  final List<BrandModel> brands;
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
-  final VoidCallback onCreateBrand;
-  final String createLabel;
-  final String selectLabel;
+class _BrandHeader extends StatelessWidget {
+  final String? name;
 
-  const _BrandSelectorBox({
-    required this.brands,
-    required this.selectedIndex,
-    required this.onSelected,
-    required this.onCreateBrand,
-    required this.createLabel,
-    required this.selectLabel,
-  });
-
-  Future<void> _openSheet(BuildContext context) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) => _BrandPickerSheet(
-        brands: brands,
-        selectedIndex: selectedIndex,
-        canCreateBrand: brands.isEmpty,
-        onSelected: (index) {
-          Navigator.of(context).pop();
-          onSelected(index);
-        },
-        onCreateBrand: () {
-          Navigator.of(context).pop();
-          onCreateBrand();
-        },
-        createLabel: createLabel,
-      ),
-    );
-  }
+  const _BrandHeader({required this.name});
 
   @override
   Widget build(BuildContext context) {
-    final selectedName = brands[selectedIndex].name ?? '—';
-    return Material(
-      color: AppTheme.surface,
-      borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-      child: InkWell(
-        onTap: () => _openSheet(context),
-        borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-        child: Container(
-          height: SizeTokens.buttonHeight,
-          padding: EdgeInsets.symmetric(horizontal: SizeTokens.paddingMD),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-            border: Border.all(color: AppTheme.border),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.storefront_outlined,
-                size: SizeTokens.iconMD,
-                color: AppTheme.textSecondary,
-              ),
-              SizedBox(width: SizeTokens.spaceSM),
-              Expanded(
-                child: Text(
-                  selectedName,
-                  style: TextStyle(
-                    fontSize: SizeTokens.fontMD,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimary,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              Icon(
-                Icons.expand_more_rounded,
-                size: SizeTokens.iconMD,
-                color: AppTheme.textSecondary,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Brand Picker Bottom Sheet
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _BrandPickerSheet extends StatelessWidget {
-  final List<BrandModel> brands;
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
-  final VoidCallback onCreateBrand;
-  final String createLabel;
-  final bool canCreateBrand;
-
-  const _BrandPickerSheet({
-    required this.brands,
-    required this.selectedIndex,
-    required this.onSelected,
-    required this.onCreateBrand,
-    required this.createLabel,
-    required this.canCreateBrand,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    SizeConfig.init(context);
     return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeTokens.paddingMD,
+        vertical: SizeTokens.spaceSM,
+      ),
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(SizeTokens.radiusXL),
-        ),
+        borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+        border: Border.all(color: AppTheme.border.withValues(alpha: 0.5)),
       ),
-      padding: EdgeInsets.fromLTRB(
-        SizeTokens.paddingPage,
-        SizeTokens.spaceXL,
-        SizeTokens.paddingPage,
-        SizeTokens.spaceXXXL,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          // Handle
-          Center(
-            child: Container(
-              width: SizeConfig.w(40),
-              height: SizeConfig.h(4),
-              decoration: BoxDecoration(
-                color: AppTheme.border,
-                borderRadius: BorderRadius.circular(SizeTokens.radiusCircle),
-              ),
+          Container(
+            padding: EdgeInsets.all(SizeTokens.spaceXS),
+            decoration: BoxDecoration(
+              color: AppTheme.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+            ),
+            child: Icon(
+              Icons.storefront_outlined,
+              size: SizeTokens.iconMD,
+              color: AppTheme.primary,
             ),
           ),
-          SizedBox(height: SizeTokens.spaceXL),
-
-          // ── Create Brand button (only when user has no brand) ───────
-          if (canCreateBrand) ...[
-            Material(
-              color: AppTheme.primary,
-              borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-              child: InkWell(
-                onTap: onCreateBrand,
-                borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-                child: Container(
-                  width: double.infinity,
-                  height: SizeTokens.buttonHeight,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: SizeTokens.paddingMD,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_rounded,
-                        size: SizeTokens.iconMD,
-                        color: AppTheme.textOnPrimary,
-                      ),
-                      SizedBox(width: SizeTokens.spaceXS),
-                      Text(
-                        createLabel,
-                        style: TextStyle(
-                          fontSize: SizeTokens.fontMD,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textOnPrimary,
-                        ),
-                      ),
-                    ],
+          SizedBox(width: SizeTokens.spaceMD),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name ?? '—',
+                  style: TextStyle(
+                    fontSize: SizeTokens.fontLG,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary,
+                    letterSpacing: -0.3,
                   ),
                 ),
-              ),
+              ],
             ),
-            SizedBox(height: SizeTokens.spaceLG),
-          ],
-
-          // ── Brand list ──────────────────────────────────────────────
-          ...List.generate(brands.length, (index) {
-            final brand = brands[index];
-            final isSelected = index == selectedIndex;
-            final isActive = brand.subscriptionStatus == 'active';
-            return Padding(
-              padding: EdgeInsets.only(bottom: SizeTokens.spaceXS),
-              child: Material(
-                color: isSelected
-                    ? AppTheme.primary.withValues(alpha: 0.06)
-                    : AppTheme.surface,
-                borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
-                child: InkWell(
-                  onTap: () => onSelected(index),
-                  borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: SizeTokens.paddingMD,
-                      vertical: SizeTokens.spaceSM,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppTheme.primary.withValues(alpha: 0.4)
-                            : AppTheme.divider,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: SizeTokens.iconXL,
-                          height: SizeTokens.iconXL,
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? AppTheme.primary.withValues(alpha: 0.1)
-                                : AppTheme.surfaceVariant,
-                            borderRadius: BorderRadius.circular(
-                              SizeTokens.radiusSM,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.storefront_outlined,
-                            size: SizeTokens.iconMD,
-                            color: isSelected
-                                ? AppTheme.primary
-                                : AppTheme.textSecondary,
-                          ),
-                        ),
-                        SizedBox(width: SizeTokens.spaceSM),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                brand.name ?? '—',
-                                style: TextStyle(
-                                  fontSize: SizeTokens.fontMD,
-                                  fontWeight: FontWeight.w600,
-                                  color: isSelected
-                                      ? AppTheme.primary
-                                      : AppTheme.textPrimary,
-                                ),
-                              ),
-                              if (brand.currentPlan != null) ...[
-                                SizedBox(height: SizeTokens.spaceXXS),
-                                Text(
-                                  brand.currentPlan!.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: SizeTokens.fontXS,
-                                    color: AppTheme.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: SizeTokens.paddingXS,
-                            vertical: SizeTokens.spaceXXS,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isActive
-                                ? AppTheme.successLight
-                                : AppTheme.errorLight,
-                            borderRadius: BorderRadius.circular(
-                              SizeTokens.radiusCircle,
-                            ),
-                          ),
-                          child: Text(
-                            isActive ? 'Active' : 'Inactive',
-                            style: TextStyle(
-                              fontSize: SizeTokens.fontXS,
-                              fontWeight: FontWeight.w600,
-                              color: isActive
-                                  ? AppTheme.success
-                                  : AppTheme.error,
-                            ),
-                          ),
-                        ),
-                        if (isSelected) ...[
-                          SizedBox(width: SizeTokens.spaceXS),
-                          Icon(
-                            Icons.check_rounded,
-                            size: SizeTokens.iconMD,
-                            color: AppTheme.primary,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
+          ),
         ],
       ),
     );

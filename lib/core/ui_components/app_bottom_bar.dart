@@ -169,8 +169,7 @@ class _BarItem extends StatelessWidget {
             item.label,
             style: TextStyle(
               fontSize: SizeTokens.fontXS,
-              fontWeight:
-                  isActive ? FontWeight.w700 : FontWeight.w400,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
               color: color,
             ),
           ),

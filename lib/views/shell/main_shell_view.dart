@@ -19,22 +19,22 @@ class MainShellView extends StatefulWidget {
 }
 
 class _MainShellViewState extends State<MainShellView> {
-  // Active page index — center FAB (2) is not a page
-  // Mapping: 0=Home, 1=Appointments, [2=FAB], 3=Members, 4=Profile
+  // Active page index
+  // Mapping: 0=Home, [1=FAB], 2=Appointments, 3=Members, 4=Profile
   // Page stack indices: 0=Home, 1=Appointments, 2=Members, 3=Profile
   int _pageIndex = 0;
 
-  // Maps bar index → page index (excluding FAB at 2)
+  // Maps bar index → page index (excluding FAB at 1)
   static const Map<int, int> _barToPage = {
     0: 0, // Home
-    1: 1, // Appointments
+    2: 1, // Appointments
     3: 2, // Members
     4: 3, // Profile
   };
 
   void _onBarTap(BuildContext context, int barIndex) {
-    if (barIndex == 2) {
-      // Center FAB — Open Appointment Form
+    if (barIndex == 1) {
+      // Index 1 (Second Item) — Open Appointment Form
       final homeVm = Provider.of<HomeViewModel>(context, listen: false);
       final brandId = homeVm.selectedBrand?.id;
       final l10n = AppStrings.of(context);
@@ -65,13 +65,13 @@ class _MainShellViewState extends State<MainShellView> {
   int get _activeBarIndex {
     switch (_pageIndex) {
       case 0:
-        return 0;
+        return 0; // Home is at index 0
       case 1:
-        return 1;
+        return 2; // Appointments is at index 2
       case 2:
-        return 3;
+        return 3; // Members is at index 3
       case 3:
-        return 4;
+        return 4; // Profile is at index 4
       default:
         return 0;
     }
@@ -101,7 +101,8 @@ class _MainShellViewState extends State<MainShellView> {
       body: IndexedStack(index: _pageIndex, children: pages),
       bottomNavigationBar: AppBottomBar(
         currentIndex: _activeBarIndex,
-        centerIndex: 2,
+        centerIndex:
+            2, // The floating action button is now at index 2 (Appointments)
         onTap: (index) => _onBarTap(context, index),
         items: [
           AppBottomBarItem(
@@ -110,14 +111,15 @@ class _MainShellViewState extends State<MainShellView> {
             label: l10n.navHome,
           ),
           AppBottomBarItem(
-            activeIcon: Icons.calendar_month_rounded,
-            inactiveIcon: Icons.calendar_month_outlined,
-            label: l10n.navAppointments,
+            activeIcon: Icons.add_circle_rounded,
+            inactiveIcon: Icons.add_circle_outline_rounded,
+            label: l10n.appointmentFormCreateButton,
           ),
           AppBottomBarItem(
-            activeIcon: Icons.add_rounded,
-            inactiveIcon: Icons.add_rounded,
-            label: '',
+            activeIcon: Icons.calendar_month_rounded,
+            inactiveIcon: Icons.calendar_month_outlined,
+            label: l10n
+                .navAppointments, // Used if it wasn't FAB, but FAB ignores it
           ),
           AppBottomBarItem(
             activeIcon: Icons.people_rounded,

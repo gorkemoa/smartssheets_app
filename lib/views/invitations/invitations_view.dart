@@ -5,7 +5,10 @@ import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
 import '../../core/ui_components/main_app_bar.dart';
 import '../../l10n/strings.dart';
+import '../../viewmodels/appointments_view_model.dart';
+import '../../viewmodels/home_view_model.dart';
 import '../../viewmodels/invitations_view_model.dart';
+import '../appointments/appointment_form_view.dart';
 import 'widgets/invitation_card.dart';
 import 'widgets/invitation_form_bottom_sheet.dart';
 
@@ -136,7 +139,9 @@ class _InvitationsBodyState extends State<_InvitationsBody> {
     return Scaffold(
       backgroundColor: AppTheme.surfaceVariant,
       appBar: MainAppBar(
-        title: l10n.invitationsTitle,
+        title: widget.brandName != null
+            ? '${widget.brandName} — ${l10n.invitationsTitle}'
+            : l10n.invitationsTitle,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(
@@ -145,6 +150,40 @@ class _InvitationsBodyState extends State<_InvitationsBody> {
             color: AppTheme.textPrimary,
           ),
         ),
+        actions: [
+          Consumer<HomeViewModel>(
+            builder: (context, homeVm, _) => IconButton(
+              onPressed: () async {
+                final brand = homeVm.selectedBrand;
+                if (brand?.id == null) return;
+                final apptVm = AppointmentsViewModel(brandId: brand!.id!)
+                  ..init();
+                final result = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: apptVm,
+                      child: AppointmentFormView(brandId: brand.id!),
+                    ),
+                  ),
+                );
+                if (result == true && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.appointmentCreateSuccess),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              },
+              icon: Icon(
+                Icons.add_rounded,
+                size: SizeTokens.iconLG,
+                color: AppTheme.primary,
+              ),
+              tooltip: l10n.appointmentFormCreateTitle,
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(

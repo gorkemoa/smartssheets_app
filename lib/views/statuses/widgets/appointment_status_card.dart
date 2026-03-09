@@ -19,10 +19,7 @@ class AppointmentStatusCard extends StatelessWidget {
   Color _parsedColor() {
     try {
       final hex = (status.color ?? '#888888').replaceFirst('#', '');
-      final value = int.parse(
-        hex.length == 6 ? 'FF$hex' : hex,
-        radix: 16,
-      );
+      final value = int.parse(hex.length == 6 ? 'FF$hex' : hex, radix: 16);
       return Color(value);
     } catch (_) {
       return AppTheme.textSecondary;
@@ -67,143 +64,102 @@ class AppointmentStatusCard extends StatelessWidget {
     final brandColor = _parsedColor();
     final isActive = status.isActive ?? true;
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(SizeTokens.paddingXL),
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
-        border: Border.all(color: AppTheme.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header row ─────────────────────────────────────────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onEdit,
+        borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: SizeTokens.paddingMD,
+            vertical: SizeTokens.paddingSM,
+          ),
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+            border: Border.all(color: AppTheme.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Color swatch circle
-              Container(
-                width: SizeTokens.avatarMD,
-                height: SizeTokens.avatarMD,
-                decoration: BoxDecoration(
-                  color: brandColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppTheme.border,
-                    width: 2,
+              // ── Main Row ─────────────────────────────────────────────
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Color swatch circle
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: brandColor,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(width: SizeTokens.spaceMD),
-              // Name + sort order
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+                  SizedBox(width: SizeTokens.spaceSM),
+                  // Name
+                  Expanded(
+                    child: Text(
                       status.name ?? '—',
                       style: TextStyle(
-                        fontSize: SizeTokens.fontLG,
-                        fontWeight: FontWeight.w700,
+                        fontSize: SizeTokens.fontMD,
+                        fontWeight: FontWeight.w600,
                         color: AppTheme.textPrimary,
                       ),
                     ),
-                    SizedBox(height: SizeTokens.spaceXXS),
-                    Text(
-                      '#${status.sortOrder ?? '—'}',
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontXS,
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Active badge
-              _StatusBadge(
-                label: isActive ? l10n.membersStatusActive : l10n.membersStatusInactive,
-                color: isActive ? AppTheme.accent : AppTheme.error,
-                background: isActive
-                    ? AppTheme.accent.withValues(alpha: 0.1)
-                    : AppTheme.errorLight,
-              ),
-              if (onEdit != null) ...[
-                SizedBox(width: SizeTokens.spaceXS),
-                SizedBox(
-                  width: SizeTokens.iconXL,
-                  height: SizeTokens.iconXL,
-                  child: IconButton(
-                    onPressed: onEdit,
-                    padding: EdgeInsets.zero,
-                    icon: Icon(
-                      Icons.edit_outlined,
-                      size: SizeTokens.iconMD,
+                  ),
+                  SizedBox(width: SizeTokens.spaceSM),
+                  // Sort Order (Small badge)
+                  Text(
+                    '#${status.sortOrder ?? '—'}',
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontXS,
+                      fontWeight: FontWeight.w500,
                       color: AppTheme.textSecondary,
                     ),
                   ),
-                ),
-              ],
-            ],
-          ),
-          SizedBox(height: SizeTokens.spaceMD),
-          Divider(color: AppTheme.divider, height: SizeTokens.spaceXS),
-          SizedBox(height: SizeTokens.spaceSM),
-          // ── Badges row ─────────────────────────────────────────────
-          Wrap(
-            spacing: SizeTokens.spaceXS,
-            runSpacing: SizeTokens.spaceXS,
-            children: [
-              // Status type badge
-              _StatusBadge(
-                label: _statusTypeLabel(),
-                color: _statusTypeColor(),
-                background: _statusTypeBg(),
+                  SizedBox(width: SizeTokens.spaceSM),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: SizeTokens.iconMD,
+                    color: AppTheme.border,
+                  ),
+                ],
               ),
-              // Default badge
-              if (status.isDefault == true)
-                _StatusBadge(
-                  label: l10n.statusDefaultBadge,
-                  color: AppTheme.primary,
-                  background: AppTheme.primary.withValues(alpha: 0.1),
-                ),
-              // Hex color chip
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: SizeTokens.paddingSM,
-                  vertical: SizeTokens.spaceXXS,
-                ),
-                decoration: BoxDecoration(
-                  color: brandColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
-                  border: Border.all(color: brandColor.withValues(alpha: 0.4)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: SizeTokens.spaceXS,
-                      height: SizeTokens.spaceXS,
-                      decoration: BoxDecoration(
-                        color: brandColor,
-                        shape: BoxShape.circle,
-                      ),
+              SizedBox(height: SizeTokens.spaceXS),
+              // ── Badges row ─────────────────────────────────────────────
+              Wrap(
+                spacing: SizeTokens.spaceXS,
+                runSpacing: SizeTokens.spaceXXS,
+                children: [
+                  // Active/Inactive badge
+                  _StatusBadge(
+                    label: isActive
+                        ? l10n.membersStatusActive
+                        : l10n.membersStatusInactive,
+                    color: isActive ? AppTheme.accent : AppTheme.error,
+                    background: isActive
+                        ? AppTheme.accent.withValues(alpha: 0.1)
+                        : AppTheme.errorLight,
+                  ),
+                  // Status type badge
+                  _StatusBadge(
+                    label: _statusTypeLabel(),
+                    color: _statusTypeColor(),
+                    background: _statusTypeBg(),
+                  ),
+                  // Default badge
+                  if (status.isDefault == true)
+                    _StatusBadge(
+                      label: l10n.statusDefaultBadge,
+                      color: AppTheme.primary,
+                      background: AppTheme.primary.withValues(alpha: 0.1),
                     ),
-                    SizedBox(width: SizeTokens.spaceXXS),
-                    Text(
-                      status.color ?? '',
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontXS,
-                        fontWeight: FontWeight.w600,
-                        color: brandColor,
-                      ),
-                    ),
-                  ],
-                ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

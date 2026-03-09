@@ -14,6 +14,7 @@ import '../../viewmodels/appointments_view_model.dart';
 import '../../viewmodels/home_view_model.dart';
 import 'widgets/brand_form_bottom_sheet.dart';
 import 'widgets/dashboard_quick_action.dart';
+import '../appointments/appointment_form_view.dart';
 import '../appointments/appointments_view.dart';
 import '../appointments/widgets/appointment_card.dart';
 import '../brand_info/brand_info_view.dart';
@@ -96,6 +97,40 @@ class _HomeBodyState extends State<_HomeBody> {
                   ),
                 ),
                 titleSpacing: SizeTokens.paddingPage,
+                actions: [
+                  IconButton(
+                    onPressed: () async {
+                      final brand = viewModel.selectedBrand;
+                      if (brand?.id == null) return;
+                      final apptVm = AppointmentsViewModel(brandId: brand!.id!)
+                        ..init();
+                      final result = await Navigator.of(context).push<bool>(
+                        MaterialPageRoute(
+                          builder: (_) => ChangeNotifierProvider.value(
+                            value: apptVm,
+                            child: AppointmentFormView(brandId: brand.id!),
+                          ),
+                        ),
+                      );
+                      if (result == true && context.mounted) {
+                        viewModel.refresh();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l10n.appointmentCreateSuccess),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(
+                      Icons.add_rounded,
+                      size: SizeTokens.iconLG,
+                      color: AppTheme.primary,
+                    ),
+                    tooltip: l10n.appointmentFormCreateTitle,
+                  ),
+                  SizedBox(width: SizeTokens.spaceXS),
+                ],
                 bottom: PreferredSize(
                   preferredSize: Size.fromHeight(SizeConfig.h(1)),
                   child: Container(

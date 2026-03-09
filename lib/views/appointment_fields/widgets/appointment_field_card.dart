@@ -67,207 +67,194 @@ class AppointmentFieldCard extends StatelessWidget {
     final isRequired = field.required ?? false;
     final optionsCount = field.optionsJson?.length ?? 0;
     final hasValidations =
-        field.validationsJson?.min != null || field.validationsJson?.max != null;
+        field.validationsJson?.min != null ||
+        field.validationsJson?.max != null;
 
     return Opacity(
-      opacity: isActive ? 1.0 : 0.55,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(SizeTokens.paddingXL),
-        decoration: BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
-          border: Border.all(color: AppTheme.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Header row ───────────────────────────────────────────
-            Row(
+      opacity: isActive ? 1.0 : 0.6,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onEdit,
+          borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              horizontal: SizeTokens.paddingMD,
+              vertical: SizeTokens.paddingSM,
+            ),
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+              border: Border.all(color: AppTheme.border),
+            ),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // label
-                      Text(
-                        field.label ?? '—',
-                        style: TextStyle(
-                          fontSize: SizeTokens.fontLG,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textPrimary,
+                // ── Header Row ───────────────────────────────────────────
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                field.label ?? '—',
+                                style: TextStyle(
+                                  fontSize: SizeTokens.fontMD,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.textPrimary,
+                                ),
+                              ),
+                              if (isRequired) ...[
+                                SizedBox(width: SizeTokens.spaceXXS),
+                                Text(
+                                  '*',
+                                  style: TextStyle(
+                                    color: AppTheme.error,
+                                    fontSize: SizeTokens.fontMD,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          Text(
+                            field.key ?? '—',
+                            style: TextStyle(
+                              fontFamily: 'monospace',
+                              fontSize: SizeTokens.fontXS,
+                              color: AppTheme.textSecondary.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: SizeTokens.spaceSM),
+                    // Type Badge (small)
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: SizeTokens.spaceXS,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _typeBg(),
+                        borderRadius: BorderRadius.circular(
+                          SizeTokens.radiusXS,
                         ),
                       ),
-                      SizedBox(height: SizeTokens.spaceXXS),
-                      // key chip (monospace)
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: SizeTokens.spaceSM,
-                          vertical: 2,
+                      child: Text(
+                        _typeLabel(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: _typeColor(),
                         ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.surfaceVariant,
-                          borderRadius:
-                              BorderRadius.circular(SizeTokens.radiusSM),
-                          border: Border.all(color: AppTheme.border),
-                        ),
-                        child: Text(
-                          field.key ?? '—',
-                          style: const TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 11,
-                            color: Colors.blueGrey,
+                      ),
+                    ),
+                    SizedBox(width: SizeTokens.spaceXS),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      size: SizeTokens.iconMD,
+                      color: AppTheme.border,
+                    ),
+                  ],
+                ),
+
+                if ((field.helpText != null && field.helpText!.isNotEmpty) ||
+                    !isActive ||
+                    optionsCount > 0 ||
+                    hasValidations) ...[
+                  SizedBox(height: SizeTokens.spaceSM),
+                  // ── Badges & Info row ──────────────────────────────────────────
+                  Wrap(
+                    spacing: SizeTokens.spaceXS,
+                    runSpacing: SizeTokens.spaceXXS,
+                    children: [
+                      // Inactive badge
+                      if (!isActive)
+                        _SmallBadge(
+                          label: 'Pasif',
+                          color: AppTheme.textSecondary,
+                          background: AppTheme.textSecondary.withValues(
+                            alpha: 0.08,
                           ),
                         ),
-                      ),
+                      // Options count
+                      if ((field.type == 'select' ||
+                              field.type == 'checkbox') &&
+                          optionsCount > 0)
+                        _SmallBadge(
+                          label: '$optionsCount ${l10n.fieldOptionsTitle}',
+                          color: AppTheme.accent,
+                          background: AppTheme.accent.withValues(alpha: 0.08),
+                        ),
+                      // Validations
+                      if (field.type == 'number' && hasValidations)
+                        _SmallBadge(
+                          label:
+                              '${field.validationsJson?.min ?? '0'} - ${field.validationsJson?.max ?? '∞'}',
+                          color: AppTheme.primary,
+                          background: AppTheme.primary.withValues(alpha: 0.08),
+                        ),
                     ],
                   ),
-                ),
-                // edit button
-                IconButton(
-                  onPressed: onEdit,
-                  icon: Icon(
-                    Icons.edit_rounded,
-                    size: SizeTokens.iconMD,
-                    color: AppTheme.textSecondary,
-                  ),
-                  tooltip: l10n.fieldFormEditTitle,
-                ),
-              ],
-            ),
-
-            SizedBox(height: SizeTokens.spaceMD),
-
-            // ── Badges row ──────────────────────────────────────────
-            Wrap(
-              spacing: SizeTokens.spaceSM,
-              runSpacing: SizeTokens.spaceSM,
-              children: [
-                // type badge
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: SizeTokens.spaceSM,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _typeBg(),
-                    borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
-                  ),
-                  child: Text(
-                    _typeLabel(),
-                    style: TextStyle(
-                      fontSize: SizeTokens.fontXS,
-                      fontWeight: FontWeight.w600,
-                      color: _typeColor(),
-                    ),
-                  ),
-                ),
-                // required badge
-                if (isRequired)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: SizeTokens.spaceSM,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.error.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
-                    ),
-                    child: Text(
-                      l10n.fieldRequiredLabel,
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontXS,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.error,
-                      ),
-                    ),
-                  ),
-                // inactive badge
-                if (!isActive)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: SizeTokens.spaceSM,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.textSecondary.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
-                    ),
-                    child: Text(
-                      '● Pasif',
+                  if (field.helpText != null && field.helpText!.isNotEmpty) ...[
+                    SizedBox(height: SizeTokens.spaceXS),
+                    Text(
+                      field.helpText!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: SizeTokens.fontXS,
                         color: AppTheme.textSecondary,
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
-                  ),
-                // options count for select/checkbox
-                if ((field.type == 'select' || field.type == 'checkbox') &&
-                    optionsCount > 0)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: SizeTokens.spaceSM,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.accent.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
-                    ),
-                    child: Text(
-                      '$optionsCount ${l10n.fieldOptionsTitle}',
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontXS,
-                        color: AppTheme.accent,
-                      ),
-                    ),
-                  ),
-                // validations for number
-                if (field.type == 'number' && hasValidations)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: SizeTokens.spaceSM,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primary.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
-                    ),
-                    child: Text(
-                      '${l10n.fieldValidationMinLabel}: ${field.validationsJson?.min ?? '—'}'
-                      '  ${l10n.fieldValidationMaxLabel}: ${field.validationsJson?.max ?? '—'}',
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontXS,
-                        color: AppTheme.primary,
-                      ),
-                    ),
-                  ),
+                  ],
+                ],
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-            // ── Help text ────────────────────────────────────────────
-            if (field.helpText != null && field.helpText!.isNotEmpty) ...[
-              SizedBox(height: SizeTokens.spaceMD),
-              Text(
-                field.helpText!,
-                style: TextStyle(
-                  fontSize: SizeTokens.fontSM,
-                  color: AppTheme.textSecondary,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
+class _SmallBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+  final Color background;
 
-            // ── Sort order ───────────────────────────────────────────
-            SizedBox(height: SizeTokens.spaceSM),
-            Text(
-              '${l10n.fieldSortOrderLabel}: ${field.sortOrder ?? '—'}',
-              style: TextStyle(
-                fontSize: SizeTokens.fontXS,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-          ],
+  const _SmallBadge({
+    required this.label,
+    required this.color,
+    required this.background,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeTokens.spaceXS,
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(SizeTokens.radiusXS),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          color: color,
         ),
       ),
     );

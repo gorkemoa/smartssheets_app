@@ -51,103 +51,102 @@ class _MemberCardState extends State<MemberCard> {
     final perms = widget.member.permissionsJson;
     final roleColor = _roleColor();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: widget.onEdit,
         borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-        border: Border(
-          left: BorderSide(color: roleColor, width: SizeTokens.spaceXXS),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primary.withValues(alpha: 0.05),
-            blurRadius: SizeTokens.spaceXS,
-            offset: const Offset(0, 2),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+            border: Border(
+              left: BorderSide(color: roleColor, width: 3),
+              top: BorderSide(color: AppTheme.border),
+              right: BorderSide(color: AppTheme.border),
+              bottom: BorderSide(color: AppTheme.border),
+            ),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: SizeTokens.paddingMD,
-          vertical: SizeTokens.paddingSM,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Header row ────────────────────────────────────────
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: SizeTokens.paddingMD,
+              vertical: SizeTokens.paddingSM,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Status dot
-                Container(
-                  width: SizeTokens.spaceXXS * 1.5,
-                  height: SizeTokens.spaceXXS * 1.5,
-                  decoration: BoxDecoration(
-                    color: isActive ? AppTheme.success : AppTheme.textHint,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                SizedBox(width: SizeTokens.spaceXS),
-                // Name
-                Expanded(
-                  child: Text(
-                    widget.member.user?.name ?? '—',
-                    style: TextStyle(
-                      fontSize: SizeTokens.fontMD,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
+                // ── Header row ────────────────────────────────────────
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Status dot
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: isActive ? AppTheme.success : AppTheme.textHint,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                SizedBox(width: SizeTokens.spaceXS),
-                // Role chip
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: SizeTokens.paddingSM,
-                    vertical: SizeTokens.spaceXXS,
-                  ),
-                  decoration: BoxDecoration(
-                    color: roleColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(
-                      SizeTokens.radiusCircle,
+                    SizedBox(width: SizeTokens.spaceSM),
+                    // Name
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.member.user?.name ?? '—',
+                            style: TextStyle(
+                              fontSize: SizeTokens.fontMD,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textPrimary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            widget.member.user?.email ?? '—',
+                            style: TextStyle(
+                              fontSize: SizeTokens.fontXS,
+                              color: AppTheme.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    _roleLabel(),
-                    style: TextStyle(
-                      fontSize: SizeTokens.fontXS,
-                      fontWeight: FontWeight.w600,
-                      color: roleColor,
+                    SizedBox(width: SizeTokens.spaceXS),
+                    // Role chip
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: SizeTokens.paddingSM,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: roleColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(
+                          SizeTokens.radiusSM,
+                        ),
+                      ),
+                      child: Text(
+                        _roleLabel(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: roleColor,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                SizedBox(width: SizeTokens.spaceXS),
-                // Edit button
-                if (widget.onEdit != null)
-                  GestureDetector(
-                    onTap: widget.onEdit,
-                    child: Icon(
-                      Icons.edit_outlined,
+                    SizedBox(width: SizeTokens.spaceXS),
+                    Icon(
+                      Icons.chevron_right_rounded,
                       size: SizeTokens.iconMD,
-                      color: AppTheme.textHint,
+                      color: AppTheme.border,
                     ),
-                  ),
-              ],
-            ),
-            SizedBox(height: SizeTokens.spaceXXS),
-            // Email
-            Text(
-              widget.member.user?.email ?? '—',
-              style: TextStyle(
-                fontSize: SizeTokens.fontXS,
-                color: AppTheme.textSecondary,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            // ── Permissions section (Accordion) ───────────────────
+                  ],
+                ),
+                // ── Permissions section (Accordion) ───────────────────
             if (perms != null) ...[
               SizedBox(height: SizeTokens.spaceMD),
               Divider(color: AppTheme.divider, height: SizeTokens.spaceXS),
@@ -223,6 +222,7 @@ class _MemberCardState extends State<MemberCard> {
           ],
         ),
       ),
+    ),
     );
   }
 }

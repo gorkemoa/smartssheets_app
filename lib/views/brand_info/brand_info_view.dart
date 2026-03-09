@@ -11,11 +11,7 @@ class BrandInfoView extends StatelessWidget {
   final int brandId;
   final String? brandName;
 
-  const BrandInfoView({
-    super.key,
-    required this.brandId,
-    this.brandName,
-  });
+  const BrandInfoView({super.key, required this.brandId, this.brandName});
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +26,7 @@ class BrandInfoView extends StatelessWidget {
         elevation: 0,
         titleSpacing: SizeTokens.paddingPage,
         title: Text(
-          brandName != null
-              ? '${l10n.brandInfoTitle} — $brandName'
-              : l10n.brandInfoTitle,
+          l10n.brandInfoTitle,
           style: TextStyle(
             fontSize: SizeTokens.fontXL,
             fontWeight: FontWeight.w700,
@@ -59,10 +53,8 @@ class BrandInfoView extends StatelessWidget {
             iconBackground: AppTheme.primary.withValues(alpha: 0.08),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => MembersView(
-                  brandId: brandId,
-                  brandName: brandName,
-                ),
+                builder: (_) =>
+                    MembersView(brandId: brandId, brandName: brandName),
               ),
             ),
           ),
@@ -143,11 +135,7 @@ class _BrandInfoTile extends StatelessWidget {
                   color: iconBackground,
                   borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
                 ),
-                child: Icon(
-                  icon,
-                  size: SizeTokens.iconMD,
-                  color: iconColor,
-                ),
+                child: Icon(icon, size: SizeTokens.iconMD, color: iconColor),
               ),
               SizedBox(width: SizeTokens.spaceSM),
               Expanded(

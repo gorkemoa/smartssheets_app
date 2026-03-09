@@ -4,7 +4,10 @@ import '../../app/app_theme.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
 import '../../l10n/strings.dart';
+import '../../viewmodels/appointments_view_model.dart';
+import '../../viewmodels/home_view_model.dart';
 import '../../viewmodels/profile_view_model.dart';
+import '../appointments/appointment_form_view.dart';
 import '../login/login_view.dart';
 import 'widgets/profile_membership_item.dart';
 import 'widgets/profile_menu_item.dart';
@@ -56,6 +59,35 @@ class _ProfileBodyState extends State<_ProfileBody> {
 
     return Scaffold(
       backgroundColor: AppTheme.surfaceVariant,
+      floatingActionButton: Consumer<HomeViewModel>(
+        builder: (context, homeVm, _) => FloatingActionButton(
+          onPressed: () async {
+            final brand = homeVm.selectedBrand;
+            if (brand?.id == null) return;
+            final apptVm = AppointmentsViewModel(brandId: brand!.id!)..init();
+            final result = await Navigator.of(context).push<bool>(
+              MaterialPageRoute(
+                builder: (_) => ChangeNotifierProvider.value(
+                  value: apptVm,
+                  child: AppointmentFormView(brandId: brand.id!),
+                ),
+              ),
+            );
+            if (result == true && context.mounted) {
+              final l10n = AppStrings.of(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(l10n.appointmentCreateSuccess),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          },
+          backgroundColor: AppTheme.primary,
+          foregroundColor: AppTheme.textOnPrimary,
+          child: Icon(Icons.add_rounded, size: SizeTokens.iconLG),
+        ),
+      ),
       body: Consumer<ProfileViewModel>(
         builder: (context, viewModel, _) {
           return NestedScrollView(
@@ -95,18 +127,18 @@ class _ProfileBodyState extends State<_ProfileBody> {
             body: viewModel.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : viewModel.errorMessage != null
-                    ? _ErrorState(
-                        message: viewModel.errorMessage!,
-                        retryLabel: l10n.profileRetry,
-                        onRetry: () => viewModel.onRetry(),
-                      )
-                    : viewModel.meResponse != null
-                        ? _ProfileContent(
-                            viewModel: viewModel,
-                            l10n: l10n,
-                            onLogout: () => _onLogout(viewModel),
-                          )
-                        : const SizedBox.shrink(),
+                ? _ErrorState(
+                    message: viewModel.errorMessage!,
+                    retryLabel: l10n.profileRetry,
+                    onRetry: () => viewModel.onRetry(),
+                  )
+                : viewModel.meResponse != null
+                ? _ProfileContent(
+                    viewModel: viewModel,
+                    l10n: l10n,
+                    onLogout: () => _onLogout(viewModel),
+                  )
+                : const SizedBox.shrink(),
           );
         },
       ),
@@ -173,10 +205,7 @@ class _MembershipsSection extends StatefulWidget {
   final ProfileViewModel viewModel;
   final AppStrings l10n;
 
-  const _MembershipsSection({
-    required this.viewModel,
-    required this.l10n,
-  });
+  const _MembershipsSection({required this.viewModel, required this.l10n});
 
   @override
   State<_MembershipsSection> createState() => _MembershipsSectionState();
@@ -256,8 +285,9 @@ class _MembershipsSectionState extends State<_MembershipsSection> {
                         ),
                         decoration: BoxDecoration(
                           color: AppTheme.primary.withValues(alpha: 0.1),
-                          borderRadius:
-                              BorderRadius.circular(SizeTokens.radiusXS),
+                          borderRadius: BorderRadius.circular(
+                            SizeTokens.radiusXS,
+                          ),
                         ),
                         child: Text(
                           '${memberships.length}',
@@ -273,8 +303,8 @@ class _MembershipsSectionState extends State<_MembershipsSection> {
                       memberships.isEmpty
                           ? Icons.chevron_right_rounded
                           : _expanded
-                              ? Icons.keyboard_arrow_up_rounded
-                              : Icons.keyboard_arrow_down_rounded,
+                          ? Icons.keyboard_arrow_up_rounded
+                          : Icons.keyboard_arrow_down_rounded,
                       size: SizeTokens.iconMD,
                       color: AppTheme.textHint,
                     ),

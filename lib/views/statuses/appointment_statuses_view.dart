@@ -6,6 +6,9 @@ import '../../core/responsive/size_tokens.dart';
 import '../../core/ui_components/main_app_bar.dart';
 import '../../l10n/strings.dart';
 import '../../viewmodels/appointment_statuses_view_model.dart';
+import '../../viewmodels/appointments_view_model.dart';
+import '../../viewmodels/home_view_model.dart';
+import '../appointments/appointment_form_view.dart';
 import 'widgets/appointment_status_card.dart';
 import 'widgets/appointment_status_form_bottom_sheet.dart';
 
@@ -100,16 +103,47 @@ class _AppointmentStatusesBodyState extends State<_AppointmentStatusesBody> {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () => _openCreate(context, l10n),
-            icon: Icon(
-              Icons.add_rounded,
-              size: SizeTokens.iconLG,
-              color: AppTheme.primary,
+          Consumer<HomeViewModel>(
+            builder: (context, homeVm, _) => IconButton(
+              onPressed: () async {
+                final brand = homeVm.selectedBrand;
+                if (brand?.id == null) return;
+                final apptVm = AppointmentsViewModel(brandId: brand!.id!)
+                  ..init();
+                final result = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: apptVm,
+                      child: AppointmentFormView(brandId: brand.id!),
+                    ),
+                  ),
+                );
+                if (result == true && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.appointmentCreateSuccess),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              },
+              icon: Icon(
+                Icons.add_rounded,
+                size: SizeTokens.iconLG,
+                color: AppTheme.primary,
+              ),
+              tooltip: l10n.appointmentFormCreateTitle,
             ),
-            tooltip: l10n.statusFormCreateTitle,
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _openCreate(context, l10n),
+        backgroundColor: AppTheme.primary,
+        foregroundColor: AppTheme.textOnPrimary,
+        tooltip: l10n.statusFormCreateTitle,
+        icon: Icon(Icons.add_rounded, size: SizeTokens.iconLG),
+        label: Text(l10n.statusFormCreateTitle),
       ),
       body: Consumer<AppointmentStatusesViewModel>(
         builder: (context, viewModel, _) {

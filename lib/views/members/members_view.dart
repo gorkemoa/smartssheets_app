@@ -62,10 +62,7 @@ class _MembersBody extends StatefulWidget {
 }
 
 class _MembersBodyState extends State<_MembersBody> {
-  Future<void> _openCreateMember(
-    BuildContext context,
-    AppStrings l10n,
-  ) async {
+  Future<void> _openCreateMember(BuildContext context, AppStrings l10n) async {
     context.read<MembersViewModel>().clearSubmitError();
     final result = await MemberFormBottomSheet.show(context);
     if (result == MemberFormResult.created && mounted) {
@@ -112,14 +109,16 @@ class _MembersBodyState extends State<_MembersBody> {
       backgroundColor: AppTheme.surfaceVariant,
       appBar: MainAppBar(
         title: widget.brandName ?? l10n.membersTitle,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            size: SizeTokens.iconMD,
-            color: AppTheme.textPrimary,
-          ),
-        ),
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: Icon(
+                  Icons.arrow_back_ios_rounded,
+                  size: SizeTokens.iconMD,
+                  color: AppTheme.textPrimary,
+                ),
+              )
+            : null,
         actions: const [],
       ),
       body: Consumer<MembersViewModel>(
@@ -193,8 +192,9 @@ class _MembersBodyState extends State<_MembersBody> {
                           height: SizeTokens.spaceMD,
                           decoration: BoxDecoration(
                             color: AppTheme.primary,
-                            borderRadius:
-                                BorderRadius.circular(SizeTokens.radiusCircle),
+                            borderRadius: BorderRadius.circular(
+                              SizeTokens.radiusCircle,
+                            ),
                           ),
                         ),
                         SizedBox(width: SizeTokens.spaceXS),
@@ -234,7 +234,9 @@ class _MembersBodyState extends State<_MembersBody> {
                             ),
                             decoration: BoxDecoration(
                               color: AppTheme.surface,
-                              borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
+                              borderRadius: BorderRadius.circular(
+                                SizeTokens.radiusSM,
+                              ),
                               border: Border.all(color: AppTheme.border),
                             ),
                             child: Row(
@@ -269,7 +271,9 @@ class _MembersBodyState extends State<_MembersBody> {
                             ),
                             decoration: BoxDecoration(
                               color: AppTheme.primary,
-                              borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
+                              borderRadius: BorderRadius.circular(
+                                SizeTokens.radiusSM,
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -307,8 +311,7 @@ class _MembersBodyState extends State<_MembersBody> {
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (_, index) => Padding(
-                        padding:
-                            EdgeInsets.only(bottom: SizeTokens.spaceMD),
+                        padding: EdgeInsets.only(bottom: SizeTokens.spaceMD),
                         child: MemberCard(
                           member: viewModel.members[index],
                           l10n: l10n,
@@ -381,11 +384,11 @@ class _ErrorState extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primary,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(SizeTokens.radiusLG),
+                    borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
                   ),
                   padding: EdgeInsets.symmetric(
-                      horizontal: SizeTokens.paddingXL),
+                    horizontal: SizeTokens.paddingXL,
+                  ),
                 ),
                 child: Text(
                   retryLabel,
@@ -403,4 +406,3 @@ class _ErrorState extends StatelessWidget {
     );
   }
 }
-

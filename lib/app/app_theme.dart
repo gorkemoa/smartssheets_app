@@ -31,7 +31,7 @@ class AppTheme {
   static const Color border = Color(0xFFD8DCE8);
   static const Color borderFocused = Color(0xFF10172F);
 
-  static const Color inputFill = Color(0xFFF4F5F8);
+  static const Color inputFill = Color(0xFFFFFFFF);
 
   // --- Text Styles ---
   static const TextStyle displayLarge = TextStyle(
@@ -114,7 +114,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: inputFill,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: border),
@@ -144,7 +147,9 @@ class AppTheme {
           backgroundColor: primary,
           foregroundColor: textOnPrimary,
           minimumSize: const Size(double.infinity, 50),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           textStyle: labelLarge,
           elevation: 0,
         ),

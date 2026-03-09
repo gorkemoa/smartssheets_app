@@ -96,6 +96,9 @@ class AppStrings {
       _t('homePermManageAppointmentFields');
   String get homeMembershipsTitle => _t('homeMembershipsTitle');
   String get homeNoMemberships => _t('homeNoMemberships');
+  String get homeNoBrandTitle => _t('homeNoBrandTitle');
+  String get homeNoBrandSubtitle => _t('homeNoBrandSubtitle');
+  String get homeNoBrandButton => _t('homeNoBrandButton');
   String get homeErrorTitle => _t('homeErrorTitle');
   String get homeDashboardQuickActions => _t('homeDashboardQuickActions');
   String get homeQuickAppointments => _t('homeQuickAppointments');
@@ -199,7 +202,8 @@ class AppStrings {
   String get membersPermChangeStatus => _t('membersPermChangeStatus');
   String get membersPermManageMembers => _t('membersPermManageMembers');
   String get membersPermManageStatuses => _t('membersPermManageStatuses');
-  String get membersPermManageAppointmentFields => _t('membersPermManageAppointmentFields');
+  String get membersPermManageAppointmentFields =>
+      _t('membersPermManageAppointmentFields');
   // Create / Edit member form
   String get memberFormCreateTitle => _t('memberFormCreateTitle');
   String get memberFormEditTitle => _t('memberFormEditTitle');
@@ -216,14 +220,16 @@ class AppStrings {
   String get memberFormStatusActive => _t('memberFormStatusActive');
   String get memberFormStatusInactive => _t('memberFormStatusInactive');
   String get memberFormPermissionsTitle => _t('memberFormPermissionsTitle');
-  String get memberFormRolePermissionsTitle => _t('memberFormRolePermissionsTitle');
+  String get memberFormRolePermissionsTitle =>
+      _t('memberFormRolePermissionsTitle');
   String get memberFormNextButton => _t('memberFormNextButton');
   String get memberFormBackButton => _t('memberFormBackButton');
   String get memberFormSaveButton => _t('memberFormSaveButton');
   String get memberFormCreateButton => _t('memberFormCreateButton');
   String get memberFormDeleteButton => _t('memberFormDeleteButton');
   String get memberFormDeleteConfirmTitle => _t('memberFormDeleteConfirmTitle');
-  String get memberFormDeleteConfirmMessage => _t('memberFormDeleteConfirmMessage');
+  String get memberFormDeleteConfirmMessage =>
+      _t('memberFormDeleteConfirmMessage');
   String get memberFormDeleteConfirm => _t('memberFormDeleteConfirm');
   String get memberFormDeleteCancel => _t('memberFormDeleteCancel');
   String get memberCreateSuccess => _t('memberCreateSuccess');
@@ -247,7 +253,8 @@ class AppStrings {
   String get invitationResendButton => _t('invitationResendButton');
   String get invitationDeleteButton => _t('invitationDeleteButton');
   String get invitationDeleteConfirmTitle => _t('invitationDeleteConfirmTitle');
-  String get invitationDeleteConfirmMessage => _t('invitationDeleteConfirmMessage');
+  String get invitationDeleteConfirmMessage =>
+      _t('invitationDeleteConfirmMessage');
   String get invitationDeleteConfirm => _t('invitationDeleteConfirm');
   String get invitationDeleteCancel => _t('invitationDeleteCancel');
   String get invitationCreateSuccess => _t('invitationCreateSuccess');
@@ -352,11 +359,15 @@ class AppStrings {
   String get appointmentDetailTitle => _t('appointmentDetailTitle');
   String get appointmentDetailNotes => _t('appointmentDetailNotes');
   String get appointmentDetailResultNotes => _t('appointmentDetailResultNotes');
-  String get appointmentDetailResultNotesEdit => _t('appointmentDetailResultNotesEdit');
-  String get appointmentDetailResultNotesEmpty => _t('appointmentDetailResultNotesEmpty');
-  String get appointmentResultNotesSuccess => _t('appointmentResultNotesSuccess');
+  String get appointmentDetailResultNotesEdit =>
+      _t('appointmentDetailResultNotesEdit');
+  String get appointmentDetailResultNotesEmpty =>
+      _t('appointmentDetailResultNotesEmpty');
+  String get appointmentResultNotesSuccess =>
+      _t('appointmentResultNotesSuccess');
   String get appointmentDetailAssignees => _t('appointmentDetailAssignees');
-  String get appointmentDetailCustomFields => _t('appointmentDetailCustomFields');
+  String get appointmentDetailCustomFields =>
+      _t('appointmentDetailCustomFields');
   String get appointmentDetailCompletedAt => _t('appointmentDetailCompletedAt');
   String get appointmentDetailEdit => _t('appointmentDetailEdit');
   // Snackbars
@@ -368,15 +379,23 @@ class AppStrings {
   String get appointmentResultFilesTitle => _t('appointmentResultFilesTitle');
   String get appointmentResultFilesEmpty => _t('appointmentResultFilesEmpty');
   String get appointmentResultFilesUpload => _t('appointmentResultFilesUpload');
-  String get appointmentResultFilesDownload => _t('appointmentResultFilesDownload');
+  String get appointmentResultFilesDownload =>
+      _t('appointmentResultFilesDownload');
   String get appointmentResultFilesDelete => _t('appointmentResultFilesDelete');
-  String get appointmentResultFilesDeleteConfirmTitle => _t('appointmentResultFilesDeleteConfirmTitle');
-  String get appointmentResultFilesDeleteConfirmMessage => _t('appointmentResultFilesDeleteConfirmMessage');
-  String get appointmentResultFilesDeleteConfirmCancel => _t('appointmentResultFilesDeleteConfirmCancel');
-  String get appointmentResultFilesDeleteConfirmAction => _t('appointmentResultFilesDeleteConfirmAction');
-  String get appointmentResultFilesDeleteSuccess => _t('appointmentResultFilesDeleteSuccess');
-  String get appointmentResultFilesUploadSuccess => _t('appointmentResultFilesUploadSuccess');
-  String get appointmentResultFilesDownloadError => _t('appointmentResultFilesDownloadError');
+  String get appointmentResultFilesDeleteConfirmTitle =>
+      _t('appointmentResultFilesDeleteConfirmTitle');
+  String get appointmentResultFilesDeleteConfirmMessage =>
+      _t('appointmentResultFilesDeleteConfirmMessage');
+  String get appointmentResultFilesDeleteConfirmCancel =>
+      _t('appointmentResultFilesDeleteConfirmCancel');
+  String get appointmentResultFilesDeleteConfirmAction =>
+      _t('appointmentResultFilesDeleteConfirmAction');
+  String get appointmentResultFilesDeleteSuccess =>
+      _t('appointmentResultFilesDeleteSuccess');
+  String get appointmentResultFilesUploadSuccess =>
+      _t('appointmentResultFilesUploadSuccess');
+  String get appointmentResultFilesDownloadError =>
+      _t('appointmentResultFilesDownloadError');
   // PDF Viewer
   String get pdfViewerTitle => _t('pdfViewerTitle');
   String get pdfViewerLoading => _t('pdfViewerLoading');
@@ -529,10 +548,7 @@ class AppStrings {
     },
 
     // Home
-    'homeGreeting': {
-      'tr': 'Merhaba, {name}!',
-      'en': 'Hello, {name}!',
-    },
+    'homeGreeting': {'tr': 'Merhaba, {name}!', 'en': 'Hello, {name}!'},
     'homeBrandTitle': {'tr': 'Markanız', 'en': 'Your Brand'},
     'homePlanLabel': {'tr': 'Plan', 'en': 'Plan'},
     'homeSubscriptionStatusLabel': {
@@ -568,17 +584,20 @@ class AppStrings {
       'tr': 'Henüz bir üyeliğiniz yok.',
       'en': 'You have no memberships yet.',
     },
-    'homeErrorTitle': {
-      'tr': 'Bir hata oluştu',
-      'en': 'An error occurred',
+    'homeNoBrandTitle': {
+      'tr': 'Henüz bir markanız yok',
+      'en': 'You don\'t have a brand yet',
     },
+    'homeNoBrandSubtitle': {
+      'tr': 'Başlamak için ilk markanızı oluşturun.',
+      'en': 'Create your first brand to get started.',
+    },
+    'homeNoBrandButton': {'tr': 'Marka Oluştur', 'en': 'Create Brand'},
+    'homeErrorTitle': {'tr': 'Bir hata oluştu', 'en': 'An error occurred'},
 
     // Home Stats
     'homeStatsTitle': {'tr': 'İstatistikler', 'en': 'Statistics'},
-    'homeStatsTotalLabel': {
-      'tr': 'Toplam Randevu',
-      'en': 'Total Appointments',
-    },
+    'homeStatsTotalLabel': {'tr': 'Toplam Randevu', 'en': 'Total Appointments'},
     'homeStatsThisMonthLabel': {'tr': 'Bu Ay', 'en': 'This Month'},
     'homeStatsActiveLabel': {'tr': 'Aktif', 'en': 'Active'},
     'homeStatsInvalidLabel': {'tr': 'İptal', 'en': 'Canceled'},
@@ -587,10 +606,7 @@ class AppStrings {
       'tr': 'Aylık Randevu',
       'en': 'Monthly Appointments',
     },
-    'homeStatsByStatusTitle': {
-      'tr': 'Durum Dağılımı',
-      'en': 'By Status',
-    },
+    'homeStatsByStatusTitle': {'tr': 'Durum Dağılımı', 'en': 'By Status'},
     'homeUpcomingTitle': {
       'tr': 'Yaklaşan Randevular',
       'en': 'Upcoming Appointments',
@@ -603,80 +619,29 @@ class AppStrings {
       'tr': 'Hızlı İşlemler',
       'en': 'Quick Actions',
     },
-    'homeQuickAppointments': {
-      'tr': 'Randevular',
-      'en': 'Appointments',
-    },
-    'homeQuickBrandInfo': {
-      'tr': 'Marka Bilgisi',
-      'en': 'Brand Info',
-    },
-    'homeQuickMembers': {
-      'tr': 'Üyeler',
-      'en': 'Members',
-    },
-    'homeQuickStatuses': {
-      'tr': 'Durumlar',
-      'en': 'Statuses',
-    },
-    'homeQuickFields': {
-      'tr': 'Alanlar',
-      'en': 'Fields',
-    },
+    'homeQuickAppointments': {'tr': 'Randevular', 'en': 'Appointments'},
+    'homeQuickBrandInfo': {'tr': 'Marka Bilgisi', 'en': 'Brand Info'},
+    'homeQuickMembers': {'tr': 'Üyeler', 'en': 'Members'},
+    'homeQuickStatuses': {'tr': 'Durumlar', 'en': 'Statuses'},
+    'homeQuickFields': {'tr': 'Alanlar', 'en': 'Fields'},
     // Billing
-    'homeBillingTitle': {
-      'tr': 'Paket Bilgisi',
-      'en': 'Subscription',
-    },
-    'homeBillingStatusLabel': {
-      'tr': 'Durum',
-      'en': 'Status',
-    },
-    'homeBillingPlanLabel': {
-      'tr': 'Plan',
-      'en': 'Plan',
-    },
-    'homeBillingExpiresLabel': {
-      'tr': 'Bitiş Tarihi',
-      'en': 'Expires',
-    },
-    'homeBillingTrialLabel': {
-      'tr': 'Deneme Sonu',
-      'en': 'Trial Ends',
-    },
-    'homeBillingLockedLabel': {
-      'tr': 'Hesap Kilitli',
-      'en': 'Account Locked',
-    },
-    'homeBillingMemberLimitLabel': {
-      'tr': 'Üye Limiti',
-      'en': 'Member Limit',
-    },
-    'homeBillingPriceLabel': {
-      'tr': 'Fiyat',
-      'en': 'Price',
-    },
+    'homeBillingTitle': {'tr': 'Paket Bilgisi', 'en': 'Subscription'},
+    'homeBillingStatusLabel': {'tr': 'Durum', 'en': 'Status'},
+    'homeBillingPlanLabel': {'tr': 'Plan', 'en': 'Plan'},
+    'homeBillingExpiresLabel': {'tr': 'Bitiş Tarihi', 'en': 'Expires'},
+    'homeBillingTrialLabel': {'tr': 'Deneme Sonu', 'en': 'Trial Ends'},
+    'homeBillingLockedLabel': {'tr': 'Hesap Kilitli', 'en': 'Account Locked'},
+    'homeBillingMemberLimitLabel': {'tr': 'Üye Limiti', 'en': 'Member Limit'},
+    'homeBillingPriceLabel': {'tr': 'Fiyat', 'en': 'Price'},
     // Brand Info page
-    'brandInfoTitle': {
-      'tr': 'Marka Bilgisi',
-      'en': 'Brand Info',
-    },
-    'brandInfoMembers': {
-      'tr': 'Üyeler',
-      'en': 'Members',
-    },
+    'brandInfoTitle': {'tr': 'Marka Bilgisi', 'en': 'Brand Info'},
+    'brandInfoMembers': {'tr': 'Üyeler', 'en': 'Members'},
     'brandInfoStatuses': {
       'tr': 'Randevu Durumları',
       'en': 'Appointment Statuses',
     },
-    'brandInfoFields': {
-      'tr': 'Randevu Alanları',
-      'en': 'Appointment Fields',
-    },
-    'seeAll': {
-      'tr': 'Tümünü Gör',
-      'en': 'See All',
-    },
+    'brandInfoFields': {'tr': 'Randevu Alanları', 'en': 'Appointment Fields'},
+    'seeAll': {'tr': 'Tümünü Gör', 'en': 'See All'},
 
     // Navigation
     'navHome': {'tr': 'Anasayfa', 'en': 'Home'},
@@ -699,7 +664,10 @@ class AppStrings {
       'en': 'You have no memberships yet.',
     },
     'profileSectionAccountHelp': {'tr': 'Hesap', 'en': 'Account'},
-    'profileUserInformation': {'tr': 'Kullanıcı Bilgileri', 'en': 'User Information'},
+    'profileUserInformation': {
+      'tr': 'Kullanıcı Bilgileri',
+      'en': 'User Information',
+    },
     'profileChangePassword': {'tr': 'Şifre Değiştir', 'en': 'Change Password'},
 
     'profileSubscriptionActive': {'tr': 'Aktif', 'en': 'Active'},
@@ -728,10 +696,7 @@ class AppStrings {
     'homeBrandCreateTitle': {'tr': 'Marka Oluştur', 'en': 'Create Brand'},
     'homeBrandEditTitle': {'tr': 'Markayı Düzenle', 'en': 'Edit Brand'},
     'homeBrandNameLabel': {'tr': 'Marka Adı', 'en': 'Brand Name'},
-    'homeBrandNameHint': {
-      'tr': 'Marka adını girin',
-      'en': 'Enter brand name',
-    },
+    'homeBrandNameHint': {'tr': 'Marka adını girin', 'en': 'Enter brand name'},
     'homeBrandTimezoneLabel': {'tr': 'Zaman Dilimi', 'en': 'Timezone'},
     'homeBrandTimezoneHint': {
       'tr': 'Örn: Europe/Istanbul',
@@ -777,18 +742,9 @@ class AppStrings {
       'tr': 'Randevu Oluştur',
       'en': 'Create Appointment',
     },
-    'membersPermUploadResult': {
-      'tr': 'Sonuç Yükle',
-      'en': 'Upload Result',
-    },
-    'membersPermChangeStatus': {
-      'tr': 'Durum Değiştir',
-      'en': 'Change Status',
-    },
-    'membersPermManageMembers': {
-      'tr': 'Üyeleri Yönet',
-      'en': 'Manage Members',
-    },
+    'membersPermUploadResult': {'tr': 'Sonuç Yükle', 'en': 'Upload Result'},
+    'membersPermChangeStatus': {'tr': 'Durum Değiştir', 'en': 'Change Status'},
+    'membersPermManageMembers': {'tr': 'Üyeleri Yönet', 'en': 'Manage Members'},
     'membersPermManageStatuses': {
       'tr': 'Durumları Yönet',
       'en': 'Manage Statuses',
@@ -805,22 +761,34 @@ class AppStrings {
     'memberFormNameHint': {'tr': 'Demo Üye', 'en': 'Demo Member'},
     'memberFormEmailLabel': {'tr': 'E-posta', 'en': 'Email'},
     'memberFormEmailHint': {'tr': 'uye@demo.local', 'en': 'member@demo.local'},
-    'memberFormPhoneLabel': {'tr': 'Telefon (isteğe bağlı)', 'en': 'Phone (optional)'},
+    'memberFormPhoneLabel': {
+      'tr': 'Telefon (isteğe bağlı)',
+      'en': 'Phone (optional)',
+    },
     'memberFormPhoneHint': {'tr': '+905550000000', 'en': '+10000000000'},
     'memberFormPasswordLabel': {'tr': 'Şifre', 'en': 'Password'},
-    'memberFormPasswordHint': {'tr': 'En az 8 karakter', 'en': 'Min 8 characters'},
+    'memberFormPasswordHint': {
+      'tr': 'En az 8 karakter',
+      'en': 'Min 8 characters',
+    },
     'memberFormRoleLabel': {'tr': 'Rol', 'en': 'Role'},
     'memberFormStatusLabel': {'tr': 'Durum', 'en': 'Status'},
     'memberFormStatusActive': {'tr': 'Aktif', 'en': 'Active'},
     'memberFormStatusInactive': {'tr': 'Pasif', 'en': 'Inactive'},
     'memberFormPermissionsTitle': {'tr': 'İzinler', 'en': 'Permissions'},
-    'memberFormRolePermissionsTitle': {'tr': 'Rol & İzinler', 'en': 'Role & Permissions'},
+    'memberFormRolePermissionsTitle': {
+      'tr': 'Rol & İzinler',
+      'en': 'Role & Permissions',
+    },
     'memberFormNextButton': {'tr': 'İleri', 'en': 'Next'},
     'memberFormBackButton': {'tr': 'Geri', 'en': 'Back'},
     'memberFormSaveButton': {'tr': 'Kaydet', 'en': 'Save'},
     'memberFormCreateButton': {'tr': 'Üye Ekle', 'en': 'Add Member'},
     'memberFormDeleteButton': {'tr': 'Üyeyi Sil', 'en': 'Remove Member'},
-    'memberFormDeleteConfirmTitle': {'tr': 'Üye Silindi', 'en': 'Remove Member'},
+    'memberFormDeleteConfirmTitle': {
+      'tr': 'Üye Silindi',
+      'en': 'Remove Member',
+    },
     'memberFormDeleteConfirmMessage': {
       'tr': 'Bu üyeyi silmek istediğinizden emin misiniz?',
       'en': 'Are you sure you want to remove this member?',
@@ -1033,17 +1001,29 @@ class AppStrings {
     },
     'appointmentFormCreateButton': {'tr': 'Oluştur', 'en': 'Create'},
     'appointmentFormSaveButton': {'tr': 'Kaydet', 'en': 'Save'},
-    'appointmentDetailTitle': {'tr': 'Randevu Detayı', 'en': 'Appointment Detail'},
+    'appointmentDetailTitle': {
+      'tr': 'Randevu Detayı',
+      'en': 'Appointment Detail',
+    },
     'appointmentDetailNotes': {'tr': 'Notlar', 'en': 'Notes'},
     'appointmentDetailResultNotes': {'tr': 'Sonuç Notu', 'en': 'Result Notes'},
-    'appointmentDetailResultNotesEdit': {'tr': 'Sonuç Notunu Düzenle', 'en': 'Edit Result Notes'},
-    'appointmentDetailResultNotesEmpty': {'tr': 'Henüz sonuç notu girilmemiş.', 'en': 'No result notes yet.'},
+    'appointmentDetailResultNotesEdit': {
+      'tr': 'Sonuç Notunu Düzenle',
+      'en': 'Edit Result Notes',
+    },
+    'appointmentDetailResultNotesEmpty': {
+      'tr': 'Henüz sonuç notu girilmemiş.',
+      'en': 'No result notes yet.',
+    },
     'appointmentResultNotesSuccess': {
       'tr': 'Sonuç notu başarıyla güncellendi.',
       'en': 'Result notes updated successfully.',
     },
     // Result files
-    'appointmentResultFilesTitle': {'tr': 'Sonuç Dosyaları', 'en': 'Result Files'},
+    'appointmentResultFilesTitle': {
+      'tr': 'Sonuç Dosyaları',
+      'en': 'Result Files',
+    },
     'appointmentResultFilesEmpty': {
       'tr': 'Henüz sonuç dosyası eklenmemiş.',
       'en': 'No result files uploaded yet.',
@@ -1059,7 +1039,10 @@ class AppStrings {
       'tr': 'Bu dosyayı silmek istediğinizden emin misiniz?',
       'en': 'Are you sure you want to delete this file?',
     },
-    'appointmentResultFilesDeleteConfirmCancel': {'tr': 'İptal', 'en': 'Cancel'},
+    'appointmentResultFilesDeleteConfirmCancel': {
+      'tr': 'İptal',
+      'en': 'Cancel',
+    },
     'appointmentResultFilesDeleteConfirmAction': {'tr': 'Sil', 'en': 'Delete'},
     'appointmentResultFilesDeleteSuccess': {
       'tr': 'Dosya başarıyla silindi.',
@@ -1074,7 +1057,10 @@ class AppStrings {
       'en': 'Could not get download link.',
     },
     'appointmentDetailAssignees': {'tr': 'Atananlar', 'en': 'Assignees'},
-    'appointmentDetailCustomFields': {'tr': 'Özel Alanlar', 'en': 'Custom Fields'},
+    'appointmentDetailCustomFields': {
+      'tr': 'Özel Alanlar',
+      'en': 'Custom Fields',
+    },
     'appointmentDetailCompletedAt': {'tr': 'Tamamlandı', 'en': 'Completed At'},
     'appointmentDetailEdit': {'tr': 'Düzenle', 'en': 'Edit'},
     'appointmentCreateSuccess': {
@@ -1098,8 +1084,10 @@ class AppStrings {
       'en': 'Delete Appointment',
     },
     'appointmentDeleteConfirmMessage': {
-      'tr': 'Bu randevuyu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
-      'en': 'Are you sure you want to delete this appointment? This action cannot be undone.',
+      'tr':
+          'Bu randevuyu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+      'en':
+          'Are you sure you want to delete this appointment? This action cannot be undone.',
     },
     'appointmentDeleteConfirmCancel': {'tr': 'İptal', 'en': 'Cancel'},
     'appointmentDeleteConfirmAction': {'tr': 'Sil', 'en': 'Delete'},
@@ -1121,10 +1109,7 @@ class AppStrings {
       'tr': 'Randevu Bilgileri',
       'en': 'Appointment Info',
     },
-    'appointmentSectionDateTime': {
-      'tr': 'Tarih ve Saat',
-      'en': 'Date & Time',
-    },
+    'appointmentSectionDateTime': {'tr': 'Tarih ve Saat', 'en': 'Date & Time'},
     'appointmentAssigneesNoneSelected': {
       'tr': 'Seçilmedi',
       'en': 'None selected',

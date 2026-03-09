@@ -32,13 +32,6 @@ class _MainShellViewState extends State<MainShellView> {
     4: 3, // Profile
   };
 
-  static final List<Widget> _pages = [
-    HomeView(),
-    const AppointmentsView(),
-    const MembersView(),
-    const ProfileView(),
-  ];
-
   void _onBarTap(BuildContext context, int barIndex) {
     if (barIndex == 2) {
       // Center FAB — Open Appointment Form
@@ -47,9 +40,9 @@ class _MainShellViewState extends State<MainShellView> {
       final l10n = AppStrings.of(context);
 
       if (brandId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.navComingSoon)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.navComingSoon)));
         return;
       }
 
@@ -85,53 +78,58 @@ class _MainShellViewState extends State<MainShellView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HomeViewModel>().init();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
     final l10n = AppStrings.of(context);
 
-    return ChangeNotifierProvider(
-      create: (_) => HomeViewModel()..init(),
-      child: Builder(
-        builder: (ctx) {
-          return Scaffold(
-            body: IndexedStack(
-              index: _pageIndex,
-              children: _pages,
-            ),
-            bottomNavigationBar: AppBottomBar(
-              currentIndex: _activeBarIndex,
-              centerIndex: 2,
-              onTap: (index) => _onBarTap(ctx, index),
-              items: [
-                AppBottomBarItem(
-                  activeIcon: Icons.home_rounded,
-                  inactiveIcon: Icons.home_outlined,
-                  label: l10n.navHome,
-                ),
-                AppBottomBarItem(
-                  activeIcon: Icons.calendar_month_rounded,
-                  inactiveIcon: Icons.calendar_month_outlined,
-                  label: l10n.navAppointments,
-                ),
-                AppBottomBarItem(
-                  activeIcon: Icons.add_rounded,
-                  inactiveIcon: Icons.add_rounded,
-                  label: '',
-                ),
-                AppBottomBarItem(
-                  activeIcon: Icons.people_rounded,
-                  inactiveIcon: Icons.people_outline_rounded,
-                  label: l10n.navMembers,
-                ),
-                AppBottomBarItem(
-                  activeIcon: Icons.person_rounded,
-                  inactiveIcon: Icons.person_outline_rounded,
-                  label: l10n.navProfile,
-                ),
-              ],
-            ),
-          );
-        },
+    final pages = [
+      const HomeView(),
+      const AppointmentsView(),
+      const MembersView(),
+      const ProfileView(),
+    ];
+
+    return Scaffold(
+      body: IndexedStack(index: _pageIndex, children: pages),
+      bottomNavigationBar: AppBottomBar(
+        currentIndex: _activeBarIndex,
+        centerIndex: 2,
+        onTap: (index) => _onBarTap(context, index),
+        items: [
+          AppBottomBarItem(
+            activeIcon: Icons.home_rounded,
+            inactiveIcon: Icons.home_outlined,
+            label: l10n.navHome,
+          ),
+          AppBottomBarItem(
+            activeIcon: Icons.calendar_month_rounded,
+            inactiveIcon: Icons.calendar_month_outlined,
+            label: l10n.navAppointments,
+          ),
+          AppBottomBarItem(
+            activeIcon: Icons.add_rounded,
+            inactiveIcon: Icons.add_rounded,
+            label: '',
+          ),
+          AppBottomBarItem(
+            activeIcon: Icons.people_rounded,
+            inactiveIcon: Icons.people_outline_rounded,
+            label: l10n.navMembers,
+          ),
+          AppBottomBarItem(
+            activeIcon: Icons.person_rounded,
+            inactiveIcon: Icons.person_outline_rounded,
+            label: l10n.navProfile,
+          ),
+        ],
       ),
     );
   }

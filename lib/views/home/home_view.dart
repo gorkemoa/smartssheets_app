@@ -182,14 +182,22 @@ class _DashboardContentState extends State<_DashboardContent> {
     final brands = viewModel.brandsResponse?.data ?? [];
 
     if (brands.isEmpty) {
-      return Center(
-        child: Text(
-          l10n.homeNoMemberships,
-          style: TextStyle(
-            fontSize: SizeTokens.fontMD,
-            color: AppTheme.textSecondary,
-          ),
-        ),
+      return _NoBrandYetState(
+        l10n: l10n,
+        onCreateBrand: () async {
+          final vm = context.read<HomeViewModel>();
+          vm.clearSubmitError();
+          final success = await BrandFormBottomSheet.show(context);
+          if (success == true && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.homeBrandCreateSuccess),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+            vm.refresh();
+          }
+        },
       );
     }
 
@@ -265,6 +273,85 @@ class _DashboardContentState extends State<_DashboardContent> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// No Brand Yet State
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _NoBrandYetState extends StatelessWidget {
+  final AppStrings l10n;
+  final VoidCallback onCreateBrand;
+
+  const _NoBrandYetState({required this.l10n, required this.onCreateBrand});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: SizeTokens.paddingPage),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: SizeTokens.iconXL * 2,
+              height: SizeTokens.iconXL * 2,
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
+              ),
+              child: Icon(
+                Icons.storefront_outlined,
+                size: SizeTokens.iconLG,
+                color: AppTheme.primary,
+              ),
+            ),
+            SizedBox(height: SizeTokens.spaceLG),
+            Text(
+              l10n.homeNoBrandTitle,
+              style: TextStyle(
+                fontSize: SizeTokens.fontLG,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary,
+                letterSpacing: -0.3,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: SizeTokens.spaceXS),
+            Text(
+              l10n.homeNoBrandSubtitle,
+              style: TextStyle(
+                fontSize: SizeTokens.fontMD,
+                color: AppTheme.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: SizeTokens.spaceXXL),
+            SizedBox(
+              width: double.infinity,
+              height: SizeTokens.buttonHeight,
+              child: ElevatedButton.icon(
+                onPressed: onCreateBrand,
+                icon: Icon(
+                  Icons.add_rounded,
+                  size: SizeTokens.iconMD,
+                  color: AppTheme.textOnPrimary,
+                ),
+                label: Text(
+                  l10n.homeNoBrandButton,
+                  style: TextStyle(
+                    fontSize: SizeTokens.fontLG,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textOnPrimary,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Brand Selector Box — opens a bottom sheet
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -293,6 +380,7 @@ class _BrandSelectorBox extends StatelessWidget {
       builder: (_) => _BrandPickerSheet(
         brands: brands,
         selectedIndex: selectedIndex,
+        canCreateBrand: brands.isEmpty,
         onSelected: (index) {
           Navigator.of(context).pop();
           onSelected(index);
@@ -364,6 +452,7 @@ class _BrandPickerSheet extends StatelessWidget {
   final ValueChanged<int> onSelected;
   final VoidCallback onCreateBrand;
   final String createLabel;
+  final bool canCreateBrand;
 
   const _BrandPickerSheet({
     required this.brands,
@@ -371,6 +460,7 @@ class _BrandPickerSheet extends StatelessWidget {
     required this.onSelected,
     required this.onCreateBrand,
     required this.createLabel,
+    required this.canCreateBrand,
   });
 
   @override
@@ -406,41 +496,44 @@ class _BrandPickerSheet extends StatelessWidget {
           ),
           SizedBox(height: SizeTokens.spaceXL),
 
-          // ── Create Brand button ─────────────────────────────────────
-          Material(
-            color: AppTheme.primary,
-            borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-            child: InkWell(
-              onTap: onCreateBrand,
+          // ── Create Brand button (only when user has no brand) ───────
+          if (canCreateBrand) ...[
+            Material(
+              color: AppTheme.primary,
               borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-              child: Container(
-                width: double.infinity,
-                height: SizeTokens.buttonHeight,
-                padding: EdgeInsets.symmetric(horizontal: SizeTokens.paddingMD),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add_rounded,
-                      size: SizeTokens.iconMD,
-                      color: AppTheme.textOnPrimary,
-                    ),
-                    SizedBox(width: SizeTokens.spaceXS),
-                    Text(
-                      createLabel,
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontMD,
-                        fontWeight: FontWeight.w600,
+              child: InkWell(
+                onTap: onCreateBrand,
+                borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+                child: Container(
+                  width: double.infinity,
+                  height: SizeTokens.buttonHeight,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeTokens.paddingMD,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_rounded,
+                        size: SizeTokens.iconMD,
                         color: AppTheme.textOnPrimary,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: SizeTokens.spaceXS),
+                      Text(
+                        createLabel,
+                        style: TextStyle(
+                          fontSize: SizeTokens.fontMD,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textOnPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-
-          SizedBox(height: SizeTokens.spaceLG),
+            SizedBox(height: SizeTokens.spaceLG),
+          ],
 
           // ── Brand list ──────────────────────────────────────────────
           ...List.generate(brands.length, (index) {
@@ -1468,11 +1561,14 @@ class _AppointmentsSheet extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
+                          final brandId = vm.brandId;
                           Navigator.of(context).pop();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  AppointmentsView(brandName: brandName),
+                              builder: (_) => AppointmentsView(
+                                brandId: brandId,
+                                brandName: brandName,
+                              ),
                             ),
                           );
                         },

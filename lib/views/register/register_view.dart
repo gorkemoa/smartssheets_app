@@ -56,8 +56,9 @@ class _RegisterViewState extends State<RegisterView> {
     if (!mounted) return;
 
     if (success) {
-      // TODO: Navigate to home screen after auth flow is complete
       if (!mounted) return;
+
+      // Delay slightly to show success message before popping
       final l10n = AppStrings.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -68,6 +69,16 @@ class _RegisterViewState extends State<RegisterView> {
           backgroundColor: AppTheme.accent,
         ),
       );
+
+      // Return credentials to LoginView
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (mounted) {
+          Navigator.pop(context, {
+            'email': _emailController.text,
+            'password': _passwordController.text,
+          });
+        }
+      });
     }
   }
 
@@ -84,10 +95,7 @@ class _RegisterViewState extends State<RegisterView> {
           children: [
             // ── Background image ──
             Positioned.fill(
-              child: Image.asset(
-                'assets/login-reg.jpg',
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset('assets/login-reg.jpg', fit: BoxFit.cover),
             ),
             // ── Gradient overlay ──
             Positioned.fill(
@@ -276,9 +284,11 @@ class _RegisterFormCard extends StatelessWidget {
                     hint: l10n.registerNameHint,
                     keyboardType: TextInputType.name,
                     textInputAction: TextInputAction.next,
-                    validator: (v) => Validators.name(v,
-                        emptyMessage: l10n.validatorNameEmpty,
-                        tooShortMessage: l10n.validatorNameTooShort),
+                    validator: (v) => Validators.name(
+                      v,
+                      emptyMessage: l10n.validatorNameEmpty,
+                      tooShortMessage: l10n.validatorNameTooShort,
+                    ),
                     onFieldSubmitted: (_) => emailFocus.requestFocus(),
                   ),
                   SizedBox(height: SizeTokens.spaceMD),
@@ -289,9 +299,11 @@ class _RegisterFormCard extends StatelessWidget {
                     hint: l10n.registerEmailHint,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    validator: (v) => Validators.email(v,
-                        emptyMessage: l10n.validatorEmailEmpty,
-                        invalidMessage: l10n.validatorEmailInvalid),
+                    validator: (v) => Validators.email(
+                      v,
+                      emptyMessage: l10n.validatorEmailEmpty,
+                      invalidMessage: l10n.validatorEmailInvalid,
+                    ),
                     onFieldSubmitted: (_) => phoneFocus.requestFocus(),
                   ),
                   SizedBox(height: SizeTokens.spaceMD),
@@ -302,9 +314,11 @@ class _RegisterFormCard extends StatelessWidget {
                     hint: l10n.registerPhoneHint,
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
-                    validator: (v) => Validators.phone(v,
-                        emptyMessage: l10n.validatorPhoneEmpty,
-                        invalidMessage: l10n.validatorPhoneInvalid),
+                    validator: (v) => Validators.phone(
+                      v,
+                      emptyMessage: l10n.validatorPhoneEmpty,
+                      invalidMessage: l10n.validatorPhoneInvalid,
+                    ),
                     onFieldSubmitted: (_) => passwordFocus.requestFocus(),
                   ),
                   SizedBox(height: SizeTokens.spaceMD),
@@ -315,10 +329,13 @@ class _RegisterFormCard extends StatelessWidget {
                     hint: l10n.registerPasswordHint,
                     isPassword: true,
                     textInputAction: TextInputAction.next,
-                    validator: (v) => Validators.password(v,
-                        emptyMessage: l10n.validatorPasswordEmpty,
-                        tooShortMessage: l10n.validatorPasswordTooShort),
-                    onFieldSubmitted: (_) => passwordConfirmFocus.requestFocus(),
+                    validator: (v) => Validators.password(
+                      v,
+                      emptyMessage: l10n.validatorPasswordEmpty,
+                      tooShortMessage: l10n.validatorPasswordTooShort,
+                    ),
+                    onFieldSubmitted: (_) =>
+                        passwordConfirmFocus.requestFocus(),
                   ),
                   SizedBox(height: SizeTokens.spaceMD),
                   AuthTextField(
@@ -422,8 +439,11 @@ class _RegisterErrorBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline_rounded,
-              color: AppTheme.error, size: SizeTokens.iconMD),
+          Icon(
+            Icons.error_outline_rounded,
+            color: AppTheme.error,
+            size: SizeTokens.iconMD,
+          ),
           SizedBox(width: SizeTokens.spaceXS),
           Expanded(
             child: Text(

@@ -19,9 +19,17 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'owner@demo.local');
-  final _passwordController = TextEditingController(text: 'password');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _passwordFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    // Default demo values, can be overridden by registration data
+    _emailController.text = 'owner@demo.local';
+    _passwordController.text = 'password';
+  }
 
   @override
   void dispose() {
@@ -79,6 +87,24 @@ class _LoginViewState extends State<LoginView> {
                       passwordController: _passwordController,
                       passwordFocus: _passwordFocus,
                       onLoginPressed: _onLoginPressed,
+                      onRegisterTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const RegisterView(),
+                          ),
+                        );
+
+                        if (result != null && result is Map<String, String>) {
+                          if (mounted) {
+                            setState(() {
+                              _emailController.text = result['email'] ?? '';
+                              _passwordController.text =
+                                  result['password'] ?? '';
+                            });
+                          }
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -116,6 +142,7 @@ class _LoginFormCard extends StatelessWidget {
   final TextEditingController passwordController;
   final FocusNode passwordFocus;
   final Future<void> Function(LoginViewModel) onLoginPressed;
+  final VoidCallback onRegisterTap;
 
   const _LoginFormCard({
     required this.formKey,
@@ -123,6 +150,7 @@ class _LoginFormCard extends StatelessWidget {
     required this.passwordController,
     required this.passwordFocus,
     required this.onLoginPressed,
+    required this.onRegisterTap,
   });
 
   @override
@@ -241,12 +269,7 @@ class _LoginFormCard extends StatelessWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterView(),
-                          ),
-                        ),
+                        onTap: onRegisterTap,
                         child: Text(
                           l10n.loginSignUp,
                           style: TextStyle(

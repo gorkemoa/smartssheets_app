@@ -785,87 +785,71 @@ class _StatsAndMonthlyCard extends StatelessWidget {
 
         // ── Pie Chart (Durum Dağılımı) ──────────────────────────────
         if (summary?.byStatus?.isNotEmpty == true) ...[
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              SizeTokens.paddingMD,
-              SizeTokens.paddingMD,
-              SizeTokens.paddingMD,
-              0,
-            ),
-            child: IntrinsicHeight(
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: SizeConfig.w(80),
-                    height: SizeConfig.h(80),
-                    child: CustomPaint(
-                      painter: _PieChartPainter(
-                        items: summary!.byStatus!,
-                        colors: _kPieColors,
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _showStatusDetail(context),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  SizeTokens.paddingMD,
+                  SizeTokens.paddingMD,
+                  SizeTokens.paddingMD,
+                  SizeTokens.spaceSM,
+                ),
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: SizeConfig.w(80),
+                        height: SizeConfig.h(80),
+                        child: CustomPaint(
+                          painter: _PieChartPainter(
+                            items: summary!.byStatus!,
+                            colors: _kPieColors,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  SizedBox(width: SizeTokens.spaceLG),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.homeStatsByStatusTitle,
-                          style: TextStyle(
-                            fontSize: SizeTokens.fontSM,
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.textSecondary,
-                          ),
+                      SizedBox(width: SizeTokens.spaceLG),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.homeStatsByStatusTitle,
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontSM,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                            SizedBox(height: SizeTokens.spaceXS),
+                            Text(
+                              '${summary?.totalAppointments ?? 0}',
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontXXL,
+                                fontWeight: FontWeight.w800,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                            Text(
+                              l10n.homeStatsTotalLabel,
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontXS,
+                                color: AppTheme.textHint,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: SizeTokens.spaceXS),
-                        Text(
-                          '${summary?.totalAppointments ?? 0}',
-                          style: TextStyle(
-                            fontSize: SizeTokens.fontXXL,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.textPrimary,
-                          ),
-                        ),
-                        Text(
-                          l10n.homeStatsTotalLabel,
-                          style: TextStyle(
-                            fontSize: SizeTokens.fontXS,
-                            color: AppTheme.textHint,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      Icon(
+                        Icons.open_in_new_rounded,
+                        size: SizeTokens.iconSM,
+                        color: AppTheme.primary,
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () => showGeneralDialog(
-                      context: context,
-                      barrierDismissible: true,
-                      barrierLabel: '',
-                      transitionDuration: const Duration(milliseconds: 300),
-                      pageBuilder: (context, anim1, anim2) =>
-                          _StatusDetailDialog(
-                            byStatus: summary!.byStatus!,
-                            title: l10n.homeStatsByStatusTitle,
-                          ),
-                      transitionBuilder: (context, anim1, anim2, child) {
-                        return ScaleTransition(
-                          scale: CurvedAnimation(
-                            parent: anim1,
-                            curve: Curves.easeOutBack,
-                          ),
-                          child: FadeTransition(opacity: anim1, child: child),
-                        );
-                      },
-                    ),
-                    icon: Icon(
-                      Icons.open_in_new_rounded,
-                      size: SizeTokens.iconSM,
-                      color: AppTheme.primary,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -1032,6 +1016,26 @@ class _StatsAndMonthlyCard extends StatelessWidget {
   double _getProgress(List<StatsMonthlyItemModel> data, int current) {
     final maxVal = data.fold<int>(0, (maxV, e) => max(maxV, e.count ?? 0));
     return maxVal > 0 ? (current / maxVal).clamp(0, 1) : 0;
+  }
+
+  void _showStatusDetail(BuildContext context) {
+    if (summary?.byStatus?.isNotEmpty != true) return;
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: '',
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, anim1, anim2) => _StatusDetailDialog(
+        byStatus: summary!.byStatus!,
+        title: l10n.homeStatsByStatusTitle,
+      ),
+      transitionBuilder: (context, anim1, anim2, child) {
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: anim1, curve: Curves.easeOutBack),
+          child: FadeTransition(opacity: anim1, child: child),
+        );
+      },
+    );
   }
 }
 

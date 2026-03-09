@@ -120,34 +120,7 @@ class _MembersBodyState extends State<_MembersBody> {
             color: AppTheme.textPrimary,
           ),
         ),
-        actions: [
-          // Navigate to invitations screen
-          IconButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => InvitationsView(
-                  brandId: widget.brandId,
-                  brandName: widget.brandName,
-                ),
-              ),
-            ),
-            icon: Icon(
-              Icons.mail_outline_rounded,
-              size: SizeTokens.iconMD,
-              color: AppTheme.textSecondary,
-            ),
-            tooltip: l10n.invitationsNavButton,
-          ),
-          IconButton(
-            onPressed: () => _openCreateMember(context, l10n),
-            icon: Icon(
-              Icons.add_rounded,
-              size: SizeTokens.iconLG,
-              color: AppTheme.primary,
-            ),
-            tooltip: l10n.memberFormCreateTitle,
-          ),
-        ],
+        actions: const [],
       ),
       body: Consumer<MembersViewModel>(
         builder: (context, viewModel, _) {
@@ -241,6 +214,82 @@ class _MembersBodyState extends State<_MembersBody> {
                             fontSize: SizeTokens.fontMD,
                             fontWeight: FontWeight.w400,
                             color: AppTheme.textSecondary,
+                          ),
+                        ),
+                        const Spacer(),
+                        // Invitations button
+                        GestureDetector(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => InvitationsView(
+                                brandId: widget.brandId,
+                                brandName: widget.brandName,
+                              ),
+                            ),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: SizeTokens.paddingSM,
+                              vertical: SizeTokens.spaceXXS,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.surface,
+                              borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
+                              border: Border.all(color: AppTheme.border),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.mail_outline_rounded,
+                                  size: SizeTokens.iconSM,
+                                  color: AppTheme.textSecondary,
+                                ),
+                                SizedBox(width: SizeTokens.spaceXXS),
+                                Text(
+                                  l10n.invitationsNavButton,
+                                  style: TextStyle(
+                                    fontSize: SizeTokens.fontXS,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: SizeTokens.spaceXS),
+                        // Add member button
+                        GestureDetector(
+                          onTap: () => _openCreateMember(context, l10n),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: SizeTokens.paddingSM,
+                              vertical: SizeTokens.spaceXXS,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primary,
+                              borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.add_rounded,
+                                  size: SizeTokens.iconSM,
+                                  color: AppTheme.textOnPrimary,
+                                ),
+                                SizedBox(width: SizeTokens.spaceXXS),
+                                Text(
+                                  l10n.memberFormCreateTitle,
+                                  style: TextStyle(
+                                    fontSize: SizeTokens.fontXS,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppTheme.textOnPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],

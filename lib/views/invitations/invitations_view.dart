@@ -151,73 +151,114 @@ class _InvitationsBodyState extends State<_InvitationsBody> {
             color: AppTheme.textPrimary,
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () => _openCreateInvitation(context, l10n),
-            icon: Icon(
-              Icons.add_rounded,
-              size: SizeTokens.iconLG,
-              color: AppTheme.primary,
-            ),
-            tooltip: l10n.invitationFormCreateTitle,
-          ),
-        ],
       ),
-      body: Consumer<InvitationsViewModel>(
-        builder: (context, viewModel, _) {
-          if (viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ── Content ────────────────────────────────────────────────────
+            Expanded(
+              child: Consumer<InvitationsViewModel>(
+                builder: (context, viewModel, _) {
+                  if (viewModel.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-          if (viewModel.errorMessage != null) {
-            return _ErrorState(
-              message: viewModel.errorMessage!,
-              retryLabel: l10n.invitationsRetry,
-              onRetry: viewModel.onRetry,
-            );
-          }
+                  if (viewModel.errorMessage != null) {
+                    return _ErrorState(
+                      message: viewModel.errorMessage!,
+                      retryLabel: l10n.invitationsRetry,
+                      onRetry: viewModel.onRetry,
+                    );
+                  }
 
-          if (viewModel.invitations.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.all(SizeTokens.paddingPage),
-                child: Text(
-                  l10n.invitationsEmpty,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: SizeTokens.fontLG,
-                    color: AppTheme.textSecondary,
+                  if (viewModel.invitations.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(SizeTokens.paddingPage),
+                        child: Text(
+                          l10n.invitationsEmpty,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontLG,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return RefreshIndicator(
+                    color: AppTheme.primary,
+                    onRefresh: () => viewModel.refresh(),
+                    child: ListView.separated(
+                      padding: EdgeInsets.all(SizeTokens.paddingPage),
+                      itemCount: viewModel.invitations.length,
+                      separatorBuilder: (_, __) =>
+                          SizedBox(height: SizeTokens.spaceSM),
+                      itemBuilder: (_, index) {
+                        final inv = viewModel.invitations[index];
+                        final invId = inv.id;
+                        return InvitationCard(
+                          invitation: inv,
+                          l10n: l10n,
+                          onResend: invId != null
+                              ? () => _onResend(context, l10n, invId)
+                              : null,
+                          onDelete: invId != null
+                              ? () => _onDelete(context, l10n, invId)
+                              : null,
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+            // ── Send invitation button ──────────────────────────────────────
+            Container(
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.textPrimary.withValues(alpha: 0.06),
+                    blurRadius: SizeConfig.r(8),
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.fromLTRB(
+                SizeTokens.paddingPage,
+                SizeTokens.spaceSM,
+                SizeTokens.paddingPage,
+                SizeTokens.spaceLG,
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                height: SizeTokens.buttonHeight,
+                child: ElevatedButton.icon(
+                  onPressed: () => _openCreateInvitation(context, l10n),
+                  icon: Icon(Icons.send_rounded, size: SizeTokens.iconMD),
+                  label: Text(
+                    l10n.invitationFormCreateTitle,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontMD,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primary,
+                    foregroundColor: AppTheme.textOnPrimary,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(SizeTokens.radiusMD),
+                    ),
                   ),
                 ),
               ),
-            );
-          }
-
-          return RefreshIndicator(
-            color: AppTheme.primary,
-            onRefresh: () => viewModel.refresh(),
-            child: ListView.separated(
-              padding: EdgeInsets.all(SizeTokens.paddingPage),
-              itemCount: viewModel.invitations.length,
-              separatorBuilder: (_, __) =>
-                  SizedBox(height: SizeTokens.spaceMD),
-              itemBuilder: (_, index) {
-                final inv = viewModel.invitations[index];
-                final invId = inv.id;
-                return InvitationCard(
-                  invitation: inv,
-                  l10n: l10n,
-                  onResend: invId != null
-                      ? () => _onResend(context, l10n, invId)
-                      : null,
-                  onDelete: invId != null
-                      ? () => _onDelete(context, l10n, invId)
-                      : null,
-                );
-              },
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }

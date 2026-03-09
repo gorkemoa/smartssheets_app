@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -173,51 +174,281 @@ class _AppointmentFormViewState extends State<AppointmentFormView> {
       '${_displayDate(dt)}  ${_displayTime(dt)}';
 
   Future<void> _pickStartDateTime() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _startDateTime,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+    final l10n = AppStrings.of(context);
+    await _showCupertinoDateTimePicker(
+      label: l10n.appointmentStartsAtLabel,
+      initial: _startDateTime,
+      onDone: (dt) => setState(() => _startDateTime = dt),
     );
-    if (picked == null || !mounted) return;
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(_startDateTime),
-    );
-    if (time == null || !mounted) return;
-    setState(() {
-      _startDateTime = DateTime(
-        picked.year,
-        picked.month,
-        picked.day,
-        time.hour,
-        time.minute,
-      );
-    });
   }
 
   Future<void> _pickEndDateTime() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _endDateTime,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+    final l10n = AppStrings.of(context);
+    await _showCupertinoDateTimePicker(
+      label: l10n.appointmentEndsAtLabel,
+      initial: _endDateTime,
+      onDone: (dt) => setState(() => _endDateTime = dt),
     );
-    if (picked == null || !mounted) return;
-    final time = await showTimePicker(
+  }
+
+  Future<void> _showCupertinoDateTimePicker({
+    required String label,
+    required DateTime initial,
+    required void Function(DateTime) onDone,
+  }) async {
+    DateTime temp = initial;
+    final l10n = AppStrings.of(context);
+    await showModalBottomSheet<void>(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(_endDateTime),
+      backgroundColor: Colors.transparent,
+      useRootNavigator: false,
+      builder: (ctx) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(SizeTokens.radiusXL),
+              topRight: Radius.circular(SizeTokens.radiusXL),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: SizeTokens.spaceMD),
+              Container(
+                width: SizeConfig.w(40),
+                height: SizeConfig.h(4),
+                decoration: BoxDecoration(
+                  color: AppTheme.border,
+                  borderRadius:
+                      BorderRadius.circular(SizeTokens.radiusCircle),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizeTokens.paddingPage,
+                  vertical: SizeTokens.spaceMD,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: SizeTokens.fontXL,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        onDone(temp);
+                        Navigator.of(ctx).pop();
+                      },
+                      child: Text(
+                        l10n.appointmentPickerDone,
+                        style: TextStyle(
+                          fontSize: SizeTokens.fontMD,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.accent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1, color: AppTheme.divider),
+              SizedBox(
+                height: SizeConfig.h(240),
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.dateAndTime,
+                  initialDateTime: initial,
+                  use24hFormat: true,
+                  minuteInterval: 5,
+                  onDateTimeChanged: (dt) {
+                    temp = dt;
+                  },
+                ),
+              ),
+              SizedBox(height: SizeConfig.h(32)),
+            ],
+          ),
+        );
+      },
     );
-    if (time == null || !mounted) return;
-    setState(() {
-      _endDateTime = DateTime(
-        picked.year,
-        picked.month,
-        picked.day,
-        time.hour,
-        time.minute,
-      );
-    });
+  }
+
+  Future<void> _showAssigneesSheet(AppStrings l10n) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useRootNavigator: false,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            return Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(ctx).size.height * 0.75,
+              ),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(SizeTokens.radiusXL),
+                  topRight: Radius.circular(SizeTokens.radiusXL),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: SizeTokens.spaceMD),
+                  Container(
+                    width: SizeConfig.w(40),
+                    height: SizeConfig.h(4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.border,
+                      borderRadius:
+                          BorderRadius.circular(SizeTokens.radiusCircle),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: SizeTokens.paddingPage,
+                      vertical: SizeTokens.spaceMD,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l10n.appointmentAssigneesLabel,
+                          style: TextStyle(
+                            fontSize: SizeTokens.fontXL,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textPrimary,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.of(ctx).pop(),
+                          child: Text(
+                            l10n.appointmentPickerDone,
+                            style: TextStyle(
+                              fontSize: SizeTokens.fontMD,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.accent,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(height: 1, color: AppTheme.divider),
+                  Flexible(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: _members.length,
+                      separatorBuilder: (_, __) =>
+                          Divider(height: 1, color: AppTheme.divider),
+                      itemBuilder: (_, i) {
+                        final m = _members[i];
+                        final id = m.id;
+                        if (id == null) return const SizedBox.shrink();
+                        final name =
+                            m.user?.name ?? m.user?.email ?? '?';
+                        final email = m.user?.name != null
+                            ? (m.user?.email ?? '')
+                            : '';
+                        final selected =
+                            _selectedMembershipIds.contains(id);
+                        return InkWell(
+                          onTap: () {
+                            setModalState(() {
+                              if (selected) {
+                                _selectedMembershipIds.remove(id);
+                              } else {
+                                _selectedMembershipIds.add(id);
+                              }
+                            });
+                            setState(() {});
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: SizeTokens.paddingPage,
+                              vertical: SizeTokens.paddingMD,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: SizeTokens.avatarMD,
+                                  height: SizeTokens.avatarMD,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: selected
+                                        ? AppTheme.primary
+                                        : AppTheme.surfaceVariant,
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    name.isNotEmpty
+                                        ? name[0].toUpperCase()
+                                        : '?',
+                                    style: TextStyle(
+                                      fontSize: SizeTokens.fontMD,
+                                      fontWeight: FontWeight.w700,
+                                      color: selected
+                                          ? Colors.white
+                                          : AppTheme.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: SizeTokens.spaceMD),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        name,
+                                        style: TextStyle(
+                                          fontSize: SizeTokens.fontMD,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppTheme.textPrimary,
+                                        ),
+                                      ),
+                                      if (email.isNotEmpty)
+                                        Text(
+                                          email,
+                                          style: TextStyle(
+                                            fontSize: SizeTokens.fontSM,
+                                            color: AppTheme.textSecondary,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  selected
+                                      ? Icons.check_circle_rounded
+                                      : Icons.radio_button_unchecked_rounded,
+                                  size: SizeTokens.iconMD,
+                                  color: selected
+                                      ? AppTheme.primary
+                                      : AppTheme.border,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: SizeConfig.h(36)),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Map<String, dynamic>? _buildCustomFields() {
@@ -364,167 +595,186 @@ class _AppointmentFormViewState extends State<AppointmentFormView> {
                   ),
                 ),
 
-              // ── Title ──────────────────────────────────────────────
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: l10n.appointmentTitleLabel,
-                  hintText: l10n.appointmentTitleHint,
-                ),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? l10n.appointmentTitleLabel
-                        : null,
-              ),
-              SizedBox(height: SizeTokens.spaceLG),
-
-              // ── Start date/time ────────────────────────────────────
-              _DateTimeTile(
-                label: l10n.appointmentStartsAtLabel,
-                value: _displayDateForPicker(_startDateTime),
-                onTap: _pickStartDateTime,
-              ),
-              SizedBox(height: SizeTokens.spaceMD),
-
-              // ── End date/time ──────────────────────────────────────
-              _DateTimeTile(
-                label: l10n.appointmentEndsAtLabel,
-                value: _displayDateForPicker(_endDateTime),
-                onTap: _pickEndDateTime,
-              ),
-              SizedBox(height: SizeTokens.spaceLG),
-
-              // ── Status ─────────────────────────────────────────────
-              if (_statuses.isNotEmpty)
-                DropdownButtonFormField<int?>(
-                  value: _selectedStatusId,
-                  decoration: InputDecoration(
-                    labelText: l10n.appointmentStatusLabel,
+              // ── Section: Randevu Bilgileri ──────────────────────────
+              _SectionLabel(l10n.appointmentSectionBasicInfo),
+              _FormCard(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeTokens.paddingMD,
                   ),
-                  items: [
-                    DropdownMenuItem<int?>(
-                      value: null,
-                      child: Text(
-                        l10n.appointmentNoStatus,
-                        style: TextStyle(color: AppTheme.textSecondary),
-                      ),
+                  child: TextFormField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      labelText: l10n.appointmentTitleLabel,
+                      hintText: l10n.appointmentTitleHint,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
                     ),
-                    ..._statuses.map(
-                      (s) => DropdownMenuItem<int?>(
-                        value: s.id,
-                        child: Text(s.name ?? '—'),
-                      ),
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty)
+                            ? l10n.appointmentTitleLabel
+                            : null,
+                  ),
+                ),
+              ),
+              SizedBox(height: SizeTokens.spaceLG),
+
+              // ── Section: Tarih ve Saat ───────────────────────────────
+              _SectionLabel(l10n.appointmentSectionDateTime),
+              _FormCard(
+                child: Column(
+                  children: [
+                    _DateTimeTile(
+                      label: l10n.appointmentStartsAtLabel,
+                      value: _displayDateForPicker(_startDateTime),
+                      icon: Icons.calendar_today_rounded,
+                      onTap: _pickStartDateTime,
+                    ),
+                    Divider(height: 1, color: AppTheme.divider),
+                    _DateTimeTile(
+                      label: l10n.appointmentEndsAtLabel,
+                      value: _displayDateForPicker(_endDateTime),
+                      icon: Icons.event_rounded,
+                      onTap: _pickEndDateTime,
                     ),
                   ],
-                  onChanged: (v) => setState(() => _selectedStatusId = v),
                 ),
-
-              if (_statuses.isNotEmpty) SizedBox(height: SizeTokens.spaceLG),
-
-              // ── Notes ──────────────────────────────────────────────
-              TextFormField(
-                controller: _notesController,
-                decoration: InputDecoration(
-                  labelText: l10n.appointmentNotesLabel,
-                  hintText: l10n.appointmentNotesHint,
-                ),
-                maxLines: 3,
               ),
               SizedBox(height: SizeTokens.spaceLG),
 
-              // ── Result notes (edit only) ───────────────────────────
-              if (widget._isEditing) ...[
-                TextFormField(
-                  controller: _resultNotesController,
-                  decoration: InputDecoration(
-                    labelText: l10n.appointmentResultNotesLabel,
-                    hintText: l10n.appointmentResultNotesHint,
+              // ── Section: Durum ───────────────────────────────────────
+              if (_statuses.isNotEmpty) ...[
+                _FormCard(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: SizeTokens.paddingMD,
+                    ),
+                    child: DropdownButtonFormField<int?>(
+                      value: _selectedStatusId,
+                      decoration: InputDecoration(
+                        labelText: l10n.appointmentStatusLabel,
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                      ),
+                      items: [
+                        DropdownMenuItem<int?>(
+                          value: null,
+                          child: Text(
+                            l10n.appointmentNoStatus,
+                            style:
+                                TextStyle(color: AppTheme.textSecondary),
+                          ),
+                        ),
+                        ..._statuses.map(
+                          (s) => DropdownMenuItem<int?>(
+                            value: s.id,
+                            child: Text(s.name ?? '—'),
+                          ),
+                        ),
+                      ],
+                      onChanged: (v) =>
+                          setState(() => _selectedStatusId = v),
+                    ),
                   ),
-                  maxLines: 3,
                 ),
                 SizedBox(height: SizeTokens.spaceLG),
               ],
 
-              // ── Assignees ──────────────────────────────────────────
+              // ── Section: Atananlar ───────────────────────────────────
               if (_members.isNotEmpty) ...[
-                Text(
-                  l10n.appointmentAssigneesLabel,
-                  style: TextStyle(
-                    fontSize: SizeTokens.fontSM,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textSecondary,
-                    letterSpacing: 0.4,
+                _FormCard(
+                  child: _AssigneesSelectTile(
+                    label: l10n.appointmentAssigneesLabel,
+                    members: _members,
+                    selectedIds: _selectedMembershipIds,
+                    noneLabel: l10n.appointmentAssigneesNoneSelected,
+                    nSelectedLabel: (n) =>
+                        l10n.appointmentAssigneesNSelected(n),
+                    onTap: () => _showAssigneesSheet(l10n),
                   ),
-                ),
-                SizedBox(height: SizeTokens.spaceSM),
-                Wrap(
-                  spacing: SizeTokens.spaceSM,
-                  runSpacing: SizeTokens.spaceSM,
-                  children: _members.map((m) {
-                    final id = m.id;
-                    if (id == null) return const SizedBox.shrink();
-                    final selected = _selectedMembershipIds.contains(id);
-                    final name =
-                        m.user?.name ?? m.user?.email ?? '?';
-                    return FilterChip(
-                      label: Text(name),
-                      selected: selected,
-                      onSelected: (val) {
-                        setState(() {
-                          if (val) {
-                            _selectedMembershipIds.add(id);
-                          } else {
-                            _selectedMembershipIds.remove(id);
-                          }
-                        });
-                      },
-                      selectedColor:
-                          AppTheme.primary.withValues(alpha: 0.15),
-                      checkmarkColor: AppTheme.primary,
-                      side: BorderSide(
-                        color: selected
-                            ? AppTheme.primary
-                            : AppTheme.border,
-                      ),
-                      labelStyle: TextStyle(
-                        fontSize: SizeTokens.fontSM,
-                        color: selected
-                            ? AppTheme.primary
-                            : AppTheme.textPrimary,
-                        fontWeight: selected
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                      ),
-                    );
-                  }).toList(),
                 ),
                 SizedBox(height: SizeTokens.spaceLG),
               ],
 
-              // ── Custom fields ──────────────────────────────────────
+              // ── Section: Notlar ──────────────────────────────────────
+              _FormCard(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: SizeTokens.paddingMD,
+                      ),
+                      child: TextFormField(
+                        controller: _notesController,
+                        decoration: InputDecoration(
+                          labelText: l10n.appointmentNotesLabel,
+                          hintText: l10n.appointmentNotesHint,
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                        maxLines: 3,
+                      ),
+                    ),
+                    if (widget._isEditing) ...[
+                      Divider(height: 1, color: AppTheme.divider),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: SizeTokens.paddingMD,
+                        ),
+                        child: TextFormField(
+                          controller: _resultNotesController,
+                          decoration: InputDecoration(
+                            labelText: l10n.appointmentResultNotesLabel,
+                            hintText: l10n.appointmentResultNotesHint,
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
+                          maxLines: 3,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              SizedBox(height: SizeTokens.spaceLG),
+
+              // ── Section: Özel Alanlar ────────────────────────────────
               if (_fields.isNotEmpty) ...[
-                Text(
-                  l10n.appointmentCustomFieldsTitle,
-                  style: TextStyle(
-                    fontSize: SizeTokens.fontSM,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textSecondary,
-                    letterSpacing: 0.4,
+                _SectionLabel(l10n.appointmentCustomFieldsTitle),
+                _FormCard(
+                  child: Column(
+                    children: [
+                      for (int i = 0; i < _fields.length; i++) ...[
+                        if (_fields[i].key != null)
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: SizeTokens.paddingMD,
+                            ),
+                            child: _buildCustomFieldInput(
+                              _fields[i],
+                              l10n,
+                              noBorder: true,
+                            ),
+                          ),
+                        if (i < _fields.length - 1 &&
+                            _fields[i].key != null)
+                          Divider(height: 1, color: AppTheme.divider),
+                      ],
+                    ],
                   ),
                 ),
-                SizedBox(height: SizeTokens.spaceSM),
-                ..._fields.map((field) {
-                  if (field.key == null) return const SizedBox.shrink();
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: SizeTokens.spaceLG),
-                    child: _buildCustomFieldInput(field, l10n),
-                  );
-                }),
+                SizedBox(height: SizeTokens.spaceLG),
               ],
 
               SizedBox(height: SizeTokens.spaceXL),
 
-              // ── Submit ─────────────────────────────────────────────
+              // ── Submit ───────────────────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
@@ -534,9 +784,13 @@ class _AppointmentFormViewState extends State<AppointmentFormView> {
                     padding: EdgeInsets.symmetric(
                       vertical: SizeTokens.paddingMD,
                     ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(SizeTokens.radiusMD),
+                    ),
                   ),
                   child: viewModel.isSubmitting
-                      ? SizedBox(
+                      ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -564,10 +818,12 @@ class _AppointmentFormViewState extends State<AppointmentFormView> {
 
   Widget _buildCustomFieldInput(
     AppointmentFieldModel field,
-    AppStrings l10n,
-  ) {
+    AppStrings l10n, {
+    bool noBorder = false,
+  }) {
     final key = field.key!;
     final label = field.label ?? key;
+    final border = noBorder ? InputBorder.none : null;
 
     switch (field.type) {
       case 'number':
@@ -576,6 +832,9 @@ class _AppointmentFormViewState extends State<AppointmentFormView> {
           decoration: InputDecoration(
             labelText: label,
             hintText: field.helpText,
+            border: border,
+            enabledBorder: border,
+            focusedBorder: border,
           ),
           keyboardType:
               const TextInputType.numberWithOptions(decimal: true, signed: true),
@@ -589,7 +848,12 @@ class _AppointmentFormViewState extends State<AppointmentFormView> {
         final current = _customFieldValues[key] as String?;
         return DropdownButtonFormField<String?>(
           value: options.any((o) => o.value == current) ? current : null,
-          decoration: InputDecoration(labelText: label),
+          decoration: InputDecoration(
+            labelText: label,
+            border: border,
+            enabledBorder: border,
+            focusedBorder: border,
+          ),
           items: [
             DropdownMenuItem<String?>(
               value: null,
@@ -679,6 +943,9 @@ class _AppointmentFormViewState extends State<AppointmentFormView> {
           decoration: InputDecoration(
             labelText: label,
             hintText: field.helpText,
+            border: border,
+            enabledBorder: border,
+            focusedBorder: border,
           ),
           onChanged: (v) {
             _customFieldValues[key] = v.isEmpty ? null : v;
@@ -690,14 +957,63 @@ class _AppointmentFormViewState extends State<AppointmentFormView> {
 
 // ── Supporting widgets ────────────────────────────────────────────────────────
 
+class _FormCard extends StatelessWidget {
+  final Widget child;
+
+  const _FormCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+        child: child,
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+
+  const _SectionLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: SizeTokens.spaceXS,
+        bottom: SizeTokens.spaceSM,
+      ),
+      child: Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          fontSize: SizeTokens.fontXS,
+          fontWeight: FontWeight.w600,
+          color: AppTheme.textSecondary,
+          letterSpacing: 0.6,
+        ),
+      ),
+    );
+  }
+}
+
 class _DateTimeTile extends StatelessWidget {
   final String label;
   final String value;
+  final IconData icon;
   final VoidCallback onTap;
 
   const _DateTimeTile({
     required this.label,
     required this.value,
+    required this.icon,
     required this.onTap,
   });
 
@@ -705,22 +1021,15 @@ class _DateTimeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
-      child: Container(
-        width: double.infinity,
+      child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: SizeTokens.paddingMD,
           vertical: SizeTokens.paddingMD,
         ),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppTheme.border),
-          borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
-          color: AppTheme.surface,
-        ),
         child: Row(
           children: [
             Icon(
-              Icons.calendar_today_rounded,
+              icon,
               size: SizeTokens.iconSM,
               color: AppTheme.textSecondary,
             ),
@@ -736,7 +1045,7 @@ class _DateTimeTile extends StatelessWidget {
                       color: AppTheme.textSecondary,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  SizedBox(height: SizeConfig.h(2)),
                   Text(
                     value,
                     style: TextStyle(
@@ -749,9 +1058,119 @@ class _DateTimeTile extends StatelessWidget {
               ),
             ),
             Icon(
-              Icons.edit_calendar_rounded,
+              Icons.chevron_right_rounded,
               size: SizeTokens.iconSM,
-              color: AppTheme.primary,
+              color: AppTheme.textSecondary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AssigneesSelectTile extends StatelessWidget {
+  final String label;
+  final List<MembershipModel> members;
+  final Set<int> selectedIds;
+  final String noneLabel;
+  final String Function(int) nSelectedLabel;
+  final VoidCallback onTap;
+
+  const _AssigneesSelectTile({
+    required this.label,
+    required this.members,
+    required this.selectedIds,
+    required this.noneLabel,
+    required this.nSelectedLabel,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final count = selectedIds.length;
+    final String subtitle;
+    if (count == 0) {
+      subtitle = noneLabel;
+    } else {
+      final names = members
+          .where((m) => m.id != null && selectedIds.contains(m.id))
+          .map((m) => m.user?.name ?? m.user?.email ?? '?')
+          .toList();
+      subtitle =
+          names.isEmpty ? nSelectedLabel(count) : names.join(', ');
+    }
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: SizeTokens.paddingMD,
+          vertical: SizeTokens.paddingMD,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.people_outline_rounded,
+              size: SizeTokens.iconSM,
+              color: AppTheme.textSecondary,
+            ),
+            SizedBox(width: SizeTokens.spaceSM),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontXS,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  SizedBox(height: SizeConfig.h(2)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontMD,
+                      fontWeight: count > 0
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                      color: count > 0
+                          ? AppTheme.textPrimary
+                          : AppTheme.textHint,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            if (count > 0) ...[
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizeTokens.paddingXS,
+                  vertical: SizeTokens.spaceXXS,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.primary.withValues(alpha: 0.1),
+                  borderRadius:
+                      BorderRadius.circular(SizeTokens.radiusCircle),
+                ),
+                child: Text(
+                  '$count',
+                  style: TextStyle(
+                    fontSize: SizeTokens.fontXS,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.primary,
+                  ),
+                ),
+              ),
+              SizedBox(width: SizeTokens.spaceXS),
+            ],
+            Icon(
+              Icons.chevron_right_rounded,
+              size: SizeTokens.iconSM,
+              color: AppTheme.textSecondary,
             ),
           ],
         ),
@@ -794,17 +1213,9 @@ class _DatePickerField extends StatelessWidget {
             '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
         onChanged(formatted);
       },
-      borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
-      child: Container(
-        width: double.infinity,
+      child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: SizeTokens.paddingMD,
           vertical: SizeTokens.paddingMD,
-        ),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppTheme.border),
-          borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
-          color: AppTheme.surface,
         ),
         child: Row(
           children: [
@@ -825,17 +1236,24 @@ class _DatePickerField extends StatelessWidget {
                       color: AppTheme.textSecondary,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  SizedBox(height: SizeConfig.h(2)),
                   Text(
                     displayValue,
                     style: TextStyle(
                       fontSize: SizeTokens.fontMD,
                       fontWeight: FontWeight.w500,
-                      color: AppTheme.textPrimary,
+                      color: value != null
+                          ? AppTheme.textPrimary
+                          : AppTheme.textHint,
                     ),
                   ),
                 ],
               ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: SizeTokens.iconSM,
+              color: AppTheme.textSecondary,
             ),
           ],
         ),
@@ -852,6 +1270,7 @@ class _ErrorReload extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppStrings.of(context);
     return Center(
       child: Padding(
         padding: EdgeInsets.all(SizeTokens.paddingPage),
@@ -869,7 +1288,7 @@ class _ErrorReload extends StatelessWidget {
             SizedBox(height: SizeTokens.spaceLG),
             TextButton(
               onPressed: onRetry,
-              child: const Text('Tekrar Dene'),
+              child: Text(l10n.appointmentsRetry),
             ),
           ],
         ),

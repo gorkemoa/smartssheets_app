@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../app/app_theme.dart';
+import '../../../core/responsive/size_config.dart';
 import '../../../core/responsive/size_tokens.dart';
 import '../../../models/membership_model.dart';
 import '../../../models/membership_permissions_model.dart';
 
-class ProfileMembershipItem extends StatelessWidget {
+class ProfileMembershipItem extends StatefulWidget {
   final MembershipModel membership;
   final String roleLabel;
   final String permissionsTitle;
@@ -31,142 +32,208 @@ class ProfileMembershipItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final permissions = membership.permissionsJson;
-    final brand = membership.brand;
-    final isActive = membership.status == 'active';
+  State<ProfileMembershipItem> createState() => _ProfileMembershipItemState();
+}
 
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
-        border: Border.all(color: AppTheme.border),
-      ),
-      child: Column(
+class _ProfileMembershipItemState extends State<ProfileMembershipItem> {
+  bool _permissionsExpanded = false;
+
+  Color _roleColor(String? role) {
+    switch (role) {
+      case 'owner':
+        return AppTheme.primary;
+      case 'admin':
+        return AppTheme.accent;
+      default:
+        return AppTheme.textSecondary;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final permissions = widget.membership.permissionsJson;
+    final brand = widget.membership.brand;
+    final roleColor = _roleColor(widget.membership.role);
+    final brandInitial = (brand?.name?.isNotEmpty == true)
+        ? brand!.name![0].toUpperCase()
+        : '?';
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+          border: Border.all(color: AppTheme.border),
+        ),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Sol aksent çizgisi
+              Container(width: 3, color: roleColor),
+              Expanded(
+                child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header: brand + role ────────────────────────────────────────────
-          Container(
-            padding: EdgeInsets.all(SizeTokens.paddingXL),
-            decoration: BoxDecoration(
-              color: AppTheme.primary,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(SizeTokens.radiusXL),
-              ),
+          // ── Header satırı ─────────────────────────────────────────────────
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: SizeTokens.paddingMD,
+              vertical: SizeTokens.paddingSM,
             ),
             child: Row(
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        brand?.name ?? '—',
-                        style: TextStyle(
-                          fontSize: SizeTokens.fontLG,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textOnPrimary,
-                        ),
-                      ),
-                      SizedBox(height: SizeTokens.spaceXXS),
-                      Row(
-                        children: [
-                          _RoleBadge(role: membership.role ?? '—'),
-                          if (isActive) ...[
-                            SizedBox(width: SizeTokens.spaceXS),
-                            _ActiveDot(),
-                          ],
-                        ],
-                      ),
-                    ],
+                Container(
+                  width: SizeConfig.r(32),
+                  height: SizeConfig.r(32),
+                  decoration: BoxDecoration(
+                    color: roleColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    brandInitial,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontMD,
+                      fontWeight: FontWeight.w700,
+                      color: roleColor,
+                    ),
                   ),
                 ),
-                if (brand?.subscriptionStatus != null)
+                SizedBox(width: SizeTokens.spaceSM),
+                Expanded(
+                  child: Text(
+                    brand?.name ?? '—',
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontMD,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                      letterSpacing: -0.2,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                SizedBox(width: SizeTokens.spaceXS),
+                _RoleBadge(role: widget.membership.role ?? '—', color: roleColor),
+                if (brand?.subscriptionStatus != null) ...[
+                  SizedBox(width: SizeTokens.spaceXS),
                   _SubStatusBadge(
                     isActive: brand!.subscriptionStatus == 'active',
-                    activeLabel: subscriptionActiveLabel,
-                    inactiveLabel: subscriptionInactiveLabel,
+                    activeLabel: widget.subscriptionActiveLabel,
+                    inactiveLabel: widget.subscriptionInactiveLabel,
                   ),
+                ],
               ],
             ),
           ),
 
-          // ── Brand info ─────────────────────────────────────────────────────
-          if (brand != null)
+          // ── Brand info satırları ──────────────────────────────────────────
+          if (brand != null) ...[
+            Container(height: 0.5, color: AppTheme.divider),
             Padding(
-              padding: EdgeInsets.fromLTRB(
-                SizeTokens.paddingXL,
-                SizeTokens.spaceMD,
-                SizeTokens.paddingXL,
-                0,
+              padding: EdgeInsets.symmetric(
+                horizontal: SizeTokens.paddingMD,
+                vertical: SizeTokens.paddingSM,
               ),
               child: Column(
                 children: [
                   _InfoRow(
-                    icon: Icons.diamond_outlined,
-                    label: planLabel,
+                    icon: Icons.layers_outlined,
+                    label: widget.planLabel,
                     value: (brand.currentPlan ?? '—').toUpperCase(),
                   ),
-                  SizedBox(height: SizeTokens.spaceXS),
                   _InfoRow(
-                    icon: Icons.people_outline_rounded,
-                    label: memberLimitLabel,
+                    icon: Icons.group_outlined,
+                    label: widget.memberLimitLabel,
                     value: brand.memberLimit?.toString() ?? '—',
                   ),
-                  if (brand.subscriptionExpiresAt != null) ...[
-                    SizedBox(height: SizeTokens.spaceXS),
+                  if (brand.subscriptionExpiresAt != null)
                     _InfoRow(
-                      icon: Icons.calendar_today_outlined,
-                      label: subscriptionExpiresLabel,
+                      icon: Icons.event_outlined,
+                      label: widget.subscriptionExpiresLabel,
                       value: _formatDate(brand.subscriptionExpiresAt!),
                     ),
-                  ],
-                  if (brand.timezone != null) ...[
-                    SizedBox(height: SizeTokens.spaceXS),
+                  if (brand.timezone != null)
                     _InfoRow(
-                      icon: Icons.public_outlined,
-                      label: timezoneLabel,
+                      icon: Icons.schedule_outlined,
+                      label: widget.timezoneLabel,
                       value: brand.timezone!,
                     ),
-                  ],
                 ],
               ),
             ),
+          ],
 
-          // ── Permissions ────────────────────────────────────────────────────
+          // ── İzinler accordion ─────────────────────────────────────────────
           if (permissions != null) ...[
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                SizeTokens.paddingXL,
-                SizeTokens.spaceMD,
-                SizeTokens.paddingXL,
-                0,
+            Container(height: 0.5, color: AppTheme.divider),
+            InkWell(
+              onTap: () =>
+                  setState(() => _permissionsExpanded = !_permissionsExpanded),
+              borderRadius: BorderRadius.vertical(
+                bottom: _permissionsExpanded
+                    ? Radius.zero
+                    : Radius.circular(SizeTokens.radiusMD),
               ),
-              child: Text(
-                permissionsTitle,
-                style: TextStyle(
-                  fontSize: SizeTokens.fontSM,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textSecondary,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizeTokens.paddingMD,
+                  vertical: SizeTokens.paddingSM,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.shield_outlined,
+                      size: SizeTokens.iconSM,
+                      color: AppTheme.textHint,
+                    ),
+                    SizedBox(width: SizeTokens.spaceXS),
+                    Text(
+                      widget.permissionsTitle,
+                      style: TextStyle(
+                        fontSize: SizeTokens.fontXS,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textSecondary,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(
+                      _permissionsExpanded
+                          ? Icons.keyboard_arrow_up_rounded
+                          : Icons.keyboard_arrow_down_rounded,
+                      size: SizeTokens.iconSM,
+                      color: AppTheme.textHint,
+                    ),
+                  ],
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                SizeTokens.paddingXL,
-                SizeTokens.spaceXS,
-                SizeTokens.paddingXL,
-                SizeTokens.paddingXL,
+            if (_permissionsExpanded) ...[
+              Container(height: 0.5, color: AppTheme.divider),
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  SizeTokens.paddingMD,
+                  SizeTokens.spaceXS,
+                  SizeTokens.paddingMD,
+                  SizeTokens.paddingMD,
+                ),
+                child: _PermissionsWrap(
+                  permissions: permissions,
+                  permissionLabels: widget.permissionLabels,
+                ),
               ),
-              child: _PermissionsWrap(
-                permissions: permissions,
-                permissionLabels: permissionLabels,
+            ],
+          ],
+        ],
               ),
             ),
-          ] else
-            SizedBox(height: SizeTokens.paddingXL),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -187,49 +254,30 @@ class ProfileMembershipItem extends StatelessWidget {
 
 class _RoleBadge extends StatelessWidget {
   final String role;
-  const _RoleBadge({required this.role});
+  final Color color;
+  const _RoleBadge({required this.role, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: SizeTokens.paddingSM,
+        horizontal: SizeTokens.spaceXS,
         vertical: SizeTokens.spaceXXS,
       ),
       decoration: BoxDecoration(
-        color: AppTheme.textOnPrimary.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(SizeTokens.radiusCircle),
+        color: color.withValues(alpha: 0.10),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+        borderRadius: BorderRadius.circular(SizeTokens.radiusXS),
       ),
       child: Text(
         role.toUpperCase(),
         style: TextStyle(
           fontSize: SizeTokens.fontXS,
-          fontWeight: FontWeight.w700,
-          color: AppTheme.textOnPrimary,
+          fontWeight: FontWeight.w600,
+          color: color,
           letterSpacing: 0.5,
         ),
       ),
-    );
-  }
-}
-
-class _ActiveDot extends StatelessWidget {
-  const _ActiveDot();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: SizeTokens.spaceXS,
-          height: SizeTokens.spaceXS,
-          decoration: const BoxDecoration(
-            color: Color(0xFF34C759),
-            shape: BoxShape.circle,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -286,29 +334,40 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: SizeTokens.iconMD, color: AppTheme.textHint),
-        SizedBox(width: SizeTokens.spaceXS),
-        Text(
-          '$label: ',
-          style: TextStyle(
-            fontSize: SizeTokens.fontSM,
-            color: AppTheme.textSecondary,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: SizeTokens.fontSM,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: SizeTokens.spaceXXS),
+      child: Row(
+        children: [
+          Icon(icon, size: SizeTokens.iconSM, color: AppTheme.textHint),
+          SizedBox(width: SizeTokens.spaceXS),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: SizeTokens.fontXS,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontXS,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                  ),
+                ),
+              ],
             ),
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -356,10 +415,13 @@ class _PermissionsWrap extends StatelessWidget {
       runSpacing: SizeTokens.spaceXS,
       children: items.map((item) {
         final color =
-            item.granted ? const Color(0xFF34C759) : AppTheme.textHint;
+            item.granted ? AppTheme.success : AppTheme.textHint;
         final bgColor = item.granted
-            ? const Color(0xFF34C759).withValues(alpha: 0.1)
+            ? AppTheme.successLight
             : AppTheme.surfaceVariant;
+        final borderColor = item.granted
+            ? AppTheme.success.withValues(alpha: 0.3)
+            : AppTheme.border;
 
         return Container(
           padding: EdgeInsets.symmetric(
@@ -369,6 +431,7 @@ class _PermissionsWrap extends StatelessWidget {
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(SizeTokens.radiusCircle),
+            border: Border.all(color: borderColor),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

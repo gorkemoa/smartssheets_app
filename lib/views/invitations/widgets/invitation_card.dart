@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../app/app_theme.dart';
+import '../../../core/responsive/size_config.dart';
 import '../../../core/responsive/size_tokens.dart';
 import '../../../l10n/strings.dart';
 import '../../../models/invitation_model.dart';
@@ -40,8 +41,6 @@ class InvitationCard extends StatelessWidget {
     }
   }
 
-  Color _roleBg() => _roleColor().withValues(alpha: 0.1);
-
   String _formatDate(String? iso) {
     if (iso == null) return '—';
     try {
@@ -59,136 +58,118 @@ class InvitationCard extends StatelessWidget {
     final isAccepted = invitation.acceptedAt != null;
 
     return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(SizeTokens.paddingXL),
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
+        borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
         border: Border.all(color: AppTheme.border),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header row ─────────────────────────────────────────────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Avatar placeholder (envelope icon)
+              // ── Left role accent bar ──────────────────────────────────
               Container(
-                width: SizeTokens.avatarMD,
-                height: SizeTokens.avatarMD,
-                decoration: BoxDecoration(
-                  color: _roleColor().withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.mail_outline_rounded,
-                  size: SizeTokens.iconMD,
-                  color: _roleColor(),
-                ),
+                width: SizeConfig.w(3),
+                color: _roleColor(),
               ),
-              SizedBox(width: SizeTokens.spaceMD),
-              // Email
+              // ── Card content ──────────────────────────────────────────
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      invitation.email ?? '—',
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontLG,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textPrimary,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeTokens.paddingMD,
+                    vertical: SizeTokens.spaceSM,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Row 1: email + role badge
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              invitation.email ?? '—',
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontMD,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(width: SizeTokens.spaceXS),
+                          _InvBadge(
+                            label: _roleLabel(),
+                            color: _roleColor(),
+                            background: _roleColor().withValues(alpha: 0.1),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: SizeTokens.spaceXXS),
-                    // Accepted / Pending status
-                    Row(
-                      children: [
-                        _InvBadge(
-                          label: isAccepted
-                              ? l10n.invitationAcceptedLabel
-                              : l10n.invitationPendingLabel,
-                          color: isAccepted ? AppTheme.accent : AppTheme.primary,
-                          background: isAccepted
-                              ? AppTheme.accent.withValues(alpha: 0.1)
-                              : AppTheme.primary.withValues(alpha: 0.1),
+                      SizedBox(height: SizeTokens.spaceXXS),
+                      // Row 2: status badge + expiry date
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _InvBadge(
+                            label: isAccepted
+                                ? l10n.invitationAcceptedLabel
+                                : l10n.invitationPendingLabel,
+                            color: isAccepted
+                                ? AppTheme.accent
+                                : AppTheme.warning,
+                            background: isAccepted
+                                ? AppTheme.accent.withValues(alpha: 0.1)
+                                : AppTheme.warning.withValues(alpha: 0.1),
+                          ),
+                          SizedBox(width: SizeTokens.spaceXS),
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: SizeTokens.iconSM,
+                            color: AppTheme.textHint,
+                          ),
+                          SizedBox(width: SizeTokens.spaceXXS),
+                          Text(
+                            _formatDate(invitation.expiresAt),
+                            style: TextStyle(
+                              fontSize: SizeTokens.fontXS,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Row 3: action buttons (only if not accepted)
+                      if (!isAccepted &&
+                          (onResend != null || onDelete != null)) ...[
+                        SizedBox(height: SizeTokens.spaceSM),
+                        Row(
+                          children: [
+                            if (onResend != null)
+                              _TextAction(
+                                label: l10n.invitationResendButton,
+                                color: AppTheme.primary,
+                                onTap: onResend!,
+                              ),
+                            if (onResend != null && onDelete != null)
+                              SizedBox(width: SizeTokens.spaceXS),
+                            if (onDelete != null)
+                              _TextAction(
+                                label: l10n.invitationDeleteButton,
+                                color: AppTheme.error,
+                                onTap: onDelete!,
+                              ),
+                          ],
                         ),
                       ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              // Role badge
-              _InvBadge(
-                label: _roleLabel(),
-                color: _roleColor(),
-                background: _roleBg(),
               ),
             ],
           ),
-          SizedBox(height: SizeTokens.spaceMD),
-          Divider(color: AppTheme.divider, height: SizeTokens.spaceXS),
-          SizedBox(height: SizeTokens.spaceSM),
-          // ── Dates ──────────────────────────────────────────────────────
-          Row(
-            children: [
-              Icon(
-                Icons.schedule_rounded,
-                size: SizeTokens.iconSM,
-                color: AppTheme.textSecondary,
-              ),
-              SizedBox(width: SizeTokens.spaceXXS),
-              Text(
-                '${l10n.invitationExpiresLabel}: ${_formatDate(invitation.expiresAt)}',
-                style: TextStyle(
-                  fontSize: SizeTokens.fontSM,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-              if (isAccepted) ...[
-                SizedBox(width: SizeTokens.spaceMD),
-                Icon(
-                  Icons.check_circle_outline_rounded,
-                  size: SizeTokens.iconSM,
-                  color: AppTheme.accent,
-                ),
-                SizedBox(width: SizeTokens.spaceXXS),
-                Text(
-                  '${l10n.invitationAcceptedLabel}: ${_formatDate(invitation.acceptedAt)}',
-                  style: TextStyle(
-                    fontSize: SizeTokens.fontSM,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          // ── Action buttons (only if not accepted) ──────────────────────
-          if (!isAccepted && (onResend != null || onDelete != null)) ...[
-            SizedBox(height: SizeTokens.spaceMD),
-            Row(
-              children: [
-                if (onResend != null)
-                  _ActionButton(
-                    label: l10n.invitationResendButton,
-                    icon: Icons.send_rounded,
-                    color: AppTheme.primary,
-                    onTap: onResend!,
-                  ),
-                if (onResend != null && onDelete != null)
-                  SizedBox(width: SizeTokens.spaceSM),
-                if (onDelete != null)
-                  _ActionButton(
-                    label: l10n.invitationDeleteButton,
-                    icon: Icons.cancel_outlined,
-                    color: AppTheme.error,
-                    onTap: onDelete!,
-                  ),
-              ],
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -211,7 +192,7 @@ class _InvBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: SizeTokens.paddingSM,
+        horizontal: SizeTokens.paddingXS,
         vertical: SizeTokens.spaceXXS,
       ),
       decoration: BoxDecoration(
@@ -230,17 +211,15 @@ class _InvBadge extends StatelessWidget {
   }
 }
 
-// ── Action button ───────────────────────────────────────────────────────────
+// ── Text action button ───────────────────────────────────────────────────────
 
-class _ActionButton extends StatelessWidget {
+class _TextAction extends StatelessWidget {
   final String label;
-  final IconData icon;
   final Color color;
   final VoidCallback onTap;
 
-  const _ActionButton({
+  const _TextAction({
     required this.label,
-    required this.icon,
     required this.color,
     required this.onTap,
   });
@@ -251,30 +230,24 @@ class _ActionButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: SizeTokens.paddingMD,
-          vertical: SizeTokens.spaceXXS + 2,
+          horizontal: SizeTokens.paddingXS,
+          vertical: SizeTokens.spaceXXS,
         ),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
-          border: Border.all(color: color.withValues(alpha: 0.3)),
+          color: color,
+          borderRadius: BorderRadius.circular(SizeTokens.radiusSM),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: SizeTokens.iconSM, color: color),
-            SizedBox(width: SizeTokens.spaceXXS),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: SizeTokens.fontXS,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-            ),
-          ],
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: SizeTokens.fontXS,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
         ),
       ),
     );
   }
 }
+
+

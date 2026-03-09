@@ -147,6 +147,11 @@ class AppStrings {
   String get profileRoleLabel => _t('profileRoleLabel');
   String get profilePermissionsTitle => _t('profilePermissionsTitle');
   String get profileNoMemberships => _t('profileNoMemberships');
+
+  String get profileSectionAccountHelp => _t('profileSectionAccountHelp');
+  String get profileUserInformation => _t('profileUserInformation');
+  String get profileChangePassword => _t('profileChangePassword');
+
   String get profileSubscriptionActive => _t('profileSubscriptionActive');
   String get profileSubscriptionInactive => _t('profileSubscriptionInactive');
   String get profileSubscriptionExpires => _t('profileSubscriptionExpires');
@@ -211,6 +216,9 @@ class AppStrings {
   String get memberFormStatusActive => _t('memberFormStatusActive');
   String get memberFormStatusInactive => _t('memberFormStatusInactive');
   String get memberFormPermissionsTitle => _t('memberFormPermissionsTitle');
+  String get memberFormRolePermissionsTitle => _t('memberFormRolePermissionsTitle');
+  String get memberFormNextButton => _t('memberFormNextButton');
+  String get memberFormBackButton => _t('memberFormBackButton');
   String get memberFormSaveButton => _t('memberFormSaveButton');
   String get memberFormCreateButton => _t('memberFormCreateButton');
   String get memberFormDeleteButton => _t('memberFormDeleteButton');
@@ -394,6 +402,14 @@ class AppStrings {
   String get appointmentEndDateButton => _t('appointmentEndDateButton');
   String get appointmentStartTimeButton => _t('appointmentStartTimeButton');
   String get appointmentEndTimeButton => _t('appointmentEndTimeButton');
+  // Cupertino picker & select box
+  String get appointmentPickerDone => _t('appointmentPickerDone');
+  String get appointmentSectionBasicInfo => _t('appointmentSectionBasicInfo');
+  String get appointmentSectionDateTime => _t('appointmentSectionDateTime');
+  String get appointmentAssigneesNoneSelected =>
+      _t('appointmentAssigneesNoneSelected');
+  String appointmentAssigneesNSelected(int n) =>
+      _tp('appointmentAssigneesNSelected', {'n': n.toString()});
 
   // ─── Translations ──────────────────────────────────────────────────────────
   // Format: 'key': {'tr': '...', 'en': '...'}
@@ -682,6 +698,10 @@ class AppStrings {
       'tr': 'Henüz bir üyeliğiniz yok.',
       'en': 'You have no memberships yet.',
     },
+    'profileSectionAccountHelp': {'tr': 'Hesap', 'en': 'Account'},
+    'profileUserInformation': {'tr': 'Kullanıcı Bilgileri', 'en': 'User Information'},
+    'profileChangePassword': {'tr': 'Şifre Değiştir', 'en': 'Change Password'},
+
     'profileSubscriptionActive': {'tr': 'Aktif', 'en': 'Active'},
     'profileSubscriptionInactive': {'tr': 'Pasif', 'en': 'Inactive'},
     'profileSubscriptionExpires': {
@@ -747,7 +767,7 @@ class AppStrings {
       'tr': 'Üyeleri görmek için Anasayfa\'dan bir marka seçin.',
       'en': 'Select a brand from Home to view its members.',
     },
-    'membersRoleOwner': {'tr': 'Sahip', 'en': 'Owner'},
+    'membersRoleOwner': {'tr': 'Kurucu', 'en': 'Owner'},
     'membersRoleAdmin': {'tr': 'Yönetici', 'en': 'Admin'},
     'membersRoleMember': {'tr': 'Üye', 'en': 'Member'},
     'membersStatusActive': {'tr': 'Aktif', 'en': 'Active'},
@@ -794,6 +814,9 @@ class AppStrings {
     'memberFormStatusActive': {'tr': 'Aktif', 'en': 'Active'},
     'memberFormStatusInactive': {'tr': 'Pasif', 'en': 'Inactive'},
     'memberFormPermissionsTitle': {'tr': 'İzinler', 'en': 'Permissions'},
+    'memberFormRolePermissionsTitle': {'tr': 'Rol & İzinler', 'en': 'Role & Permissions'},
+    'memberFormNextButton': {'tr': 'İleri', 'en': 'Next'},
+    'memberFormBackButton': {'tr': 'Geri', 'en': 'Back'},
     'memberFormSaveButton': {'tr': 'Kaydet', 'en': 'Save'},
     'memberFormCreateButton': {'tr': 'Üye Ekle', 'en': 'Add Member'},
     'memberFormDeleteButton': {'tr': 'Üyeyi Sil', 'en': 'Remove Member'},
@@ -1093,6 +1116,23 @@ class AppStrings {
     'appointmentEndDateButton': {'tr': 'Tarih Seç', 'en': 'Select Date'},
     'appointmentStartTimeButton': {'tr': 'Saat Seç', 'en': 'Select Time'},
     'appointmentEndTimeButton': {'tr': 'Saat Seç', 'en': 'Select Time'},
+    'appointmentPickerDone': {'tr': 'Tamam', 'en': 'Done'},
+    'appointmentSectionBasicInfo': {
+      'tr': 'Randevu Bilgileri',
+      'en': 'Appointment Info',
+    },
+    'appointmentSectionDateTime': {
+      'tr': 'Tarih ve Saat',
+      'en': 'Date & Time',
+    },
+    'appointmentAssigneesNoneSelected': {
+      'tr': 'Seçilmedi',
+      'en': 'None selected',
+    },
+    'appointmentAssigneesNSelected': {
+      'tr': '{n} kişi seçildi',
+      'en': '{n} selected',
+    },
     // PDF Viewer
     'pdfViewerTitle': {'tr': 'PDF Görüntüleyici', 'en': 'PDF Viewer'},
     'pdfViewerLoading': {'tr': 'PDF yükleniyor...', 'en': 'Loading PDF...'},

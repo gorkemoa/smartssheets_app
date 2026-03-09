@@ -40,6 +40,7 @@ enum MemberFormResult { created, updated, deleted }
 
 class _MemberFormBottomSheetState extends State<MemberFormBottomSheet> {
   final _formKey = GlobalKey<FormState>();
+  int _currentStep = 0;
 
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
@@ -88,6 +89,17 @@ class _MemberFormBottomSheetState extends State<MemberFormBottomSheet> {
     _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  bool get _isLastStep => _currentStep == 1;
+
+  void _onNext() {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _currentStep = 1);
+  }
+
+  void _onBack() {
+    setState(() => _currentStep = 0);
   }
 
   Future<void> _onSubmit(
@@ -171,6 +183,179 @@ class _MemberFormBottomSheetState extends State<MemberFormBottomSheet> {
     if (success) Navigator.of(context).pop(MemberFormResult.deleted);
   }
 
+  String _stepTitle(AppStrings l10n) {
+    if (_currentStep == 0) {
+      return widget._isEditing
+          ? l10n.memberFormEditTitle
+          : l10n.memberFormCreateTitle;
+    }
+    return widget._isEditing
+        ? l10n.memberFormPermissionsTitle
+        : l10n.memberFormRolePermissionsTitle;
+  }
+
+  Widget _buildStep0(AppStrings l10n) {
+    if (widget._isEditing) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _SectionLabel(
+            label: l10n.memberFormRoleLabel,
+            icon: Icons.shield_outlined,
+          ),
+          SizedBox(height: SizeTokens.spaceSM),
+          _RoleDropdown(
+            value: _selectedRole,
+            roles: _roles,
+            l10n: l10n,
+            onChanged: (v) => setState(() => _selectedRole = v!),
+          ),
+          SizedBox(height: SizeTokens.spaceMD),
+          _SectionLabel(
+            label: l10n.memberFormStatusLabel,
+            icon: Icons.radio_button_checked_rounded,
+          ),
+          SizedBox(height: SizeTokens.spaceSM),
+          _StatusDropdown(
+            value: _selectedStatus,
+            statuses: _statuses,
+            l10n: l10n,
+            onChanged: (v) => setState(() => _selectedStatus = v!),
+          ),
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _MemberTextField(
+          controller: _nameController,
+          label: l10n.memberFormNameLabel,
+          hint: l10n.memberFormNameHint,
+          textInputAction: TextInputAction.next,
+          validator: (v) => (v == null || v.trim().isEmpty) ? '*' : null,
+        ),
+        SizedBox(height: SizeTokens.spaceMD),
+        _MemberTextField(
+          controller: _emailController,
+          label: l10n.memberFormEmailLabel,
+          hint: l10n.memberFormEmailHint,
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
+          validator: (v) => (v == null || v.trim().isEmpty) ? '*' : null,
+        ),
+        SizedBox(height: SizeTokens.spaceMD),
+        _MemberTextField(
+          controller: _phoneController,
+          label: l10n.memberFormPhoneLabel,
+          hint: l10n.memberFormPhoneHint,
+          keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.next,
+        ),
+        SizedBox(height: SizeTokens.spaceMD),
+        _MemberTextField(
+          controller: _passwordController,
+          label: l10n.memberFormPasswordLabel,
+          hint: l10n.memberFormPasswordHint,
+          obscureText: true,
+          textInputAction: TextInputAction.done,
+          validator: (v) => (v == null || v.length < 8) ? '*' : null,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStep1(AppStrings l10n) {
+    final permsWidget = Container(
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceVariant,
+        borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
+      ),
+      child: Column(
+        children: [
+          _PermSwitch(
+            label: l10n.membersPermCreateAppointment,
+            value: _permCreateAppointment,
+            onChanged: (v) => setState(() => _permCreateAppointment = v),
+            showDivider: true,
+          ),
+          _PermSwitch(
+            label: l10n.membersPermUploadResult,
+            value: _permUploadResult,
+            onChanged: (v) => setState(() => _permUploadResult = v),
+            showDivider: true,
+          ),
+          _PermSwitch(
+            label: l10n.membersPermChangeStatus,
+            value: _permChangeStatus,
+            onChanged: (v) => setState(() => _permChangeStatus = v),
+            showDivider: true,
+          ),
+          _PermSwitch(
+            label: l10n.membersPermManageMembers,
+            value: _permManageMembers,
+            onChanged: (v) => setState(() => _permManageMembers = v),
+            showDivider: true,
+          ),
+          _PermSwitch(
+            label: l10n.membersPermManageStatuses,
+            value: _permManageStatuses,
+            onChanged: (v) => setState(() => _permManageStatuses = v),
+            showDivider: true,
+          ),
+          _PermSwitch(
+            label: l10n.membersPermManageAppointmentFields,
+            value: _permManageAppointmentFields,
+            onChanged: (v) =>
+                setState(() => _permManageAppointmentFields = v),
+            showDivider: false,
+          ),
+        ],
+      ),
+    );
+
+    if (!widget._isEditing) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _SectionLabel(
+            label: l10n.memberFormRoleLabel,
+            icon: Icons.shield_outlined,
+          ),
+          SizedBox(height: SizeTokens.spaceSM),
+          _RoleDropdown(
+            value: _selectedRole,
+            roles: _roles,
+            l10n: l10n,
+            onChanged: (v) => setState(() => _selectedRole = v!),
+          ),
+          SizedBox(height: SizeTokens.spaceMD),
+          _SectionLabel(
+            label: l10n.memberFormPermissionsTitle,
+            icon: Icons.lock_outline_rounded,
+          ),
+          SizedBox(height: SizeTokens.spaceSM),
+          permsWidget,
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _SectionLabel(
+          label: l10n.memberFormPermissionsTitle,
+          icon: Icons.lock_outline_rounded,
+        ),
+        SizedBox(height: SizeTokens.spaceSM),
+        permsWidget,
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
@@ -221,7 +406,7 @@ class _MemberFormBottomSheetState extends State<MemberFormBottomSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // ── Title ──────────────────────────────────────────────
+                      // ── Title + step dots ──────────────────────────────────
                       Row(
                         children: [
                           Container(
@@ -234,150 +419,38 @@ class _MemberFormBottomSheetState extends State<MemberFormBottomSheet> {
                             ),
                           ),
                           SizedBox(width: SizeTokens.spaceSM),
-                          Text(
-                            widget._isEditing
-                                ? l10n.memberFormEditTitle
-                                : l10n.memberFormCreateTitle,
-                            style: TextStyle(
-                              fontSize: SizeTokens.fontXXL,
-                              fontWeight: FontWeight.w700,
-                              color: AppTheme.textPrimary,
-                              letterSpacing: -0.4,
+                          Expanded(
+                            child: Text(
+                              _stepTitle(l10n),
+                              style: TextStyle(
+                                fontSize: SizeTokens.fontXXL,
+                                fontWeight: FontWeight.w700,
+                                color: AppTheme.textPrimary,
+                                letterSpacing: -0.4,
+                              ),
                             ),
+                          ),
+                          _StepDots(
+                            currentStep: _currentStep,
+                            totalSteps: 2,
                           ),
                         ],
                       ),
                       SizedBox(height: SizeTokens.spaceXXL),
 
-                      // ── Create-only fields ──────────────────────────────────
-                      if (!widget._isEditing) ...[
-                        _MemberTextField(
-                          controller: _nameController,
-                          label: l10n.memberFormNameLabel,
-                          hint: l10n.memberFormNameHint,
-                          textInputAction: TextInputAction.next,
-                          validator: (v) =>
-                              (v == null || v.trim().isEmpty) ? '*' : null,
+                      // ── Step content (animated) ────────────────────────────
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        transitionBuilder: (child, animation) =>
+                            FadeTransition(
+                          opacity: animation,
+                          child: child,
                         ),
-                        SizedBox(height: SizeTokens.spaceMD),
-                        _MemberTextField(
-                          controller: _emailController,
-                          label: l10n.memberFormEmailLabel,
-                          hint: l10n.memberFormEmailHint,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          validator: (v) =>
-                              (v == null || v.trim().isEmpty) ? '*' : null,
-                        ),
-                        SizedBox(height: SizeTokens.spaceMD),
-                        _MemberTextField(
-                          controller: _phoneController,
-                          label: l10n.memberFormPhoneLabel,
-                          hint: l10n.memberFormPhoneHint,
-                          keyboardType: TextInputType.phone,
-                          textInputAction: TextInputAction.next,
-                        ),
-                        SizedBox(height: SizeTokens.spaceMD),
-                        _MemberTextField(
-                          controller: _passwordController,
-                          label: l10n.memberFormPasswordLabel,
-                          hint: l10n.memberFormPasswordHint,
-                          obscureText: true,
-                          textInputAction: TextInputAction.done,
-                          validator: (v) =>
-                              (v == null || v.length < 8) ? '*' : null,
-                        ),
-                        SizedBox(height: SizeTokens.spaceMD),
-                      ],
-
-                      // ── Role dropdown ───────────────────────────────────────
-                      _SectionLabel(
-                        label: l10n.memberFormRoleLabel,
-                        icon: Icons.shield_outlined,
-                      ),
-                      SizedBox(height: SizeTokens.spaceSM),
-                      _RoleDropdown(
-                        value: _selectedRole,
-                        roles: _roles,
-                        l10n: l10n,
-                        onChanged: (v) => setState(() => _selectedRole = v!),
-                      ),
-                      SizedBox(height: SizeTokens.spaceMD),
-
-                      // ── Status dropdown (edit only) ─────────────────────────
-                      if (widget._isEditing) ...[
-                        _SectionLabel(
-                          label: l10n.memberFormStatusLabel,
-                          icon: Icons.radio_button_checked_rounded,
-                        ),
-                        SizedBox(height: SizeTokens.spaceSM),
-                        _StatusDropdown(
-                          value: _selectedStatus,
-                          statuses: _statuses,
-                          l10n: l10n,
-                          onChanged: (v) =>
-                              setState(() => _selectedStatus = v!),
-                        ),
-                        SizedBox(height: SizeTokens.spaceMD),
-                      ],
-
-                      // ── Permissions ─────────────────────────────────────────
-                      _SectionLabel(
-                        label: l10n.memberFormPermissionsTitle,
-                        icon: Icons.lock_outline_rounded,
-                      ),
-                      SizedBox(height: SizeTokens.spaceSM),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.surfaceVariant,
-                          borderRadius:
-                              BorderRadius.circular(SizeTokens.radiusLG),
-                        ),
-                        child: Column(
-                          children: [
-                            _PermSwitch(
-                              label: l10n.membersPermCreateAppointment,
-                              value: _permCreateAppointment,
-                              onChanged: (v) =>
-                                  setState(() => _permCreateAppointment = v),
-                              showDivider: true,
-                            ),
-                            _PermSwitch(
-                              label: l10n.membersPermUploadResult,
-                              value: _permUploadResult,
-                              onChanged: (v) =>
-                                  setState(() => _permUploadResult = v),
-                              showDivider: true,
-                            ),
-                            _PermSwitch(
-                              label: l10n.membersPermChangeStatus,
-                              value: _permChangeStatus,
-                              onChanged: (v) =>
-                                  setState(() => _permChangeStatus = v),
-                              showDivider: true,
-                            ),
-                            _PermSwitch(
-                              label: l10n.membersPermManageMembers,
-                              value: _permManageMembers,
-                              onChanged: (v) =>
-                                  setState(() => _permManageMembers = v),
-                              showDivider: true,
-                            ),
-                            _PermSwitch(
-                              label: l10n.membersPermManageStatuses,
-                              value: _permManageStatuses,
-                              onChanged: (v) =>
-                                  setState(() => _permManageStatuses = v),
-                              showDivider: true,
-                            ),
-                            _PermSwitch(
-                              label: l10n.membersPermManageAppointmentFields,
-                              value: _permManageAppointmentFields,
-                              onChanged: (v) => setState(
-                                  () => _permManageAppointmentFields = v),
-                              showDivider: false,
-                            ),
-                          ],
+                        child: KeyedSubtree(
+                          key: ValueKey(_currentStep),
+                          child: _currentStep == 0
+                              ? _buildStep0(l10n)
+                              : _buildStep1(l10n),
                         ),
                       ),
 
@@ -414,46 +487,85 @@ class _MemberFormBottomSheetState extends State<MemberFormBottomSheet> {
                       ],
                       SizedBox(height: SizeTokens.spaceXXL),
 
-                      // ── Submit button ───────────────────────────────────────
-                      SizedBox(
-                        width: double.infinity,
-                        height: SizeTokens.buttonHeight,
-                        child: ElevatedButton(
-                          onPressed: viewModel.isSubmitting
-                              ? null
-                              : () => _onSubmit(viewModel, l10n),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primary,
-                            disabledBackgroundColor: AppTheme.primaryLight,
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(SizeTokens.radiusLG),
-                            ),
-                          ),
-                          child: viewModel.isSubmitting
-                              ? SizedBox(
-                                  width: SizeTokens.iconMD,
-                                  height: SizeTokens.iconMD,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: SizeConfig.w(2),
-                                    color: AppTheme.textOnPrimary,
+                      // ── Navigation: Back / Next or Submit ─────────────────
+                      Row(
+                        children: [
+                          if (_currentStep > 0) ...[
+                            Expanded(
+                              child: SizedBox(
+                                height: SizeTokens.buttonHeight,
+                                child: OutlinedButton(
+                                  onPressed: viewModel.isSubmitting
+                                      ? null
+                                      : _onBack,
+                                  style: OutlinedButton.styleFrom(
+                                    side:
+                                        BorderSide(color: AppTheme.border),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          SizeTokens.radiusLG),
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  widget._isEditing
-                                      ? l10n.memberFormSaveButton
-                                      : l10n.memberFormCreateButton,
-                                  style: TextStyle(
-                                    fontSize: SizeTokens.fontLG,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.textOnPrimary,
+                                  child: Text(
+                                    l10n.memberFormBackButton,
+                                    style: TextStyle(
+                                      fontSize: SizeTokens.fontLG,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textSecondary,
+                                    ),
                                   ),
                                 ),
-                        ),
+                              ),
+                            ),
+                            SizedBox(width: SizeTokens.spaceSM),
+                          ],
+                          Expanded(
+                            child: SizedBox(
+                              height: SizeTokens.buttonHeight,
+                              child: ElevatedButton(
+                                onPressed: viewModel.isSubmitting
+                                    ? null
+                                    : _isLastStep
+                                        ? () => _onSubmit(viewModel, l10n)
+                                        : _onNext,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.primary,
+                                  disabledBackgroundColor:
+                                      AppTheme.primaryLight,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        SizeTokens.radiusLG),
+                                  ),
+                                ),
+                                child: viewModel.isSubmitting && _isLastStep
+                                    ? SizedBox(
+                                        width: SizeTokens.iconMD,
+                                        height: SizeTokens.iconMD,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: SizeConfig.w(2),
+                                          color: AppTheme.textOnPrimary,
+                                        ),
+                                      )
+                                    : Text(
+                                        _isLastStep
+                                            ? (widget._isEditing
+                                                ? l10n.memberFormSaveButton
+                                                : l10n.memberFormCreateButton)
+                                            : l10n.memberFormNextButton,
+                                        style: TextStyle(
+                                          fontSize: SizeTokens.fontLG,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppTheme.textOnPrimary,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
 
-                      // ── Delete button (edit only) ───────────────────────────
-                      if (widget._isEditing) ...[
+                      // ── Delete button (edit only, last step) ───────────────
+                      if (widget._isEditing && _isLastStep) ...[
                         SizedBox(height: SizeTokens.spaceMD),
                         SizedBox(
                           width: double.infinity,
@@ -465,8 +577,8 @@ class _MemberFormBottomSheetState extends State<MemberFormBottomSheet> {
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(color: AppTheme.error),
                               shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(SizeTokens.radiusLG),
+                                borderRadius: BorderRadius.circular(
+                                    SizeTokens.radiusLG),
                               ),
                             ),
                             child: Text(
@@ -486,6 +598,36 @@ class _MemberFormBottomSheetState extends State<MemberFormBottomSheet> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StepDots extends StatelessWidget {
+  final int currentStep;
+  final int totalSteps;
+
+  const _StepDots({required this.currentStep, required this.totalSteps});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(
+        totalSteps,
+        (i) => AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          margin: EdgeInsets.only(left: SizeTokens.spaceXXS),
+          width: i == currentStep
+              ? SizeTokens.spaceLG
+              : SizeTokens.spaceXXS * 1.5,
+          height: SizeTokens.spaceXXS * 1.5,
+          decoration: BoxDecoration(
+            color:
+                i == currentStep ? AppTheme.primary : AppTheme.border,
+            borderRadius: BorderRadius.circular(SizeTokens.radiusCircle),
+          ),
         ),
       ),
     );

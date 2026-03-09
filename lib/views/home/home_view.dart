@@ -13,7 +13,6 @@ import '../../models/stats_summary_model.dart';
 import '../../viewmodels/appointments_view_model.dart';
 import '../../viewmodels/home_view_model.dart';
 import 'widgets/brand_form_bottom_sheet.dart';
-import 'widgets/dashboard_stat_tile.dart';
 import 'widgets/dashboard_quick_action.dart';
 import '../appointments/appointments_view.dart';
 import '../appointments/widgets/appointment_card.dart';
@@ -176,8 +175,6 @@ class _DashboardContent extends StatefulWidget {
 }
 
 class _DashboardContentState extends State<_DashboardContent> {
-  bool _statsExpanded = false;
-
   @override
   Widget build(BuildContext context) {
     final viewModel = widget.viewModel;
@@ -236,9 +233,6 @@ class _DashboardContentState extends State<_DashboardContent> {
             selectLabel: l10n.homeBrandTitle,
           ),
           SizedBox(height: SizeTokens.spaceMD),
-          // ── 4-Grid Stats ────────────────────────────────────────────
-          _StatsGrid(summary: summary, l10n: l10n),
-          SizedBox(height: SizeTokens.spaceMD),
           // ── Upcoming Appointments Slider ────────────────────────────
           _UpcomingAppointmentsSlider(
             appointments: brand.id != null
@@ -256,13 +250,12 @@ class _DashboardContentState extends State<_DashboardContent> {
           ),
           SizedBox(height: SizeTokens.spaceMD),
 
-          // ── Statistics Accordion ────────────────────────────────────
-          _StatsAccordion(
+          // ── Statistics Section ──────────────────────────────────────
+          _StatsAndMonthlyCard(
             l10n: l10n,
             summary: summary,
             monthly: monthly,
-            expanded: _statsExpanded,
-            onToggle: () => setState(() => _statsExpanded = !_statsExpanded),
+            showHeader: true,
           ),
           SizedBox(height: SizeTokens.spaceMD),
         ],
@@ -738,165 +731,6 @@ class _UpcomingAppointmentsSlider extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // 2×2 Stats Grid
 // ─────────────────────────────────────────────────────────────────────────────
-
-class _StatsGrid extends StatelessWidget {
-  final dynamic summary;
-  final AppStrings l10n;
-
-  const _StatsGrid({required this.summary, required this.l10n});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: DashboardStatTile(
-                icon: Icons.calendar_month_rounded,
-                value: '${summary?.totalAppointments ?? 0}',
-                label: l10n.homeStatsTotalLabel,
-                iconColor: Colors.white,
-                iconBackground: AppTheme.accent,
-              ),
-            ),
-            SizedBox(width: SizeTokens.spaceSM),
-            Expanded(
-              child: DashboardStatTile(
-                icon: Icons.date_range_rounded,
-                value: '${summary?.thisMonthCreated ?? 0}',
-                label: l10n.homeStatsThisMonthLabel,
-                iconColor: Colors.white,
-                iconBackground: AppTheme.primary,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: SizeTokens.spaceSM),
-        Row(
-          children: [
-            Expanded(
-              child: DashboardStatTile(
-                icon: Icons.check_circle_outline_rounded,
-                value: '${summary?.activeCount ?? 0}',
-                label: l10n.homeStatsActiveLabel,
-                iconColor: Colors.white,
-                iconBackground: AppTheme.success,
-              ),
-            ),
-            SizedBox(width: SizeTokens.spaceSM),
-            Expanded(
-              child: DashboardStatTile(
-                icon: Icons.schedule_rounded,
-                value: '${summary?.upcoming7Days ?? 0}',
-                label: l10n.homeStatsUpcoming7DaysLabel,
-                iconColor: Colors.white,
-                iconBackground: AppTheme.warning,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Stats Accordion
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _StatsAccordion extends StatelessWidget {
-  final AppStrings l10n;
-  final dynamic summary;
-  final StatsMonthlyResponseModel? monthly;
-  final bool expanded;
-  final VoidCallback onToggle;
-
-  const _StatsAccordion({
-    required this.l10n,
-    required this.summary,
-    required this.monthly,
-    required this.expanded,
-    required this.onToggle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(SizeTokens.radiusLG),
-        border: Border.all(color: AppTheme.divider),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          // ── Header (tappable) ───────────────────────────────────────
-          InkWell(
-            onTap: onToggle,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: SizeTokens.paddingMD,
-                vertical: SizeTokens.spaceMD,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.bar_chart_rounded,
-                    size: SizeTokens.iconSM,
-                    color: AppTheme.primary,
-                  ),
-                  SizedBox(width: SizeTokens.spaceXS),
-                  Expanded(
-                    child: Text(
-                      l10n.homeStatsTitle,
-                      style: TextStyle(
-                        fontSize: SizeTokens.fontMD,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textPrimary,
-                      ),
-                    ),
-                  ),
-                  AnimatedRotation(
-                    turns: expanded ? 0.5 : 0.0,
-                    duration: const Duration(milliseconds: 250),
-                    child: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: SizeTokens.iconMD,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // ── Collapsible body ────────────────────────────────────────
-          AnimatedCrossFade(
-            duration: const Duration(milliseconds: 300),
-            crossFadeState: expanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            firstChild: const SizedBox.shrink(),
-            secondChild: Column(
-              children: [
-                Divider(height: 1, color: AppTheme.divider),
-                if (summary != null || monthly != null) ...[
-                  Divider(height: 1, color: AppTheme.divider),
-                  _StatsAndMonthlyCard(
-                    summary: summary,
-                    monthly: monthly,
-                    l10n: l10n,
-                    showHeader: false,
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Stats & Monthly Card

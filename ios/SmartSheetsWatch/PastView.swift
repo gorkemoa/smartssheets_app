@@ -14,10 +14,12 @@ struct PastView: View {
                     )
                 } else {
                     List(session.past) { appointment in
-                        AppointmentRow(appointment: appointment)
-                            .foregroundColor(.secondary)
+                        NavigationLink(destination: AppointmentDetailView(appointment: appointment)) {
+                            AppointmentRow(appointment: appointment)
+                                .foregroundColor(.secondary)
+                        }
                     }
-                    .listStyle(.carousel)
+                    .listStyle(.plain)
                 }
             }
             .navigationTitle("Geçmiş")

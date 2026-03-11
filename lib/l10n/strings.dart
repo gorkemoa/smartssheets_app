@@ -169,6 +169,43 @@ class AppStrings {
   String get profilePermManageAppointmentFields =>
       _t('profilePermManageAppointmentFields');
 
+  // ─── Profile Edit ─────────────────────────────────────────────────────────
+  String get profileEditTitle => _t('profileEditTitle');
+  String get profileEditNameLabel => _t('profileEditNameLabel');
+  String get profileEditNameHint => _t('profileEditNameHint');
+  String get profileEditEmailLabel => _t('profileEditEmailLabel');
+  String get profileEditEmailHint => _t('profileEditEmailHint');
+  String get profileEditPhoneLabel => _t('profileEditPhoneLabel');
+  String get profileEditPhoneHint => _t('profileEditPhoneHint');
+  String get profileEditSaveButton => _t('profileEditSaveButton');
+  String get profileEditSuccess => _t('profileEditSuccess');
+
+  // ─── Change Password ───────────────────────────────────────────────────────
+  String get profileChangePasswordTitle => _t('profileChangePasswordTitle');
+  String get profileCurrentPasswordLabel => _t('profileCurrentPasswordLabel');
+  String get profileCurrentPasswordHint => _t('profileCurrentPasswordHint');
+  String get profileNewPasswordLabel => _t('profileNewPasswordLabel');
+  String get profileNewPasswordHint => _t('profileNewPasswordHint');
+  String get profileNewPasswordConfirmLabel =>
+      _t('profileNewPasswordConfirmLabel');
+  String get profileNewPasswordConfirmHint => _t('profileNewPasswordConfirmHint');
+  String get profileChangePasswordButton => _t('profileChangePasswordButton');
+  String get profileChangePasswordSuccess => _t('profileChangePasswordSuccess');
+
+  // ─── Delete Account ────────────────────────────────────────────────────────
+  String get profileDeleteAccount => _t('profileDeleteAccount');
+  String get profileDeleteAccountConfirmTitle =>
+      _t('profileDeleteAccountConfirmTitle');
+  String get profileDeleteAccountConfirmMessage =>
+      _t('profileDeleteAccountConfirmMessage');
+  String get profileDeleteAccountPasswordLabel =>
+      _t('profileDeleteAccountPasswordLabel');
+  String get profileDeleteAccountPasswordHint =>
+      _t('profileDeleteAccountPasswordHint');
+  String get profileDeleteAccountConfirm => _t('profileDeleteAccountConfirm');
+  String get profileDeleteAccountCancel => _t('profileDeleteAccountCancel');
+  String get profileDeleteAccountSuccess => _t('profileDeleteAccountSuccess');
+
   // ─── Brand Form ─────────────────────────────────────────────────────────────
   String get homeBrandCreateTitle => _t('homeBrandCreateTitle');
   String get homeBrandEditTitle => _t('homeBrandEditTitle');
@@ -1128,5 +1165,78 @@ class AppStrings {
     'pdfViewerZoomIn': {'tr': 'Yakınlaştır', 'en': 'Zoom In'},
     'pdfViewerZoomOut': {'tr': 'Uzaklaştır', 'en': 'Zoom Out'},
     'pdfViewerOpen': {'tr': 'Görüntüle', 'en': 'View'},
+
+    // Profile Edit
+    'profileEditTitle': {'tr': 'Bilgilerimi Düzenle', 'en': 'Edit Profile'},
+    'profileEditNameLabel': {'tr': 'Ad Soyad', 'en': 'Full Name'},
+    'profileEditNameHint': {
+      'tr': 'Adınızı ve soyadınızı girin',
+      'en': 'Enter your full name',
+    },
+    'profileEditEmailLabel': {'tr': 'E-posta', 'en': 'Email'},
+    'profileEditEmailHint': {
+      'tr': 'ornek@email.com',
+      'en': 'example@email.com',
+    },
+    'profileEditPhoneLabel': {'tr': 'Telefon', 'en': 'Phone'},
+    'profileEditPhoneHint': {'tr': '+905551234567', 'en': '+15551234567'},
+    'profileEditSaveButton': {'tr': 'Kaydet', 'en': 'Save'},
+    'profileEditSuccess': {
+      'tr': 'Profil başarıyla güncellendi.',
+      'en': 'Profile updated successfully.',
+    },
+
+    // Change Password
+    'profileChangePasswordTitle': {
+      'tr': 'Şifre Değiştir',
+      'en': 'Change Password',
+    },
+    'profileCurrentPasswordLabel': {
+      'tr': 'Mevcut Şifre',
+      'en': 'Current Password',
+    },
+    'profileCurrentPasswordHint': {'tr': '••••••••', 'en': '••••••••'},
+    'profileNewPasswordLabel': {'tr': 'Yeni Şifre', 'en': 'New Password'},
+    'profileNewPasswordHint': {'tr': '••••••••', 'en': '••••••••'},
+    'profileNewPasswordConfirmLabel': {
+      'tr': 'Yeni Şifre Tekrar',
+      'en': 'Confirm New Password',
+    },
+    'profileNewPasswordConfirmHint': {'tr': '••••••••', 'en': '••••••••'},
+    'profileChangePasswordButton': {
+      'tr': 'Şifreyi Güncelle',
+      'en': 'Update Password',
+    },
+    'profileChangePasswordSuccess': {
+      'tr': 'Şifreniz başarıyla güncellendi.',
+      'en': 'Password updated successfully.',
+    },
+
+    // Delete Account
+    'profileDeleteAccount': {'tr': 'Hesabı Sil', 'en': 'Delete Account'},
+    'profileDeleteAccountConfirmTitle': {
+      'tr': 'Hesabı Sil',
+      'en': 'Delete Account',
+    },
+    'profileDeleteAccountConfirmMessage': {
+      'tr':
+          'Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+      'en':
+          'Are you sure you want to delete your account? This action cannot be undone.',
+    },
+    'profileDeleteAccountPasswordLabel': {
+      'tr': 'Mevcut Şifre',
+      'en': 'Current Password',
+    },
+    'profileDeleteAccountPasswordHint': {'tr': '••••••••', 'en': '••••••••'},
+    'profileDeleteAccountConfirm': {
+      'tr': 'Hesabı Sil',
+      'en': 'Delete Account',
+    },
+    'profileDeleteAccountCancel': {'tr': 'İptal', 'en': 'Cancel'},
+    'profileDeleteAccountSuccess': {
+      'tr': 'Hesabınız başarıyla silindi.',
+      'en': 'Your account has been deleted.',
+    },
   };
 }

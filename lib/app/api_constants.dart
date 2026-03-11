@@ -8,6 +8,9 @@ class ApiConstants {
   static const String register = '/auth/register';
   static const String logout = '/auth/logout';
   static const String me = '/auth/me';
+  static const String updateProfile = '/auth/profile';
+  static const String changePassword = '/auth/password/change';
+  static const String deleteAccount = '/auth/account';
 
   // Brands
   static const String brands = '/brands';

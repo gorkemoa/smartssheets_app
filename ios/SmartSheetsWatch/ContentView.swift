@@ -21,6 +21,12 @@ struct ContentView: View {
                 .tabItem {
                     Label("Geçmiş", systemImage: "clock.arrow.circlepath")
                 }
+
+            // Refresh sekmesi
+            RefreshView()
+                .tabItem {
+                    Label("Yenile", systemImage: "arrow.clockwise")
+                }
         }
     }
 }

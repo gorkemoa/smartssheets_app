@@ -6,9 +6,12 @@ import '../core/network/api_exception.dart';
 import '../core/network/api_result.dart';
 import '../core/utils/logger.dart';
 import '../models/auth_response_model.dart';
+import '../models/change_password_request_model.dart';
+import '../models/delete_account_request_model.dart';
 import '../models/login_request_model.dart';
 import '../models/me_response_model.dart';
 import '../models/register_request_model.dart';
+import '../models/update_profile_request_model.dart';
 
 class AuthService {
   AuthService._();
@@ -128,5 +131,56 @@ class AuthService {
       requiresAuth: true,
     );
     await clearSession();
+  }
+
+  Future<ApiResult<void>> updateProfile(
+    UpdateProfileRequestModel request,
+  ) async {
+    AppLogger.info(_tag, 'updateProfile() called');
+
+    final result = await ApiClient.instance.patch(
+      ApiConstants.updateProfile,
+      body: request.toJson(),
+      requiresAuth: true,
+    );
+
+    return switch (result) {
+      ApiSuccess() => const ApiSuccess(null),
+      ApiFailure(:final exception) => ApiFailure(exception),
+    };
+  }
+
+  Future<ApiResult<void>> changePassword(
+    ChangePasswordRequestModel request,
+  ) async {
+    AppLogger.info(_tag, 'changePassword() called');
+
+    final result = await ApiClient.instance.post(
+      ApiConstants.changePassword,
+      body: request.toJson(),
+      requiresAuth: true,
+    );
+
+    return switch (result) {
+      ApiSuccess() => const ApiSuccess(null),
+      ApiFailure(:final exception) => ApiFailure(exception),
+    };
+  }
+
+  Future<ApiResult<void>> deleteAccount(
+    DeleteAccountRequestModel request,
+  ) async {
+    AppLogger.info(_tag, 'deleteAccount() called');
+
+    final result = await ApiClient.instance.delete(
+      ApiConstants.deleteAccount,
+      requiresAuth: true,
+      body: request.toJson(),
+    );
+
+    return switch (result) {
+      ApiSuccess() => const ApiSuccess(null),
+      ApiFailure(:final exception) => ApiFailure(exception),
+    };
   }
 }

@@ -4,11 +4,11 @@ import '../../app/app_theme.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
 import '../../l10n/strings.dart';
-import '../../viewmodels/appointments_view_model.dart';
-import '../../viewmodels/home_view_model.dart';
+import '../../models/delete_account_request_model.dart';
 import '../../viewmodels/profile_view_model.dart';
-import '../appointments/appointment_form_view.dart';
 import '../login/login_view.dart';
+import 'widgets/change_password_sheet.dart';
+import 'widgets/edit_profile_sheet.dart';
 import 'widgets/profile_membership_item.dart';
 import 'widgets/profile_menu_item.dart';
 import 'widgets/profile_section_container.dart';
@@ -52,6 +52,87 @@ class _ProfileBodyState extends State<_ProfileBody> {
     }
   }
 
+  Future<void> _onDeleteAccount(
+    ProfileViewModel viewModel,
+    AppStrings l10n,
+  ) async {
+    final passwordController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          l10n.profileDeleteAccountConfirmTitle,
+          style: TextStyle(
+            fontSize: SizeTokens.fontLG,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.profileDeleteAccountConfirmMessage,
+              style: TextStyle(
+                fontSize: SizeTokens.fontMD,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+            SizedBox(height: SizeTokens.spaceMD),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: l10n.profileDeleteAccountPasswordLabel,
+                hintText: l10n.profileDeleteAccountPasswordHint,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(SizeTokens.radiusMD),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.profileDeleteAccountCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.error),
+            child: Text(
+              l10n.profileDeleteAccountConfirm,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final password = passwordController.text;
+    passwordController.dispose();
+    if (password.isEmpty) return;
+    try {
+      await viewModel.deleteAccount(
+        DeleteAccountRequestModel(currentPassword: password),
+      );
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const LoginView()),
+        (route) => false,
+      );
+    } catch (errorMessage) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage.toString()),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppTheme.error,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
@@ -59,35 +140,6 @@ class _ProfileBodyState extends State<_ProfileBody> {
 
     return Scaffold(
       backgroundColor: AppTheme.surfaceVariant,
-      floatingActionButton: Consumer<HomeViewModel>(
-        builder: (context, homeVm, _) => FloatingActionButton(
-          onPressed: () async {
-            final brand = homeVm.selectedBrand;
-            if (brand?.id == null) return;
-            final apptVm = AppointmentsViewModel(brandId: brand!.id!)..init();
-            final result = await Navigator.of(context).push<bool>(
-              MaterialPageRoute(
-                builder: (_) => ChangeNotifierProvider.value(
-                  value: apptVm,
-                  child: AppointmentFormView(brandId: brand.id!),
-                ),
-              ),
-            );
-            if (result == true && context.mounted) {
-              final l10n = AppStrings.of(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.appointmentCreateSuccess),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
-          },
-          backgroundColor: AppTheme.primary,
-          foregroundColor: AppTheme.textOnPrimary,
-          child: Icon(Icons.add_rounded, size: SizeTokens.iconLG),
-        ),
-      ),
       body: Consumer<ProfileViewModel>(
         builder: (context, viewModel, _) {
           return NestedScrollView(
@@ -137,6 +189,7 @@ class _ProfileBodyState extends State<_ProfileBody> {
                     viewModel: viewModel,
                     l10n: l10n,
                     onLogout: () => _onLogout(viewModel),
+                    onDeleteAccount: () => _onDeleteAccount(viewModel, l10n),
                   )
                 : const SizedBox.shrink(),
           );
@@ -150,11 +203,13 @@ class _ProfileContent extends StatelessWidget {
   final ProfileViewModel viewModel;
   final AppStrings l10n;
   final VoidCallback onLogout;
+  final VoidCallback onDeleteAccount;
 
   const _ProfileContent({
     required this.viewModel,
     required this.l10n,
     required this.onLogout,
+    required this.onDeleteAccount,
   });
 
   @override
@@ -178,13 +233,36 @@ class _ProfileContent extends StatelessWidget {
               ProfileMenuItem(
                 icon: Icons.person_outline_rounded,
                 label: l10n.profileUserInformation,
-                onTap: () {},
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => ChangeNotifierProvider.value(
+                    value: viewModel,
+                    child: EditProfileSheet(
+                      user: viewModel.meResponse?.user,
+                    ),
+                  ),
+                ),
               ),
               ProfileMenuItem(
                 icon: Icons.lock_outline_rounded,
                 label: l10n.profileChangePassword,
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => ChangeNotifierProvider.value(
+                    value: viewModel,
+                    child: const ChangePasswordSheet(),
+                  ),
+                ),
+              ),
+              ProfileMenuItem(
+                icon: Icons.delete_outline_rounded,
+                label: l10n.profileDeleteAccount,
                 isLast: true,
-                onTap: () {},
+                onTap: onDeleteAccount,
               ),
             ],
           ),
@@ -392,7 +470,15 @@ class _UserCard extends StatelessWidget {
         ],
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => ChangeNotifierProvider.value(
+            value: context.read<ProfileViewModel>(),
+            child: EditProfileSheet(user: user),
+          ),
+        ),
         borderRadius: BorderRadius.circular(SizeTokens.radiusXL),
         child: Padding(
           padding: EdgeInsets.all(SizeTokens.paddingXL),

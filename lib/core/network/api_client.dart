@@ -189,18 +189,20 @@ class ApiClient {
   Future<ApiResult<Map<String, dynamic>>> delete(
     String endpoint, {
     bool requiresAuth = true,
+    Map<String, dynamic>? body,
   }) async {
     final uri = _buildUri(endpoint);
     final headers = _buildHeaders(requiresAuth: requiresAuth);
+    final encodedBody = body != null ? jsonEncode(body) : null;
 
     AppLogger.request(
       _tag,
-      'URL: $uri\nMETHOD: DELETE\nHEADERS: $headers',
+      'URL: $uri\nMETHOD: DELETE\nHEADERS: $headers${encodedBody != null ? '\nBODY: $encodedBody' : ''}',
     );
 
     try {
       final response = await http
-          .delete(uri, headers: headers)
+          .delete(uri, headers: headers, body: encodedBody)
           .timeout(_timeout);
 
       return _handleResponse(response, uri.toString(), 'DELETE');

@@ -20,6 +20,22 @@ struct CurrentView: View {
                                     .foregroundColor(.green)
                             }
 
+                            // Statü badge
+                            if !appointment.statusName.isEmpty {
+                                HStack(spacing: 4) {
+                                    Circle()
+                                        .fill(appointment.statusColor)
+                                        .frame(width: 6, height: 6)
+                                    Text(appointment.statusName)
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundColor(appointment.statusColor)
+                                }
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3)
+                                .background(appointment.statusColor.opacity(0.15))
+                                .clipShape(Capsule())
+                            }
+
                             Text(appointment.title)
                                 .font(.system(size: 14, weight: .bold))
                                 .foregroundColor(.primary)
@@ -31,9 +47,32 @@ struct CurrentView: View {
                             }
 
                             if !appointment.time.isEmpty {
-                                Label(appointment.time, systemImage: "clock")
+                                Label {
+                                    Group {
+                                        if appointment.endTime.isEmpty {
+                                            Text(appointment.time)
+                                        } else {
+                                            Text("\(appointment.time) – \(appointment.endTime)")
+                                        }
+                                    }
                                     .font(.system(size: 12))
-                                    .foregroundColor(.secondary)
+                                } icon: {
+                                    Image(systemName: "clock")
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+
+                            if !appointment.notes.isEmpty {
+                                Divider()
+                                Label {
+                                    Text(appointment.notes)
+                                        .font(.system(size: 11))
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(4)
+                                } icon: {
+                                    Image(systemName: "note.text")
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
                         .padding(.horizontal, 4)

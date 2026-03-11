@@ -14,9 +14,11 @@ struct UpcomingView: View {
                     )
                 } else {
                     List(session.upcoming) { appointment in
-                        AppointmentRow(appointment: appointment)
+                        NavigationLink(destination: AppointmentDetailView(appointment: appointment)) {
+                            AppointmentRow(appointment: appointment)
+                        }
                     }
-                    .listStyle(.carousel)
+                    .listStyle(.plain)
                 }
             }
             .navigationTitle("Yaklaşan")
